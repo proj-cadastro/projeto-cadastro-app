@@ -1,0 +1,31 @@
+name: Automação de Versão e Tag
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  version_and_tag:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v3
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - name: Instalar dependências
+        run: npm install
+
+      - name: Incrementar versão e atualizar app.json
+        run: npm run release
+
+      - name: Push das alterações e tags
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git push --follow-tagss
