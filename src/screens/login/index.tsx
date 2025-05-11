@@ -43,7 +43,7 @@ const LoginScreen = ({ navigation }: any) => {
       <Button title="Entrar" onPress={handleLogin} />
 
       <TouchableOpacity onPress={() => navigation.navigate("Register")}>
-        <Text style={styles.link}>Não tem uma conta? Cadastre-se</Text>
+        <Text style={styles.link}>Não tem uma conta? Cadastre-se aqui</Text>
       </TouchableOpacity>
     </View>
   );
@@ -76,12 +76,12 @@ const styles = StyleSheet.create({
     color: "#007BFF",
     textDecorationLine: "underline",
   },
-    logo: {
-        width: 200,
-        height: 200,
-        marginBottom: 20,
-        resizeMode: "contain",
-    },
+  logo: {
+    width: 200,
+    height: 200,
+    marginBottom: 20,
+    resizeMode: "contain",
+  },
 });
 
 export default LoginScreen;
