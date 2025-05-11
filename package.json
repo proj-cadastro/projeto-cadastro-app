@@ -1,13 +1,14 @@
 {
   "name": "projeto-cadastro-app",
   "license": "0BSD",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "index.ts",
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "release": "standard-version && node scripts/updateAppJson.js"
   },
   "dependencies": {
     "@react-navigation/native": "^7.1.8",
@@ -22,6 +23,7 @@
   "devDependencies": {
     "@babel/core": "^7.25.2",
     "@types/react": "~19.0.10",
+    "standard-version": "^9.5.0",
     "typescript": "~5.8.3"
   },
   "private": true
