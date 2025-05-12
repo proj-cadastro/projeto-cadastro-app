@@ -16,6 +16,7 @@ const LoginScreen = ({ navigation }: any) => {
   const handleLogin = () => {
     console.log("Email:", email);
     console.log("Password:", password);
+    navigation.navigate("Home");
   };
 
   return (
