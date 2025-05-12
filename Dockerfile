@@ -10,9 +10,6 @@ COPY . .
 # Instalando as dependências
 RUN npm install --legacy-peer-deps
 
-# Criando o build da aplicação
-RUN npm run build
-
 # Expondo a porta do front-end (ajuste conforme necessário)
 EXPOSE 3000
 
