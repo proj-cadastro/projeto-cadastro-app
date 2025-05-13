@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.2.14](https://github.com/proj-cadastro/projeto-cadastro-app/compare/v1.2.13...v1.2.14) (2025-05-13)
+
+
+### Bug Fixes
+
+* add condition to prevent GitHub Actions from pushing changes ([3d6e4f8](https://github.com/proj-cadastro/projeto-cadastro-app/commit/3d6e4f81ba39960118f7b476eb56fe676d282668))
+
 ### [1.2.13](https://github.com/proj-cadastro/projeto-cadastro-app/compare/v1.2.12...v1.2.13) (2025-05-13)
 
 ### [1.2.12](https://github.com/proj-cadastro/projeto-cadastro-app/compare/v1.2.11...v1.2.12) (2025-05-13)
