@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.2.19](https://github.com/proj-cadastro/projeto-cadastro-app/compare/v1.2.18...v1.2.19) (2025-05-13)
+
+
+### Bug Fixes
+
+* amend commit message to include [skip ci] to prevent CI loops ([2fee6da](https://github.com/proj-cadastro/projeto-cadastro-app/commit/2fee6daa85df570be1aeed2b60540858dd493f8f))
+
 ### [1.2.18](https://github.com/proj-cadastro/projeto-cadastro-app/compare/v1.2.17...v1.2.18) (2025-05-13)
 
 ### [1.2.17](https://github.com/proj-cadastro/projeto-cadastro-app/compare/v1.2.16...v1.2.17) (2025-05-13)
