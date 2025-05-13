@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## 1.3.0 (2025-05-13)
+
+
+### Features
+
+* add automatic commit for app.json updates in release workflow ([67592a6](https://github.com/proj-cadastro/projeto-cadastro-app/commit/67592a68b35f7283331fb4083c6bb14ef8790ac1))
+
 ### 1.2.23 (2025-05-13)
 
 ### 1.2.22 (2025-05-13)
