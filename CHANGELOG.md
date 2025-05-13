@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.2.17](https://github.com/proj-cadastro/projeto-cadastro-app/compare/v1.2.16...v1.2.17) (2025-05-13)
+
+
+### Bug Fixes
+
+* update paths-ignore in GitHub Actions workflow to exclude package.json and app.json ([a5479fa](https://github.com/proj-cadastro/projeto-cadastro-app/commit/a5479faa2a1b4384bd9fe94826eb698d5097487f))
+
 ### [1.2.16](https://github.com/proj-cadastro/projeto-cadastro-app/compare/v1.2.15...v1.2.16) (2025-05-13)
 
 
