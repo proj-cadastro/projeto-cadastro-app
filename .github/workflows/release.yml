@@ -36,6 +36,7 @@ jobs:
         run: npm run release
 
       - name: Push das alterações e tags
+        if: github.actor != 'github-actions'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
