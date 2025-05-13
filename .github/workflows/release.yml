@@ -29,6 +29,18 @@ jobs:
       - name: Incrementar versão e atualizar app.json
         run: npm run release
 
+      - name: Commitar alterações no app.json
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            git add app.json
+            git commit -m "chore: atualiza app.json para versão $(jq -r '.version' package.json)"
+            git push
+          else
+            echo "Nenhuma alteração no app.json para commitar."
+          fi
+
       - name: Push das alterações e tags
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
