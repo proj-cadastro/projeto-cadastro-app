@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.2.0](https://github.com/proj-cadastro/projeto-cadastro-app/compare/v1.1.1...v1.2.0) (2025-05-13)
+
+
+### Features
+
+* add logo ([f5a37f7](https://github.com/proj-cadastro/projeto-cadastro-app/commit/f5a37f7eaf7b3ac6c62366077096b0b637f73572))
+* replace Button with TouchableOpacity for login and registration screens ([aaebaed](https://github.com/proj-cadastro/projeto-cadastro-app/commit/aaebaed069a2e98a40efc139e3d0217e29dcffab))
+
+
+### Bug Fixes
+
+* add Git configuration step in CI workflow ([3fd252c](https://github.com/proj-cadastro/projeto-cadastro-app/commit/3fd252c63518e8604c294b8178db0838ea6352a6))
+
 ### 1.1.1 (2025-05-12)
 
 ## 1.1.0 (2025-05-11)
