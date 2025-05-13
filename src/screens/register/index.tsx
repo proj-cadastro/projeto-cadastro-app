@@ -6,6 +6,7 @@ import {
   Button,
   StyleSheet,
   TouchableOpacity,
+  Image
 } from "react-native";
 
 const RegisterScreen = ({ navigation }: any) => {
@@ -21,6 +22,10 @@ const RegisterScreen = ({ navigation }: any) => {
 
   return (
     <View style={styles.container}>
+      <Image
+              source={require("../../../assets/logoFatecCapi.png")}
+              style={styles.logo}
+            />
       <Text style={styles.title}>Cadastro</Text>
 
       <TextInput
@@ -78,6 +83,12 @@ const styles = StyleSheet.create({
     marginTop: 20,
     color: "#007BFF",
     textDecorationLine: "underline",
+  },
+   logo: {
+    width: 200,
+    height: 200,
+    marginBottom: 20,
+    resizeMode: "contain",
   },
 });
 
