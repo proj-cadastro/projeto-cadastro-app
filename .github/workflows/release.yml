@@ -4,6 +4,11 @@ on:
   push:
     branches:
       - master
+    paths-ignore:
+      - 'CHANGELOG.md'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'app.json'
   pull_request:
     branches:
       - master
@@ -36,7 +41,6 @@ jobs:
         run: npm run release
 
       - name: Push das alterações e tags
-        if: github.actor != 'github-actions'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
