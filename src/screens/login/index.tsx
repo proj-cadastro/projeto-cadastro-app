@@ -52,6 +52,7 @@ const LoginScreen = ({ navigation }: any) => {
   );
 };
 
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
