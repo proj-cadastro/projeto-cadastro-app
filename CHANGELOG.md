@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.2.13](https://github.com/proj-cadastro/projeto-cadastro-app/compare/v1.2.12...v1.2.13) (2025-05-13)
+
+### [1.2.12](https://github.com/proj-cadastro/projeto-cadastro-app/compare/v1.2.11...v1.2.12) (2025-05-13)
+
+
+### Bug Fixes
+
+* update Git configuration to use local scope ([b0db868](https://github.com/proj-cadastro/projeto-cadastro-app/commit/b0db8687d66a9ab9a74e42195116a5b5f68cb8e4))
+
 ### [1.2.11](https://github.com/proj-cadastro/projeto-cadastro-app/compare/v1.2.10...v1.2.11) (2025-05-13)
 
 ### [1.2.10](https://github.com/proj-cadastro/projeto-cadastro-app/compare/v1.2.9...v1.2.10) (2025-05-13)
