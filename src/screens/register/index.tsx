@@ -6,7 +6,7 @@ import {
   Button,
   StyleSheet,
   TouchableOpacity,
-  Image
+  Image,
 } from "react-native";
 
 const RegisterScreen = ({ navigation }: any) => {
@@ -23,9 +23,9 @@ const RegisterScreen = ({ navigation }: any) => {
   return (
     <View style={styles.container}>
       <Image
-              source={require("../../../assets/logoFatecCapi.png")}
-              style={styles.logo}
-            />
+        source={require("../../../assets/logoFatecCapi.png")}
+        style={styles.logo}
+      />
       <Text style={styles.title}>Cadastro</Text>
 
       <TextInput
@@ -48,7 +48,9 @@ const RegisterScreen = ({ navigation }: any) => {
         onChangeText={setPassword}
       />
 
-      <Button title="Cadastrar" onPress={handleRegister} />
+      <TouchableOpacity style={styles.button} onPress={handleRegister}>
+        <Text style={styles.buttonText}>Cadastrar</Text>
+      </TouchableOpacity>
 
       <TouchableOpacity onPress={() => navigation.navigate("Login")}>
         <Text style={styles.link}>Já tem uma conta? Entrar</Text>
@@ -84,11 +86,25 @@ const styles = StyleSheet.create({
     color: "#007BFF",
     textDecorationLine: "underline",
   },
-   logo: {
+  logo: {
     width: 200,
     height: 200,
     marginBottom: 20,
     resizeMode: "contain",
+  },
+  button: {
+    width: "40%",
+    height: 40,
+    backgroundColor: "#a1a1a1",
+    borderRadius: 5,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 20,
+  },
+  buttonText: {
+    color: "#FFFFFF",
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });
 

@@ -41,7 +41,9 @@ const LoginScreen = ({ navigation }: any) => {
         onChangeText={setPassword}
       />
 
-      <Button title="Entrar" onPress={handleLogin} />
+      <TouchableOpacity style={styles.button} onPress={handleLogin}>
+        <Text style={styles.buttonText}>Entrar</Text>
+      </TouchableOpacity>
 
       <TouchableOpacity onPress={() => navigation.navigate("Register")}>
         <Text style={styles.link}>Não tem uma conta? Cadastre-se aqui</Text>
@@ -82,6 +84,20 @@ const styles = StyleSheet.create({
     height: 200,
     marginBottom: 20,
     resizeMode: "contain",
+  },
+  button: {
+    width: "40%",
+    height: 40,
+    backgroundColor: "#a1a1a1",
+    borderRadius: 5,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 20,
+  },
+  buttonText: {
+    color: "#FFFFFF",
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });
 
