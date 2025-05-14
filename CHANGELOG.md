@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## 1.4.0 (2025-05-14)
+
+
+### Features
+
+* add Docker Hub login and image build steps to release workflow ([8cc6eeb](https://github.com/proj-cadastro/projeto-cadastro-app/commit/8cc6eeb5872b7717d9e4e500114d794f28f28ec5))
+
 ## 1.3.0 (2025-05-13)
 
 
