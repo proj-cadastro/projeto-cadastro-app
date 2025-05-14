@@ -55,10 +55,12 @@ jobs:
 
       - name: Criar imagem docker
         run: |
-          docker build -t projetointegradorfatec/projeto-cadastro-app:latest .          
-          docker tag projetointegradorfatec/projeto-cadastro-app:latest projetointegradorfatec/projeto-cadastro-app:$(jq -r '.version' package.json)
+          VERSION=$(jq -r '.version' package.json)
+          docker build -t projetointegradorfatec/projeto-cadastro-app:latest .
+          docker tag projetointegradorfatec/projeto-cadastro-app:latest projetointegradorfatec/projeto-cadastro-app:$VERSION
 
       - name: Efetuar push da imagem
         run: |
-          docker push projetointegradorfatec/projeto-cadastro-app:${{ steps.version.outputs.NEW_VERSION }}
+          VERSION=$(jq -r '.version' package.json)
+          docker push projetointegradorfatec/projeto-cadastro-app:$VERSION
           docker push projetointegradorfatec/projeto-cadastro-app:latest
