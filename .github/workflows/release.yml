@@ -60,5 +60,5 @@ jobs:
 
       - name: Efetuar push da imagem
         run: |
-          docker push projetointegradorfatec/projeto-cadastro-app:latest
           docker push projetointegradorfatec/projeto-cadastro-app:${{ steps.version.outputs.NEW_VERSION }}
+          docker push projetointegradorfatec/projeto-cadastro-app:latest
