@@ -1,10 +1,16 @@
 import React from "react";
-import { SafeAreaView, Text, StyleSheet } from "react-native";
+import { SafeAreaView, Text, StyleSheet, View } from "react-native";
+import HamburgerMenu from "../../../components/HamburgerMenu";
 
-const RegisterProfessorScreen = () => {
+const RegisterCoursesScreen = () => {
   return (
     <SafeAreaView style={styles.container}>
-      <Text>Register Professor Screen</Text>
+      <View style={styles.menuContainer}>
+        <HamburgerMenu />
+      </View>
+      <View style={styles.content}>
+        <Text>Register cursos Screen</Text>
+      </View>
     </SafeAreaView>
   );
 };
@@ -12,10 +18,19 @@ const RegisterProfessorScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "#fff",
+  },
+  menuContainer: {
+    position: "absolute",
+    top: 10,
+    left: 10,
+    zIndex: 10,
+  },
+  content: {
+    flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#fff",
   },
 });
 
-export default RegisterProfessorScreen;
+export default RegisterCoursesScreen;

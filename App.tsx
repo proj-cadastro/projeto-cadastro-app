@@ -9,10 +9,10 @@ const screens = {
   Loading: require("./src/screens/loading").default,
   Home: require("./src/screens/home").default,
   ListProfessors: require("./src/screens/professors/list").default,
-  RegisterProfessors: require("./src/screens/professors/edit").default,
+  RegisterProfessors: require("./src/screens/professors/register").default,
   EditProfessors: require("./src/screens/professors/edit").default,
   ListCourses: require("./src/screens/courses/list").default,
-  RegisterCourses: require("./src/screens/courses/edit").default,
+  RegisterCourses: require("./src/screens/courses/register").default,
   EditCourses: require("./src/screens/courses/edit").default,
 };
 
