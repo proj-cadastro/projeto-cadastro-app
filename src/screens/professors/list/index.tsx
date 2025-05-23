@@ -44,18 +44,24 @@ const ProfessorsListScreen = () => {
     // lógica de impressão ou exportação
   };
 
-  const renderCheckbox = (label: string, checked: boolean, onChange: (val: boolean) => void) => (
-    <TouchableOpacity
-      style={styles.checkboxContainer}
-      onPress={() => onChange(!checked)}
-      activeOpacity={0.7}
-    >
-      <Text style={[styles.checkbox, checked && styles.checked]}>
-        {checked ? "☑" : "☐"}
-      </Text>
-      <Text>{label}</Text>
-    </TouchableOpacity>
-  );
+  const renderCheckbox = (
+  label: string,
+  checked: boolean,
+  onChange: (val: boolean) => void,
+  key?: string
+) => (
+  <TouchableOpacity
+    key={key}
+    style={styles.checkboxContainer}
+    onPress={() => onChange(!checked)}
+    activeOpacity={0.7}
+  >
+    <Text style={[styles.checkbox, checked && styles.checked]}>
+      {checked ? "☑" : "☐"}
+    </Text>
+    <Text>{label}</Text>
+  </TouchableOpacity>
+);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -73,25 +79,31 @@ const ProfessorsListScreen = () => {
           style={styles.input}
         />
 
-        <View style={styles.checkboxRow}>
-          <View style={styles.checkboxGroup}>
-            <Text style={styles.subtitle}>Cursos</Text>
-            {Object.entries(cursos).map(([curso, checked]) =>
-              renderCheckbox(curso, checked, (val) =>
-                setCursos((prev) => ({ ...prev, [curso]: val }))
-              )
-            )}
-          </View>
+<View style={styles.checkboxRow}>
+  <View style={styles.checkboxGroup}>
+    <Text style={styles.subtitle}>Cursos</Text>
+    {Object.entries(cursos).map(([curso, checked]) =>
+      renderCheckbox(
+        curso,
+        checked,
+        (val) => setCursos((prev) => ({ ...prev, [curso]: val })),
+        curso // key
+      )
+    )}
+  </View>
 
-          <View style={styles.checkboxGroup}>
-            <Text style={styles.subtitle}>Titulação</Text>
-            {Object.entries(titulacoes).map(([tit, checked]) =>
-              renderCheckbox(tit, checked, (val) =>
-                setTitulacoes((prev) => ({ ...prev, [tit]: val }))
-              )
-            )}
-          </View>
-        </View>
+  <View style={styles.checkboxGroup}>
+    <Text style={styles.subtitle}>Titulação</Text>
+    {Object.entries(titulacoes).map(([tit, checked]) =>
+      renderCheckbox(
+        tit,
+        checked,
+        (val) => setTitulacoes((prev) => ({ ...prev, [tit]: val })),
+        tit // key
+      )
+    )}
+  </View>
+</View>
 
         <View style={styles.buttonRow}>
           <Button title="Filtrar 🔍" onPress={handleFiltrar} color="#007bff" />
