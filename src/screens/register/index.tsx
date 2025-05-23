@@ -8,16 +8,25 @@ import {
   TouchableOpacity,
   Image,
 } from "react-native";
+import { createUser } from "../../services/users/userService";
 
 const RegisterScreen = ({ navigation }: any) => {
-  const [name, setName] = useState("");
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const handleRegister = () => {
-    console.log("Name:", name);
-    console.log("Email:", email);
-    console.log("Password:", password);
+    if (username && email && password) {
+      createUser({ username, email, password })
+        .then(() => {
+          alert("Usuário cadastrado com sucesso!");
+          navigation.navigate("Login");
+        })
+        .catch((error) => {
+          console.error(error);
+          alert("Erro ao cadastrar usuário.");
+        });
+    }
   };
 
   return (
@@ -31,8 +40,8 @@ const RegisterScreen = ({ navigation }: any) => {
       <TextInput
         style={styles.input}
         placeholder="Nome"
-        value={name}
-        onChangeText={setName}
+        value={username}
+        onChangeText={setUsername}
       />
       <TextInput
         style={styles.input}
