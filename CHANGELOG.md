@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## 1.5.0 (2025-05-20)
+
+
+### Features
+
+* adiciona menu hamburguer e atualiza rotas de registro e edição de professores e cursos ([35be7b3](https://github.com/proj-cadastro/projeto-cadastro-app/commit/35be7b3278a588e5f44a27932ef666bfc697c0cc))
+
 ### 1.4.4 (2025-05-20)
 
 ### 1.4.3 (2025-05-14)
