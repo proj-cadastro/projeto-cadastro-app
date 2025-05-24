@@ -20,7 +20,12 @@ const screens = {
   Loading: require("./src/screens/loading").default,
   Home: require("./src/screens/home").default,
   ListProfessors: require("./src/screens/professors/list").default,
-  RegisterProfessors: require("./src/screens/professors/register").default,
+  //rotas registro professor
+  RegisterProfessorsIndex: require("./src/screens/professors/register").default,
+  RegisterProfessorsStepOne: require("./src/screens/professors/register/stepOne").default,
+  RegisterProfessorsStepTwo: require("./src/screens/professors/register/stepTwo").default,
+  RegisterProfessorsFinished: require("./src/screens/professors/register/finished").default,
+  //
   EditProfessors: require("./src/screens/professors/edit").default,
   ListCourses: require("./src/screens/courses/list").default,
   RegisterCourses: require("./src/screens/courses/register").default,
