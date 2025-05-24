@@ -5,7 +5,7 @@ import { useNavigation } from "@react-navigation/native";
 const menuItems = [
   { label: "Início", route: "Home" },
   { label: "Lista de Professores", route: "ListProfessors" },
-  { label: "Cadastrar Professores", route: "RegisterProfessors" },
+  { label: "Cadastrar Professores", route: "RegisterProfessorsIndex" },
   { label: "Lista de Cursos", route: "ListCourses" },
   { label: "Cadastrar Cursos", route: "RegisterCourses" },
 ];
