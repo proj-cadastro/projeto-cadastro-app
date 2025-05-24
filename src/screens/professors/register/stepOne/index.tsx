@@ -1,21 +1,15 @@
 "use client";
 
 import React, { useState } from "react";
-import {
-  SafeAreaView,
-  View,
-  ScrollView,
-  Text,
-  TextInput,
-  StyleSheet,
-  Dimensions,
-} from "react-native";
+import { SafeAreaView, View, ScrollView, Text, TextInput } from "react-native";
 import { Card, Button, ProgressBar, MD3Colors } from "react-native-paper";
-import ListPicker from "../../../components/atoms/ListPicker";
-
-const screenHeight = Dimensions.get("window").height;
+import ListPicker from "../../../../components/atoms/ListPicker";
+import { useNavigation } from "@react-navigation/native";
+import { NavigationProp } from "../../../../types/rootStackParamList ";
+import { FormStyles } from "../../../../style/FormStyles";
 
 export default function StepOne() {
+  const navigation = useNavigation<NavigationProp>(); // Usa a tipagem correta
 
   //necessário conferir os reqs da api, para ver se está batendo com o que estamos armazenando...
   const [name, setName] = useState("");
@@ -24,55 +18,52 @@ export default function StepOne() {
   const [numMatricula, setNumMatricula] = useState("");
   const [codUnidade, setCodUnidade] = useState("");
 
-
   const handleAdvance = () => {
-    //precisa jogar este pessoal para a próxima fase do form
-    const aux = { name, email, titulacao, numMatricula, codUnidade }
-    
-    console.log(aux)
+    const partialDataProfessor = {
+      name,
+      email,
+      titulacao,
+      numMatricula,
+      codUnidade,
+    };
+
+    //enviando o objeto do professor para a próxima fase do form(StepTwo)
+    navigation.navigate("RegisterProfessorsStepTwo", { partialDataProfessor });
+    console.log(partialDataProfessor);
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <View style={styles.container}>
+    <SafeAreaView style={FormStyles.safeArea}>
+      <View style={FormStyles.container}>
         <ScrollView
-          contentContainerStyle={styles.scrollContent}
+          contentContainerStyle={FormStyles.scrollContent}
           keyboardShouldPersistTaps="handled"
         >
-          <Card style={[styles.card]} mode="elevated">
+          <Card style={FormStyles.card} mode="elevated">
             <Card.Content>
-              <Text style={{ fontWeight: "bold", color: "#333", fontSize: 25 }}>
-                Cadastro de Professor
-              </Text>
+              <Text style={FormStyles.title}>Cadastro de Professor</Text>
 
-              <Text
-                style={{
-                  color: "#757575",
-                  marginTop: 4,
-                  fontSize: 15,
-                }}
-              >
+              <Text style={FormStyles.description}>
                 Insira os dados do professor para registrá-lo no sistema
               </Text>
 
-
-              <Text style={styles.label}>Nome</Text>
+              <Text style={FormStyles.label}>Nome</Text>
               <TextInput
                 placeholder="value"
-                style={styles.input}
+                style={FormStyles.input}
                 value={name}
                 onChangeText={setName}
               />
 
-              <Text style={styles.label}>Email</Text>
+              <Text style={FormStyles.label}>Email</Text>
               <TextInput
                 placeholder="value"
-                style={styles.input}
+                style={FormStyles.input}
                 onChangeText={setEmail}
                 value={email}
               />
 
-              <Text style={styles.label}>Titulação</Text>
+              <Text style={FormStyles.label}>Titulação</Text>
               {/* Buscar as titulações dos professores e atribuir a lista, ou por ser estático, retornar diretamente*/}
               {/* pegamos o valor do picker via uma funcao na props que nos retorna o valor selecionado ao clicar */}
               <ListPicker
@@ -80,18 +71,18 @@ export default function StepOne() {
                 onSelect={(titulacao) => setTitulacao(titulacao)}
               />
 
-              <Text style={styles.label}>Número de Matrícula</Text>
+              <Text style={FormStyles.label}>Número de Matrícula</Text>
               <TextInput
                 placeholder="value"
-                style={styles.input}
+                style={FormStyles.input}
                 onChangeText={setNumMatricula}
                 value={numMatricula}
               />
 
-              <Text style={styles.label}>Código da Unidade</Text>
+              <Text style={FormStyles.label}>Código da Unidade</Text>
               <TextInput
                 placeholder="value"
-                style={styles.input}
+                style={FormStyles.input}
                 onChangeText={setCodUnidade}
                 value={codUnidade}
               />
@@ -100,7 +91,7 @@ export default function StepOne() {
             <Card.Actions>
               <Button
                 labelStyle={{ color: "white" }}
-                style={styles.button}
+                style={FormStyles.button}
                 onPress={handleAdvance}
               >
                 Ir para a Próxima Etapa
@@ -114,40 +105,3 @@ export default function StepOne() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  container: {
-    height: screenHeight * 0.8, // 80% da altura da tela fixa
-    width: "95%",
-  },
-  scrollContent: {
-    flexGrow: 1,
-    paddingBottom: 20,
-  },
-  card: {
-    backgroundColor: "#fff",
-    padding: 10,
-  },
-  input: {
-    borderColor: "#D9D9D9",
-    marginBottom: 12,
-    borderWidth: 1,
-    borderRadius: 8,
-    padding: 10,
-  },
-  label: {
-    fontSize: 17,
-    fontWeight: "bold",
-  },
-  button: {
-    backgroundColor: "#444",
-    width: "100%",
-    borderRadius: 12,
-    borderWidth: 0,
-  },
-});
