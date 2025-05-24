@@ -1,6 +1,8 @@
 import React from "react";
 import { SafeAreaView, Text, StyleSheet, View } from "react-native";
 import HamburgerMenu from "../../../components/HamburgerMenu";
+import StepOneScreen from "./StepOne";
+import StepTwo from "./StepTwo";
 
 const RegisterProfessorScreen = () => {
   return (
@@ -9,7 +11,7 @@ const RegisterProfessorScreen = () => {
         <HamburgerMenu />
       </View>
       <View style={styles.content}>
-        <Text>Register Professor Screen</Text>
+        <StepTwo/>
       </View>
     </SafeAreaView>
   );

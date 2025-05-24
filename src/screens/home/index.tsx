@@ -1,6 +1,7 @@
 import React from "react";
 import { SafeAreaView, Text, StyleSheet, View } from "react-native";
 import HamburgerMenu from "../../components/HamburgerMenu";
+import Chart from "../../components/Chart";
 
 const HomeScreen = () => {
   return (
@@ -9,7 +10,7 @@ const HomeScreen = () => {
         <HamburgerMenu />
       </View>
       <View style={styles.content}>
-        <Text>Home Screen</Text>
+        <Chart data={[1, 2, 3]} label={["Arroz", "Feijão", "e batata"]}/>
       </View>
     </SafeAreaView>
   );
