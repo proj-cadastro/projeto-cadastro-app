@@ -29,10 +29,16 @@ const ProfessorsListScreen = () => {
     Doutor: true,
     Mestre: false,
   });
+  const [showCursos, setShowCursos] = useState(false);
+  const [showTitulacoes, setShowTitulacoes] = useState(false);
+  const [expandedRow, setExpandedRow] = useState<number | null>(null);
 
   const professores = [
     { nome: "Jura", email: "Lanches.com", titulacao: "Doutor" },
     { nome: "Lion", email: "Parmera.com", titulacao: "Mestre" },
+    { nome: "Matheus", email: "Maromba.com", titulacao: "Especialista" },
+    { nome: "Matheus", email: "Maromba.com", titulacao: "Especialista" },
+    { nome: "Matheus", email: "Maromba.com", titulacao: "Especialista" },
     { nome: "Matheus", email: "Maromba.com", titulacao: "Especialista" },
   ];
 
@@ -70,7 +76,7 @@ const ProfessorsListScreen = () => {
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        <Text style={styles.title}>Filtrar Professores</Text>
+        <Text style={styles.title}>Professores</Text>
 
         <TextInput
           placeholder="Nome do Professor"
@@ -79,35 +85,49 @@ const ProfessorsListScreen = () => {
           style={styles.input}
         />
 
-<View style={styles.checkboxRow}>
-  <View style={styles.checkboxGroup}>
-    <Text style={styles.subtitle}>Cursos</Text>
-    {Object.entries(cursos).map(([curso, checked]) =>
-      renderCheckbox(
-        curso,
-        checked,
-        (val) => setCursos((prev) => ({ ...prev, [curso]: val })),
-        curso // key
-      )
-    )}
-  </View>
-
-  <View style={styles.checkboxGroup}>
-    <Text style={styles.subtitle}>Titulação</Text>
-    {Object.entries(titulacoes).map(([tit, checked]) =>
-      renderCheckbox(
-        tit,
-        checked,
-        (val) => setTitulacoes((prev) => ({ ...prev, [tit]: val })),
-        tit // key
-      )
-    )}
-  </View>
-</View>
-
-        <View style={styles.buttonRow}>
-          <Button title="Filtrar 🔍" onPress={handleFiltrar} color="#007bff" />
-          <Button title="Imprimir 🖨️" onPress={handleImprimir} color="#6c757d" />
+        <View style={styles.filterRow}>
+          <View style={styles.filterGroup}>
+            <TouchableOpacity
+              onPress={() => setShowCursos((prev) => !prev)}
+            >
+              <Text style={styles.filterText}>Cursos ▼</Text>
+            </TouchableOpacity>
+            {showCursos && (
+              <View style={styles.submenuOverlay}>
+                <View style={styles.submenu}>
+                  {Object.entries(cursos).map(([curso, checked]) =>
+                    renderCheckbox(
+                      curso,
+                      checked,
+                      (val) => setCursos((prev) => ({ ...prev, [curso]: val })),
+                      curso
+                    )
+                  )}
+                </View>
+              </View>
+            )}
+          </View>
+          <View style={styles.filterGroup}>
+            <TouchableOpacity
+              onPress={() => setShowTitulacoes((prev) => !prev)}
+            >
+              <Text style={styles.filterText}>Titulação ▼</Text>
+            </TouchableOpacity>
+            {showTitulacoes && (
+              <View style={styles.submenuOverlay}>
+                <View style={styles.submenu}>
+                  {Object.entries(titulacoes).map(([tit, checked]) =>
+                    renderCheckbox(
+                      tit,
+                      checked,
+                      (val) => setTitulacoes((prev) => ({ ...prev, [tit]: val })),
+                      tit
+                    )
+                  )}
+                </View>
+              </View>
+            )}
+          </View>
         </View>
 
         <View style={styles.table}>
@@ -115,27 +135,47 @@ const ProfessorsListScreen = () => {
             <Text style={styles.headerCell}>Nome</Text>
             <Text style={styles.headerCell}>E-mail</Text>
             <Text style={styles.headerCell}>Titulação</Text>
-            <Text style={styles.headerCell}>Opções</Text>
           </View>
 
-                {professores.map((prof, idx) => (
-        <View key={idx} style={styles.tableRow}>
-          <Text style={styles.cell}>{prof.nome}</Text>
-          <Text style={styles.cell}>{prof.email}</Text>
-          <Text style={styles.cell}>{prof.titulacao}</Text>
-          <View style={[styles.cell, { flexDirection: "row", gap: 8 }]}>
-            <TouchableOpacity onPress={() => alert(`Adicionar para ${prof.nome}`)}>
-              <Text>➕</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => alert(`Editar ${prof.nome}`)}>
-              <Text>📝</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => alert(`Excluir ${prof.nome}`)}>
-              <Text>🗑️</Text>
-            </TouchableOpacity>
-          </View>
+          {professores.map((prof, idx) => (
+            <View key={idx}>
+              <TouchableOpacity
+                style={styles.tableRow}
+                onPress={() => setExpandedRow(expandedRow === idx ? null : idx)}
+                activeOpacity={0.7}
+              >
+                <Text style={styles.cell}>{prof.nome}</Text>
+                <Text style={styles.cell}>{prof.email}</Text>
+                <Text style={styles.cell}>{prof.titulacao}</Text>
+              </TouchableOpacity>
+              {expandedRow === idx && (
+                <View style={styles.optionsRow}>
+                  <TouchableOpacity
+                    style={styles.cleanOptionBtn}
+                    onPress={() => alert(`Ver mais de ${prof.nome}`)}
+                  >
+                    <Text style={styles.cleanOptionText}>🔎 Ver mais</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.cleanOptionBtn}
+                    onPress={() => alert(`Editar ${prof.nome}`)}
+                  >
+                    <Text style={styles.cleanOptionText}>📝 Editar</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.cleanOptionBtn}
+                    onPress={() => alert(`Excluir ${prof.nome}`)}
+                  >
+                    <Text style={styles.cleanOptionText}>🗑️ Remover</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+            </View>
+          ))}
         </View>
-      ))}
+
+        <View style={styles.printButtonContainer}>
+          <Button title="Imprimir 🖨️" onPress={handleImprimir} color="#6c757d" />
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -162,6 +202,49 @@ const styles = StyleSheet.create({
     padding: 10,
     marginBottom: 16,
   },
+  filterRow: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 16,
+    gap: 32,
+    position: "relative",
+    zIndex: 20,
+  },
+  filterGroup: {
+    alignItems: "center",
+    flex: 1,
+    position: "relative",
+  },
+  filterText: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#222",
+    marginBottom: 4,
+    paddingVertical: 4,
+    paddingHorizontal: 2,
+    textAlign: "center",
+  },
+  submenuOverlay: {
+    position: "absolute",
+    top: 32,
+    left: "50%",
+    transform: [{ translateX: -80 }],
+    zIndex: 100,
+    width: 160,
+    alignItems: "center",
+  },
+  submenu: {
+    backgroundColor: "#f9f9f9",
+    borderRadius: 5,
+    padding: 8,
+    elevation: 4,
+    shadowColor: "#000",
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 2 },
+    minWidth: 120,
+  },
   checkboxRow: { flexDirection: "row", justifyContent: "space-between" },
   checkboxGroup: { flex: 1, marginRight: 8 },
   subtitle: { fontWeight: "bold", marginBottom: 8 },
@@ -183,6 +266,7 @@ const styles = StyleSheet.create({
     color: "#fff",
     flex: 1,
     fontWeight: "bold",
+    textAlign: "center",
   },
   tableRow: {
     flexDirection: "row",
@@ -191,7 +275,33 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "#ccc",
   },
-  cell: { flex: 1 },
+  cell: { 
+    flex: 1,
+    textAlign: "center",
+  },
+  optionsRow: {
+    flexDirection: "row",
+    justifyContent: "center",
+    backgroundColor: "#e9ecef",
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    marginBottom: 2,
+    gap: 16,
+  },
+  cleanOptionBtn: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 4,
+  },
+  cleanOptionText: {
+    color: "#222",
+    fontSize: 14,
+    fontWeight: "400",
+  },
+  printButtonContainer: {
+    alignItems: "center",
+    marginVertical: 24,
+  },
 });
 
 export default ProfessorsListScreen;
