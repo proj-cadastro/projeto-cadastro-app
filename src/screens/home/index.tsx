@@ -10,7 +10,8 @@ const HomeScreen = () => {
         <HamburgerMenu />
       </View>
       <View style={styles.content}>
-        <Chart data={[1, 2, 3]} label={["Arroz", "Feijão", "e batata"]}/>
+        <Text style={styles.title}>Distribuição de Titulação</Text>
+        <Chart data={[1, 2, 3]} label={["Mestre", "Doutor", "Especialista"]}/>
       </View>
     </SafeAreaView>
   );
@@ -31,6 +32,15 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    paddingHorizontal: 20,
+    paddingTop: 40,
+  },
+  title: {
+    fontSize: 22,
+    fontWeight: "bold",
+    marginBottom: 24,
+    color: "#333",
+    alignSelf: "center",
   },
 });
 

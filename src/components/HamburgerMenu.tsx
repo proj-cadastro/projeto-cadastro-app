@@ -23,7 +23,7 @@ export default function HamburgerMenu() {
   return (
     <View>
       <TouchableOpacity onPress={() => setVisible(true)} style={styles.icon}>
-        <Text style={{ fontSize: 30 }}>☰</Text>
+        <Text style={{ fontSize: 40 }}>☰</Text>
       </TouchableOpacity>
       <Modal
         transparent
