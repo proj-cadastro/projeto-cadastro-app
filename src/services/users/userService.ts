@@ -1,12 +1,13 @@
 import api from "../apiService";
 
 export interface UserData {
-  username: string;
+  nome: string;
   email: string;
-  password: string;
+  senha: string;
 }
 
-export async function createUser(userData: UserData) {
-  const response = await api.post("/users", userData);
+export async function signUp(data: UserData) {
+  const response = await api.post("/usuarios", data);
   return response.data;
 }
+

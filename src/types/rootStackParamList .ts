@@ -7,11 +7,10 @@ export type RootStackParamList = {
   FormProfessorStepOne: undefined;
   RegisterProfessorsStepTwo: {
     partialDataProfessor: {
-      name: string;
+      nome: string;
       email: string;
       titulacao: string;
-      numMatricula: string;
-      codUnidade: string;
+      idUnidade: string;
     };
   };
 };

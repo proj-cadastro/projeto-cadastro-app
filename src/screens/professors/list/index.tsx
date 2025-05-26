@@ -10,14 +10,11 @@ import {
   TouchableOpacity
 } from "react-native";
 import HamburgerMenu from "../../../components/HamburgerMenu";
+import { useProfessor } from "../../../context/ProfessorContext";
 
-interface Professor {
-  nome: string;
-  email: string;
-  titulacao: string;
-}
 
-const ProfessorsListScreen = () => {
+
+const ListProfessorScreen = () => {
   const [nome, setNome] = useState("");
   const [cursos, setCursos] = useState({
     CDN: true,
@@ -33,14 +30,7 @@ const ProfessorsListScreen = () => {
   const [showTitulacoes, setShowTitulacoes] = useState(false);
   const [expandedRow, setExpandedRow] = useState<number | null>(null);
 
-  const professores = [
-    { nome: "Jura", email: "Lanches.com", titulacao: "Doutor" },
-    { nome: "Lion", email: "Parmera.com", titulacao: "Mestre" },
-    { nome: "Matheus", email: "Maromba.com", titulacao: "Especialista" },
-    { nome: "Matheus", email: "Maromba.com", titulacao: "Especialista" },
-    { nome: "Matheus", email: "Maromba.com", titulacao: "Especialista" },
-    { nome: "Matheus", email: "Maromba.com", titulacao: "Especialista" },
-  ];
+  const { professors } = useProfessor()
 
   const handleFiltrar = () => {
     // lógica de filtragem aqui (se quiser ajuda com isso, posso montar também)
@@ -51,23 +41,23 @@ const ProfessorsListScreen = () => {
   };
 
   const renderCheckbox = (
-  label: string,
-  checked: boolean,
-  onChange: (val: boolean) => void,
-  key?: string
-) => (
-  <TouchableOpacity
-    key={key}
-    style={styles.checkboxContainer}
-    onPress={() => onChange(!checked)}
-    activeOpacity={0.7}
-  >
-    <Text style={[styles.checkbox, checked && styles.checked]}>
-      {checked ? "☑" : "☐"}
-    </Text>
-    <Text>{label}</Text>
-  </TouchableOpacity>
-);
+    label: string,
+    checked: boolean,
+    onChange: (val: boolean) => void,
+    key?: string
+  ) => (
+    <TouchableOpacity
+      key={key}
+      style={styles.checkboxContainer}
+      onPress={() => onChange(!checked)}
+      activeOpacity={0.7}
+    >
+      <Text style={[styles.checkbox, checked && styles.checked]}>
+        {checked ? "☑" : "☐"}
+      </Text>
+      <Text>{label}</Text>
+    </TouchableOpacity>
+  );
 
   return (
     <SafeAreaView style={styles.container}>
@@ -137,7 +127,7 @@ const ProfessorsListScreen = () => {
             <Text style={styles.headerCell}>Titulação</Text>
           </View>
 
-          {professores.map((prof, idx) => (
+          {professors.map((prof, idx) => (
             <View key={idx}>
               <TouchableOpacity
                 style={styles.tableRow}
@@ -190,7 +180,7 @@ const styles = StyleSheet.create({
     left: 10,
     zIndex: 10,
   },
-  scrollContent: { 
+  scrollContent: {
     padding: 16,
     paddingTop: 100, // ajuste o valor conforme desejar
   },
@@ -275,7 +265,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "#ccc",
   },
-  cell: { 
+  cell: {
     flex: 1,
     textAlign: "center",
   },
@@ -304,4 +294,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ProfessorsListScreen;
+export default ListProfessorScreen;

@@ -10,14 +10,11 @@ import {
   TouchableOpacity
 } from "react-native";
 import HamburgerMenu from "../../../components/HamburgerMenu";
+import { useCourse } from "../../../context/CourseContext";
 
 const ListCoursesScreen = () => {
   const [nome, setNome] = useState("");
-  const [curso, setCursos] = useState({
-    CDN: true,
-    CO: false,
-    DSM: true,
-  });
+
   const [modalidades, setModalidades] = useState({
     Presencial: true,
     Híbrido: true,
@@ -26,11 +23,7 @@ const ListCoursesScreen = () => {
   const [showModalidades, setShowModalidades] = useState(false);
   const [expandedRow, setExpandedRow] = useState<number | null>(null);
 
-  const cursos = [
-    { nome: "Ciência de Dados", sigla: "CDN", codigo: "181" },
-    { nome: "Controle de Obras", sigla: "CO", codigo: "105" },
-    { nome: "Desenvolvimento de Software Multiplataforma", sigla: "DSM", codigo: "181" },
-  ];
+  const { courses } = useCourse()
 
   const handleFiltrar = () => {
     // lógica de filtragem aqui (se quiser ajuda com isso, posso montar também)
@@ -104,7 +97,7 @@ const ListCoursesScreen = () => {
             <Text style={styles.headerCellSmall}>Código</Text>
           </View>
 
-          {cursos.map((curso, idx) => (
+          {courses.map((curso, idx) => (
             <View key={idx}>
               <TouchableOpacity
                 style={styles.tableRow}
@@ -146,6 +139,7 @@ const ListCoursesScreen = () => {
         </View>
       </ScrollView>
     </SafeAreaView>
+
   );
 };
 

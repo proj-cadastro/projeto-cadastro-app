@@ -8,25 +8,24 @@ import {
   TouchableOpacity,
   Image,
 } from "react-native";
-import { createUser } from "../../services/users/userService";
+import { signUp } from "../../services/users/userService";
 
 const RegisterScreen = ({ navigation }: any) => {
-  const [username, setUsername] = useState("");
+  const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [senha, setSenha] = useState("");
 
-  const handleRegister = () => {
-    if (username && email && password) {
-      createUser({ username, email, password })
-        .then(() => {
-          alert("Usuário cadastrado com sucesso!");
-          navigation.navigate("Login");
-        })
-        .catch((error) => {
-          console.error(error);
-          alert("Erro ao cadastrar usuário.");
-        });
+  const [error, setError] = useState("")
+
+  const handleRegister = async () => {
+    try {
+      await signUp({ nome, email, senha })
+      navigation.navigate("Login")
+    } catch (error: any) {
+      setError(error.response.data.message)
+      console.error(error.response.data.message)
     }
+
   };
 
   return (
@@ -40,8 +39,8 @@ const RegisterScreen = ({ navigation }: any) => {
       <TextInput
         style={styles.input}
         placeholder="Nome"
-        value={username}
-        onChangeText={setUsername}
+        value={nome}
+        onChangeText={setNome}
       />
       <TextInput
         style={styles.input}
@@ -53,13 +52,14 @@ const RegisterScreen = ({ navigation }: any) => {
         style={styles.input}
         placeholder="Senha"
         secureTextEntry
-        value={password}
-        onChangeText={setPassword}
+        value={senha}
+        onChangeText={setSenha}
       />
 
       <TouchableOpacity style={styles.button} onPress={handleRegister}>
         <Text style={styles.buttonText}>Cadastrar</Text>
       </TouchableOpacity>
+
 
       <TouchableOpacity onPress={() => navigation.navigate("Login")}>
         <Text style={styles.link}>Já tem uma conta? Entrar</Text>

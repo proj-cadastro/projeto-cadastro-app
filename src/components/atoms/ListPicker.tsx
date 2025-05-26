@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { List, Text } from "react-native-paper";
 
 type Props = {
-  items: string[];
-  onSelect: (value: string) => void 
+  items: any[];
+  onSelect: (value: any) => void 
 };
 
 export default function ListPicker({ items, onSelect }: Props) {

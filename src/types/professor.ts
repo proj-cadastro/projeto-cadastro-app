@@ -1,13 +1,12 @@
-import { Courses } from "./courses";
+import { Referencia, StatusAtividade, Titulacao } from "../enums/professors/professorEnum";
 
 export type Professor = {
-  name: string;
+  nome: string;
   email: string;
   titulacao: string;
-  numMatricula: string;
-  codUnidade: string;
-  lattes: string;
+  idUnidade: string;
   referencia: string;
-  observacoes: string;
-  cursos: Courses[]
+  lattes: string;
+  statusAtividade: string;
+  observacoes?: string;
 };
