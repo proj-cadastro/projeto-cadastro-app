@@ -5,7 +5,7 @@ import { SafeAreaView, View } from "react-native";
 import { FormStyles } from "../../../../style/FormStyles";
 import HamburgerMenu from "../../../../components/HamburgerMenu";
 
-const Finished = () => {
+const FinishedProfessorScreen = () => {
   const navigation = useNavigation();
 
   return (
@@ -22,4 +22,4 @@ const Finished = () => {
   );
 };
 
-export default Finished;
+export default FinishedProfessorScreen;

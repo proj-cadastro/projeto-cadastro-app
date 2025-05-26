@@ -14,7 +14,6 @@ export default function StepOne() {
   const [nome, setNome] = useState("");
   const [sigla, setSigla] = useState("");
   const [codigo, setCodigo] = useState("");
-  const [disciplinas, setDisciplinas] = useState("");
   
 
   const handleAdvance = () => {
@@ -22,8 +21,6 @@ export default function StepOne() {
       nome,
       sigla,
       codigo,      
-      disciplinas,
-      
     };
 
     //enviando o objeto do curso para a próxima fase do form(StepTwo)
@@ -75,13 +72,7 @@ export default function StepOne() {
               </View>
             </View>
 
-              <Text style={FormStyles.label}>Disciplinas</Text>
-              <TextInput
-                placeholder="Disciplinas"
-                style={FormStyles.input}
-                onChangeText={setDisciplinas}
-                value={disciplinas}
-              />             
+                        
 
             
             </Card.Content>

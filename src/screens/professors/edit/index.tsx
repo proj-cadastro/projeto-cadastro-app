@@ -2,7 +2,7 @@ import React from "react";
 import { SafeAreaView, Text, StyleSheet, View } from "react-native";
 import HamburgerMenu from "../../../components/HamburgerMenu";
 
-const RegisterProfessorScreen = () => {
+const EditProfessorScreen = () => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.menuContainer}>
@@ -33,4 +33,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default RegisterProfessorScreen;
+export default EditProfessorScreen;

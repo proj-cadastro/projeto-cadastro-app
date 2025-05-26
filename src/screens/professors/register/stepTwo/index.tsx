@@ -7,7 +7,6 @@ import {
   Button,
   ProgressBar,
   MD3Colors,
-  Checkbox,
 } from "react-native-paper";
 
 import ListPicker from "../../../../components/atoms/ListPicker";
@@ -18,8 +17,10 @@ import { useNavigation } from "@react-navigation/native";
 import { RouteParamsProps } from "../../../../types/rootStackParamList ";
 
 import { FormStyles } from "../../../../style/FormStyles";
+import { postProfessor } from "../../../../services/professors/professorService";
+import { Referencia, StatusAtividade } from "../../../../enums/professors/professorEnum";
 
-export default function StepTwo() {
+export default function ProfessorFormStepTwo() {
   const navigation = useNavigation();
 
   const route = useRoute<RouteParamsProps<"RegisterProfessorsStepTwo">>();
@@ -29,10 +30,8 @@ export default function StepTwo() {
   const [lattes, setLattes] = useState("");
   const [referencia, setReferencia] = useState("");
   const [observacoes, setObservacoes] = useState("");
-  const [cursos, setCursos] = useState("");
-  const [status, setStatus] = useState("");
+  const [statusAtividade, setStatusAtividade] = useState("");
 
-  const [checked, setChecked] = useState(false);
 
   const handleSubmit = async () => {
     try {
@@ -40,16 +39,18 @@ export default function StepTwo() {
         lattes,
         referencia,
         observacoes,
-        cursos,
-        status,
+        statusAtividade,
         ...partialDataProfessor,
       };
       console.log(professor);
 
+      await postProfessor(professor)
+
       navigation.navigate("RegisterProfessorsFinished" as never);
-      //conversar com o service para enviar o objeto completo para a api
-    } catch (error) {
-      console.error(error);
+      //conversar com o service para enviar o objeto completo para a api 
+
+    } catch (error: any) {
+      console.error(error.response.data);
     }
   };
 
@@ -91,11 +92,9 @@ export default function StepTwo() {
               />
 
               <Text style={FormStyles.label}>Referência</Text>
-              <TextInput
-                placeholder="PES II - B"
-                style={FormStyles.input}
-                onChangeText={setReferencia}
-                value={referencia}
+              <ListPicker
+                items={Object.values(Referencia)}
+                onSelect={(ref: Referencia) => setReferencia(ref)}
               />
 
               <Text style={FormStyles.label}>Observações</Text>
@@ -106,21 +105,13 @@ export default function StepTwo() {
                 value={observacoes}
               />
 
-              <Text style={FormStyles.label}>Curso(s)</Text>
-              {/* componentizar este parceiro, isolar a lógica de busca de cursos */}
-              {/* como se consumisse um contexto de cursos, e depois pegasse seus nomes e atribuisse aos checkpoints, fazer um .map((curso))...*/}
-              <Checkbox
-                status={checked ? "checked" : "unchecked"}
-                onPress={() => {
-                  setChecked(!checked);
-                }}
-              />
+
 
               <Text style={FormStyles.label}>Professor está ativo?</Text>
               {/* pegamos o valor do picker via uma funcao na props que nos retorna o valor selecionado ao clicar */}
               <ListPicker
-                items={["Sim", "Não"]}
-                onSelect={(status) => setStatus(status)}
+                items={Object.values(StatusAtividade)}
+                onSelect={(status) => setStatusAtividade(status)}
               />
             </Card.Content>
 

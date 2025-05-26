@@ -13,6 +13,8 @@ import {
   MD3LightTheme as DefaultTheme,
   ActivityIndicator,
 } from "react-native-paper";
+import { CourseProvider } from "./src/context/CourseContext";
+import { ProfessorProvider } from "./src/context/ProfessorContext";
 
 const screens = {
   Login: require("./src/screens/login").default,
@@ -66,20 +68,26 @@ export default function App() {
 
   return (
     <PaperProvider theme={theme}>
-      <NavigationContainer>
-        <Stack.Navigator
-          initialRouteName="Loading"
-          screenOptions={{ headerShown: false }}
-        >
-          {Object.keys(screens).map((screenName) => (
-            <Stack.Screen
-              key={screenName}
-              name={screenName}
-              component={screens[screenName as keyof Screens]}
-            />
-          ))}
-        </Stack.Navigator>
-      </NavigationContainer>
+      {/* devido ao fato das telas estarem amarradas, estou declarando o provedor do curso de forma global, depois é necessário refatorar
+      para que ele só seja acessado a partir de um diretório, protetedRoutes... */}
+      <CourseProvider>
+        <ProfessorProvider>
+          <NavigationContainer>
+            <Stack.Navigator
+              initialRouteName="Loading"
+              screenOptions={{ headerShown: false }}
+            >
+              {Object.keys(screens).map((screenName) => (
+                <Stack.Screen
+                  key={screenName}
+                  name={screenName}
+                  component={screens[screenName as keyof Screens]}
+                />
+              ))}
+            </Stack.Navigator>
+          </NavigationContainer>
+        </ProfessorProvider>
+      </CourseProvider>
     </PaperProvider>
   );
 }

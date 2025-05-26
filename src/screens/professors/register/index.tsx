@@ -1,7 +1,7 @@
 import React from "react";
 import { SafeAreaView, Text, StyleSheet, View } from "react-native";
 import HamburgerMenu from "../../../components/HamburgerMenu";
-import StepOne from "./stepOne";
+import ProfessorFormStepOne from "./stepOne";
 
 const RegisterProfessorScreen = () => {
   return (
@@ -10,7 +10,7 @@ const RegisterProfessorScreen = () => {
         <HamburgerMenu />
       </View>
       <View style={styles.content}>
-        <StepOne/>
+        <ProfessorFormStepOne/>
       </View>
     </SafeAreaView>
   );

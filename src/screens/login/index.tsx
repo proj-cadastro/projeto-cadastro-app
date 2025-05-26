@@ -8,15 +8,19 @@ import {
   TouchableOpacity,
   Image,
 } from "react-native";
+import { login } from "../../services/users/authService";
 
 const LoginScreen = ({ navigation }: any) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleLogin = () => {
-    console.log("Email:", email);
-    console.log("Password:", password);
-    navigation.navigate("Home");
+  const handleLogin = async () => {
+    try {
+      await login(email, password)
+      navigation.navigate("Home")
+    } catch (error: any) {
+      console.error(error.response.data.mensagem)
+    }
   };
 
   return (

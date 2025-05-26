@@ -1,11 +1,9 @@
-import { Professor } from "./professor";
+import { ModeloCurso } from "../enums/courses/courseEnum";
 
-export type Courses = {
+export type Course = {
   nome: string;
+  codigo: string;
   sigla: string;
-  codigo: number;
-  disciplinas: string;
-  modelo: string;
-  professor: Professor[];
-  coordenador: string;
+  modelo: ModeloCurso;
+  coordenadorId: number;
 };

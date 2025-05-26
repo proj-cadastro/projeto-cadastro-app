@@ -10,7 +10,6 @@ export type RootStackParamListCurso = {
       nome: string;
       sigla: string;
       codigo: string;
-      disciplinas: string;
       
     };
   };

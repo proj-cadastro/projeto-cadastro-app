@@ -7,24 +7,23 @@ import ListPicker from "../../../../components/atoms/ListPicker";
 import { useNavigation } from "@react-navigation/native";
 import { NavigationProp } from "../../../../types/rootStackParamList ";
 import { FormStyles } from "../../../../style/FormStyles";
+import { Titulacao } from "../../../../enums/professors/professorEnum";
 
-export default function StepOne() {
+export default function ProfessorFormStepOne() {
   const navigation = useNavigation<NavigationProp>(); // Usa a tipagem correta
 
   //necessário conferir os reqs da api, para ver se está batendo com o que estamos armazenando...
-  const [name, setName] = useState("");
+  const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
-  const [titulacao, setTitulacao] = useState("");
-  const [numMatricula, setNumMatricula] = useState("");
-  const [codUnidade, setCodUnidade] = useState("");
+  const [titulacao, setTitulacao] = useState(Titulacao.MESTRE);
+  const [idUnidade, setIdUnidade] = useState("");
 
   const handleAdvance = () => {
     const partialDataProfessor = {
-      name,
+      nome,
       email,
       titulacao,
-      numMatricula,
-      codUnidade,
+      idUnidade,
     };
 
     //enviando o objeto do professor para a próxima fase do form(StepTwo)
@@ -51,8 +50,8 @@ export default function StepOne() {
               <TextInput
                 placeholder="value"
                 style={FormStyles.input}
-                value={name}
-                onChangeText={setName}
+                value={nome}
+                onChangeText={setNome}
               />
 
               <Text style={FormStyles.label}>Email</Text>
@@ -67,24 +66,16 @@ export default function StepOne() {
               {/* Buscar as titulações dos professores e atribuir a lista, ou por ser estático, retornar diretamente*/}
               {/* pegamos o valor do picker via uma funcao na props que nos retorna o valor selecionado ao clicar */}
               <ListPicker
-                items={["Exemplo1", "Exemplo2"]}
-                onSelect={(titulacao) => setTitulacao(titulacao)}
-              />
-
-              <Text style={FormStyles.label}>Número de Matrícula</Text>
-              <TextInput
-                placeholder="value"
-                style={FormStyles.input}
-                onChangeText={setNumMatricula}
-                value={numMatricula}
+                items={Object.values(Titulacao)}
+                onSelect={(titulacao: Titulacao) => setTitulacao(titulacao)}
               />
 
               <Text style={FormStyles.label}>Código da Unidade</Text>
               <TextInput
                 placeholder="value"
                 style={FormStyles.input}
-                onChangeText={setCodUnidade}
-                value={codUnidade}
+                onChangeText={setIdUnidade}
+                value={idUnidade}
               />
             </Card.Content>
 
