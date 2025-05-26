@@ -35,6 +35,8 @@ export const FormStyles = StyleSheet.create({
   card: {
     backgroundColor: "#fff",
     padding: 10,
+    height: "100%",
+    flex: 1,
   },
   input: {
     borderColor: "#D9D9D9",
