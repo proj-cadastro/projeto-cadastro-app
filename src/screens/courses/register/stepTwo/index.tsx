@@ -18,6 +18,8 @@ import { useNavigation } from "@react-navigation/native";
 import { RouteParamsProps } from "../../../../types/rootStackParamListCurso"; 
 
 import { FormStyles } from "../../../../style/FormStyles";
+import { postCourse } from "../../../../services/course/cursoService";
+import { ModeloCurso } from "../../../../enums/courses/courseEnum";
 
 export default function StepTwo() {
   const navigation = useNavigation();
@@ -26,25 +28,24 @@ export default function StepTwo() {
   const { partialDataCurso } = route.params;
 
   //necessário conferir os reqs da api, para ver se está batendo com o que estamos armazenando...
-  const [modelo, setModelo] = useState("");
-  const [professores, setProfessores] = useState("");
-  const [coordenador, setCoordenador] = useState("");
+  const [modelo, setModelo] = useState<ModeloCurso>(ModeloCurso.PRESENCIAL);
+  const [coordenadorId, setCoordenadorId] = useState(1);
  
 
   const handleSubmit = async () => {
     try {
       const curso = {
         modelo,
-        professores,
-        coordenador,
+        coordenadorId,
         ...partialDataCurso,
       };
       console.log(curso);
 
+      await postCourse(curso)
       navigation.navigate("RegisterCursosFinished" as never);
       //conversar com o service para enviar o objeto completo para a api
-    } catch (error) {
-      console.error(error);
+    } catch (error: any) {
+      console.error(error.response.data);
     }
   };
 
@@ -77,30 +78,17 @@ export default function StepTwo() {
               </Text>
 
               {/* body */}
-              <Text style={FormStyles.label}>Modelo</Text>
-              <TextInput
-                placeholder="Modelo do curso"
-                style={FormStyles.input}
-                value={modelo}
-                onChangeText={setModelo}
-              />
-
-              <Text style={FormStyles.label}>Professores</Text>
-              {/* Buscar as titulações dos professores e atribuir a lista, ou por ser estático, retornar diretamente*/}
-              {/* pegamos o valor do picker via uma funcao na props que nos retorna o valor selecionado ao clicar */}
               <ListPicker
-                items={["Professor1", "Professor2"]}
-                onSelect={(professores) => setProfessores(professores)}
+                items={Object.values(ModeloCurso)}
+                onSelect={(modelo) => setModelo(modelo)}
               />
-
-                            
 
               <Text style={FormStyles.label}>Coordenador</Text>
               {/* Buscar as titulações dos professores e atribuir a lista, ou por ser estático, retornar diretamente*/}
               {/* pegamos o valor do picker via uma funcao na props que nos retorna o valor selecionado ao clicar */}
               <ListPicker
-                items={["Coordenador1"]}
-                onSelect={(coordenador) => setCoordenador(coordenador)}
+                items={[1]}
+                onSelect={(coordenador) => setCoordenadorId(coordenador)}
               />              
 
               
