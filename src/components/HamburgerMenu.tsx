@@ -55,7 +55,7 @@ export default function HamburgerMenu() {
               style={styles.logoutButton}
               onPress={handleLogout}
             >
-              <Text style={styles.logoutText}>Sair</Text>
+              <Text style={styles.logoutText} onPress={handleLogout}>Sair</Text>
             </TouchableOpacity>
           </View>
         </TouchableOpacity>
