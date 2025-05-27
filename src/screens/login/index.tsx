@@ -12,13 +12,15 @@ import {
   Keyboard,
   TouchableWithoutFeedback,
 } from "react-native";
-import { login } from "../../services/users/authService";
+import { login as loginService} from "../../services/users/authService";
 import { userLoginSchema } from "../../validations/users/usersValidations";
+import { useAuth } from "../../context/AuthContext";
 
 const LoginScreen = ({ navigation }: any) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
+  const { login: authLogin } = useAuth();
 
   const handleLogin = async () => {
     try {
@@ -27,7 +29,8 @@ const LoginScreen = ({ navigation }: any) => {
         { email, senha: password },
         { abortEarly: false }
       );
-      await login(email, password);
+      await loginService(email, password);
+      authLogin();
       navigation.navigate("Home");
     } catch (error: any) {
       if (error.name === "ValidationError") {

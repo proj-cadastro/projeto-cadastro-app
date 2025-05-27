@@ -1,23 +1,24 @@
 import React, { useState } from "react";
 import { View, TouchableOpacity, Text, Modal, StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { useAuth } from "../context/AuthContext";
 
 const menuItems = [
   { label: "Início", route: "Home" },
   { label: "Lista de Professores", route: "ListProfessors" },
   { label: "Cadastrar Professores", route: "RegisterProfessorsIndex" },
   { label: "Lista de Cursos", route: "ListCourses" },
-  { label: "Cadastrar Cursos", route: "RegisterCourses" },
+  { label: "Cadastrar Cursos", route: "RegisterCursosIndex" },
 ];
 
 export default function HamburgerMenu() {
   const [visible, setVisible] = useState(false);
   const navigation = useNavigation();
+  const { logout } = useAuth();
 
   const handleLogout = () => {
     setVisible(false);
-    // Aqui você pode adicionar lógica de logout se necessário
-    navigation.navigate("Login" as never);
+    logout();
   };
 
   return (
@@ -55,7 +56,9 @@ export default function HamburgerMenu() {
               style={styles.logoutButton}
               onPress={handleLogout}
             >
-              <Text style={styles.logoutText} onPress={handleLogout}>Sair</Text>
+              <Text style={styles.logoutText} onPress={handleLogout}>
+                Sair
+              </Text>
             </TouchableOpacity>
           </View>
         </TouchableOpacity>

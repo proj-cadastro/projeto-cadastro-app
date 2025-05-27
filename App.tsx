@@ -1,7 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { Screens } from "./src/types/screens";
 import {
   useFonts,
   Inter_400Regular,
@@ -13,45 +12,47 @@ import {
   MD3LightTheme as DefaultTheme,
   ActivityIndicator,
 } from "react-native-paper";
-import { CourseProvider } from "./src/context/CourseContext";
-import { ProfessorProvider } from "./src/context/ProfessorContext";
 
-const screens = {
+import { ProtectedRoutes } from "./src/routes/protectedRoutes";
+import { AuthProvider, useAuth } from "./src/context/AuthContext";
+
+// Telas públicas
+const PublicScreens = {
   Login: require("./src/screens/login").default,
   Register: require("./src/screens/register").default,
   Loading: require("./src/screens/loading").default,
-  Home: require("./src/screens/home").default,
-  ListProfessors: require("./src/screens/professors/list").default,
-  EditProfessors: require("./src/screens/professors/edit").default,
-  //rotas registro professor
-  RegisterProfessorsIndex: require("./src/screens/professors/register").default,
-  RegisterProfessorsStepOne: require("./src/screens/professors/register/stepOne").default,
-  RegisterProfessorsStepTwo: require("./src/screens/professors/register/stepTwo").default,
-  RegisterProfessorsFinished: require("./src/screens/professors/register/finished").default,
-  //rotas registro cursos
-  RegisterCursosIndex: require("./src/screens/courses/register").default,
-  RegisterCursosStepOne: require("./src/screens/courses/register/stepOne").default,
-  RegisterCursosStepTwo: require("./src/screens/courses/register/stepTwo").default,
-  RegisterCursosFinished: require("./src/screens/courses/register/finished").default,
-  EditCursos: require("./src/screens/courses/edit").default,
-  ListCourses: require("./src/screens/courses/list").default,
-  RegisterCourses: require("./src/screens/courses/register").default,
-  EditCourses: require("./src/screens/courses/edit").default,
 };
 
 const Stack = createNativeStackNavigator();
 
-// Cria tema com Inter como fonte padrão
 const theme = {
   ...DefaultTheme,
   fonts: {
     ...DefaultTheme.fonts,
-    bodyLarge: { ...DefaultTheme.fonts.bodyLarge, fontFamily: "Inter_400Regular" },
-    bodyMedium: { ...DefaultTheme.fonts.bodyMedium, fontFamily: "Inter_400Regular" },
-    bodySmall: { ...DefaultTheme.fonts.bodySmall, fontFamily: "Inter_400Regular" },
-    titleLarge: { ...DefaultTheme.fonts.titleLarge, fontFamily: "Inter_700Bold" },
-    titleMedium: { ...DefaultTheme.fonts.titleMedium, fontFamily: "Inter_500Medium" },
-    titleSmall: { ...DefaultTheme.fonts.titleSmall, fontFamily: "Inter_500Medium" },
+    bodyLarge: {
+      ...DefaultTheme.fonts.bodyLarge,
+      fontFamily: "Inter_400Regular",
+    },
+    bodyMedium: {
+      ...DefaultTheme.fonts.bodyMedium,
+      fontFamily: "Inter_400Regular",
+    },
+    bodySmall: {
+      ...DefaultTheme.fonts.bodySmall,
+      fontFamily: "Inter_400Regular",
+    },
+    titleLarge: {
+      ...DefaultTheme.fonts.titleLarge,
+      fontFamily: "Inter_700Bold",
+    },
+    titleMedium: {
+      ...DefaultTheme.fonts.titleMedium,
+      fontFamily: "Inter_500Medium",
+    },
+    titleSmall: {
+      ...DefaultTheme.fonts.titleSmall,
+      fontFamily: "Inter_500Medium",
+    },
   },
 };
 
@@ -67,27 +68,43 @@ export default function App() {
   }
 
   return (
-    <PaperProvider theme={theme}>
-      {/* devido ao fato das telas estarem amarradas, estou declarando o provedor do curso de forma global, depois é necessário refatorar
-      para que ele só seja acessado a partir de um diretório, protetedRoutes... */}
-      <CourseProvider>
-        <ProfessorProvider>
-          <NavigationContainer>
-            <Stack.Navigator
-              initialRouteName="Loading"
-              screenOptions={{ headerShown: false }}
-            >
-              {Object.keys(screens).map((screenName) => (
-                <Stack.Screen
-                  key={screenName}
-                  name={screenName}
-                  component={screens[screenName as keyof Screens]}
-                />
-              ))}
-            </Stack.Navigator>
-          </NavigationContainer>
-        </ProfessorProvider>
-      </CourseProvider>
-    </PaperProvider>
+    <AuthProvider>
+      <PaperProvider theme={theme}>
+        <NavigationContainer>
+          <Routes />
+        </NavigationContainer>
+      </PaperProvider>
+    </AuthProvider>
+  );
+}
+
+function Routes() {
+  const { isAuthenticated } = useAuth();
+
+  const PublicScreens = {
+    Login: require("./src/screens/login").default,
+    Register: require("./src/screens/register").default,
+    Loading: require("./src/screens/loading").default,
+  };
+
+  const Stack = createNativeStackNavigator();
+
+  return isAuthenticated ? (
+    <ProtectedRoutes />
+  ) : (
+    <Stack.Navigator
+      initialRouteName="Login"
+      screenOptions={{ headerShown: false }}
+    >
+      {Object.keys(PublicScreens).map((screenName) => (
+        <Stack.Screen
+          key={screenName}
+          name={screenName}
+          component={
+            PublicScreens[screenName as keyof typeof PublicScreens]
+          }
+        />
+      ))}
+    </Stack.Navigator>
   );
 }
