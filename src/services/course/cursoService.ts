@@ -22,3 +22,9 @@ export const postCourse = async (data: Course) => {
 
     return response.data
 }
+
+export const deleteCourse = async (id: number) => {
+    const response = await api.delete(`/cursos/${id}`)
+
+    return response.data
+}
