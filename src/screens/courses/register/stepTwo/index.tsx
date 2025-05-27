@@ -15,14 +15,19 @@ import HamburgerMenu from "../../../../components/HamburgerMenu";
 
 import { useRoute } from "@react-navigation/native";
 import { useNavigation } from "@react-navigation/native";
-import { RouteParamsProps } from "../../../../types/rootStackParamListCurso"; 
+import { RouteParamsProps } from "../../../../types/rootStackParamListCurso";
 
 import { FormStyles } from "../../../../style/FormStyles";
 import { postCourse } from "../../../../services/course/cursoService";
 import { ModeloCurso } from "../../../../enums/courses/courseEnum";
+import { useCourse } from "../../../../context/CourseContext";
+import { useProfessor } from "../../../../context/ProfessorContext";
 
 export default function StepTwo() {
   const navigation = useNavigation();
+
+  const { refreshCoursesData } = useCourse()
+  const { professors } = useProfessor()
 
   const route = useRoute<RouteParamsProps<"RegisterCursosStepTwo">>();
   const { partialDataCurso } = route.params;
@@ -30,7 +35,7 @@ export default function StepTwo() {
   //necessário conferir os reqs da api, para ver se está batendo com o que estamos armazenando...
   const [modelo, setModelo] = useState<ModeloCurso>(ModeloCurso.PRESENCIAL);
   const [coordenadorId, setCoordenadorId] = useState(1);
- 
+
 
   const handleSubmit = async () => {
     try {
@@ -42,6 +47,7 @@ export default function StepTwo() {
       console.log(curso);
 
       await postCourse(curso)
+      refreshCoursesData()
       navigation.navigate("RegisterCursosFinished" as never);
       //conversar com o service para enviar o objeto completo para a api
     } catch (error: any) {
@@ -87,11 +93,13 @@ export default function StepTwo() {
               {/* Buscar as titulações dos professores e atribuir a lista, ou por ser estático, retornar diretamente*/}
               {/* pegamos o valor do picker via uma funcao na props que nos retorna o valor selecionado ao clicar */}
               <ListPicker
-                items={[1]}
-                onSelect={(coordenador) => setCoordenadorId(coordenador)}
-              />              
+                items={professors}
+                onSelect={(id) => setCoordenadorId(id)}
+                getLabel={(prof) => prof.nome}
+                getValue={(prof) => prof.id}
+              />
 
-              
+
             </Card.Content>
 
             <Card.Actions>
