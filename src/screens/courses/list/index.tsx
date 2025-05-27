@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   SafeAreaView,
   TextInput,
@@ -38,11 +38,15 @@ const ListCoursesScreen = () => {
   const handleDelete = async (id: number) => {
     try {
       await deleteCourse(id)
-      await refreshCoursesData()
+      refreshCoursesData()
+      console.log(courses.length)
+
     } catch (error: any) {
       console.error(error.response.data.mensagem)
     }
   }
+
+  useEffect(() => { refreshCoursesData() }, [])
 
   const renderCheckbox = (
     label: string,
@@ -102,56 +106,61 @@ const ListCoursesScreen = () => {
         </View>
 
         <View style={styles.table}>
-          <View style={styles.tableHeader}>
-            <Text style={styles.headerCellNome}>Nome</Text>
-            <Text style={styles.headerCellSmall}>Sigla</Text>
-            <Text style={styles.headerCellSmall}>Código</Text>
-          </View>
+          {courses.length === 0 ? (<Text style={styles.emptyText}>Nenhum Curso Encontrado</Text>) : (
+            <>
+              <View style={styles.tableHeader}>
+                <Text style={styles.headerCellNome}>Nome</Text>
+                <Text style={styles.headerCellSmall}>Sigla</Text>
+                <Text style={styles.headerCellSmall}>Código</Text>
+              </View>
 
-          {courses.map((curso, idx) => (
-            <View key={idx}>
-              <TouchableOpacity
-                style={styles.tableRow}
-                onPress={() => setExpandedRow(expandedRow === idx ? null : idx)}
-                activeOpacity={0.7}
-              >
-                <Text style={styles.cellNome}>{curso.nome}</Text>
-                <Text style={styles.cellSmall}>{curso.sigla}</Text>
-                <Text style={styles.cellSmall}>{curso.codigo}</Text>
-              </TouchableOpacity>
-              {expandedRow === idx && (
-                <View style={styles.optionsRow}>
+              {courses.map((curso, idx) => (
+                <View key={idx}>
                   <TouchableOpacity
-                    style={styles.cleanOptionBtn}
-                    onPress={() => alert(`Ver mais de ${curso.nome}`)}
+                    style={styles.tableRow}
+                    onPress={() => setExpandedRow(expandedRow === idx ? null : idx)}
+                    activeOpacity={0.7}
                   >
-                    <Text style={styles.cleanOptionText}>🔎 Ver mais</Text>
+                    <Text style={styles.cellNome}>{curso.nome}</Text>
+                    <Text style={styles.cellSmall}>{curso.sigla}</Text>
+                    <Text style={styles.cellSmall}>{curso.codigo}</Text>
                   </TouchableOpacity>
-                  <TouchableOpacity
-                    style={styles.cleanOptionBtn}
-                    onPress={() => alert(`Editar ${curso.nome}`)}
-                  >
-                    <Text style={styles.cleanOptionText}>📝 Editar</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={styles.cleanOptionBtn}
-                    onPress={() =>
-                      showConfirmDialog({
-                        message: `Deseja realmente excluir ${curso.nome}?`,
-                        onConfirm: () => { if (curso.id) handleDelete(curso.id) },
-                      })}
-                  >
-                    <Text style={styles.cleanOptionText}>🗑️ Remover</Text>
-                  </TouchableOpacity>
+                  {expandedRow === idx && (
+                    <View style={styles.optionsRow}>
+                      <TouchableOpacity
+                        style={styles.cleanOptionBtn}
+                        onPress={() => alert(`Ver mais de ${curso.nome}`)}
+                      >
+                        <Text style={styles.cleanOptionText}>🔎 Ver mais</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        style={styles.cleanOptionBtn}
+                        onPress={() => alert(`Editar ${curso.nome}`)}
+                      >
+                        <Text style={styles.cleanOptionText}>📝 Editar</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        style={styles.cleanOptionBtn}
+                        onPress={() =>
+                          showConfirmDialog({
+                            message: `Deseja realmente excluir ${curso.nome}?`,
+                            onConfirm: () => { if (curso.id) handleDelete(curso.id) },
+                          })}
+                      >
+                        <Text style={styles.cleanOptionText}>🗑️ Remover</Text>
+                      </TouchableOpacity>
+                    </View>
+                  )}
                 </View>
-              )}
-            </View>
-          ))}
+              ))}
+              <View style={styles.printButtonContainer}>
+                <Button title="Imprimir 🖨️" onPress={handleImprimir} color="#6c757d" />
+              </View>
+            </>)}
+
         </View>
 
-        <View style={styles.printButtonContainer}>
-          <Button title="Imprimir 🖨️" onPress={handleImprimir} color="#6c757d" />
-        </View>
+
       </ScrollView>
     </SafeAreaView>
 
@@ -288,6 +297,12 @@ const styles = StyleSheet.create({
   printButtonContainer: {
     alignItems: "center",
     marginVertical: 24,
+  },
+  emptyText: {
+    textAlign: "center",
+    marginVertical: 24,
+    fontSize: 16,
+    color: "#888",
   },
 });
 

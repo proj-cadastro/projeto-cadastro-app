@@ -22,11 +22,20 @@ export const ProfessorProvider = ({ children }: { children: ReactNode }) => {
             const professoresData = await getProfessors()
             setProfessors(professoresData)
         } catch (error: any) {
-            console.error(error.response?.error?.messagem || "Erro ao carregar professores")
+            //contornando o erro 404 do backend para listas vazias
+            const msg = error.response?.data?.mensagem
+
+            if (msg === "Nenhum professor encontrado") {
+                setProfessors([])
+            } else {
+                console.error(msg || "Erro ao buscar professores")
+            }
+            //##
         } finally {
             setLoading(false)
         }
     }, [])
+
 
     useEffect(() => {
         fetchData()
