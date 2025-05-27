@@ -14,3 +14,9 @@ export const getProfessors = async () => {
     //data = {message: professores encontrados com sucesso, data: []}
     return response.data.data
 }
+
+export const deleteProfessors = async (id: number) => {
+    const response = await api.delete(`/professores/${id}`)
+
+    return response.data
+}

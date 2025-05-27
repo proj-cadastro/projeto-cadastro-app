@@ -11,6 +11,8 @@ import {
 } from "react-native";
 import HamburgerMenu from "../../../components/HamburgerMenu";
 import { useCourse } from "../../../context/CourseContext";
+import { deleteCourse } from "../../../services/course/cursoService";
+import { showConfirmDialog } from "../../../components/atoms/ConfirmAlert";
 
 const ListCoursesScreen = () => {
   const [nome, setNome] = useState("");
@@ -23,7 +25,7 @@ const ListCoursesScreen = () => {
   const [showModalidades, setShowModalidades] = useState(false);
   const [expandedRow, setExpandedRow] = useState<number | null>(null);
 
-  const { courses } = useCourse()
+  const { courses, refreshCoursesData } = useCourse()
 
   const handleFiltrar = () => {
     // lógica de filtragem aqui (se quiser ajuda com isso, posso montar também)
@@ -32,6 +34,15 @@ const ListCoursesScreen = () => {
   const handleImprimir = () => {
     // lógica de impressão ou exportação
   };
+
+  const handleDelete = async (id: number) => {
+    try {
+      await deleteCourse(id)
+      await refreshCoursesData()
+    } catch (error: any) {
+      console.error(error.response.data.mensagem)
+    }
+  }
 
   const renderCheckbox = (
     label: string,
@@ -124,7 +135,11 @@ const ListCoursesScreen = () => {
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={styles.cleanOptionBtn}
-                    onPress={() => alert(`Excluir ${curso.nome}`)}
+                    onPress={() =>
+                      showConfirmDialog({
+                        message: `Deseja realmente excluir ${curso.nome}?`,
+                        onConfirm: () => { if (curso.id) handleDelete(curso.id) },
+                      })}
                   >
                     <Text style={styles.cleanOptionText}>🗑️ Remover</Text>
                   </TouchableOpacity>
