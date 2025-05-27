@@ -11,11 +11,11 @@ const api = axios.create({
 
 //intercepta cada interacao com a api e injeta o token
 api.interceptors.request.use(async (config) => {
-  const token = await AsyncStorage.getItem("token")
+  const token = await AsyncStorage.getItem("token");
 
-  if (token) config.headers.Authorization = `Bearer ${token}`
+  if (token) config.headers.Authorization = `Bearer ${token}`;
 
-  return config
-})
+  return config;
+});
 
 export default api;
