@@ -1,9 +1,11 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
+// @ts-ignore
+const baseURL = process.env.API_URL;
 
 // Base URL da sua API
 const api = axios.create({
-  baseURL: "http://10.68.153.170:3000", //rodar o backend local e adicionar o ipv4 da sua máquina, encontre via cmd/ipconfig
+  baseURL,
   headers: {
     "Content-Type": "application/json",
   },

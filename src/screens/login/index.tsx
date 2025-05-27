@@ -84,6 +84,10 @@ const LoginScreen = ({ navigation }: any) => {
             onChangeText={setPassword}
           />
 
+          {fieldErrors.api && (
+            <Text style={styles.errorText}>{fieldErrors.api}</Text>
+          )}
+
           <TouchableOpacity style={styles.button} onPress={handleLogin}>
             <Text style={styles.buttonText}>Entrar</Text>
           </TouchableOpacity>
