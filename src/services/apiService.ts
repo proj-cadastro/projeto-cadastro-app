@@ -3,7 +3,7 @@ import axios from "axios";
 
 // Base URL da sua API
 const api = axios.create({
-  baseURL: "http://192.168.15.185:3000", //rodar o backend local e adicionar o ipv4 da sua máquina, encontre via cmd/ipconfig
+  baseURL: "http://10.68.153.170:3000", //rodar o backend local e adicionar o ipv4 da sua máquina, encontre via cmd/ipconfig
   headers: {
     "Content-Type": "application/json",
   },
