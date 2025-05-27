@@ -17,7 +17,11 @@ export default function ListPicker<T>({
   const [expanded, setExpanded] = useState(false);
   const [selectedLabel, setSelectedLabel] = useState<string | null>(null);
 
-  const handlePress = () => setExpanded(!expanded);
+  const handlePress = () => {
+    if (items.length > 0) {
+      setExpanded(!expanded);
+    }
+  };
 
   const handleSelect = (item: T) => {
     const label = getLabel ? getLabel(item) : String(item);
@@ -28,21 +32,26 @@ export default function ListPicker<T>({
     onSelect(value);
   };
 
+  const title = items.length === 0
+    ? "Não há itens"
+    : selectedLabel ?? "Escolha uma opção";
+
   return (
     <List.Section>
       <List.Accordion
-        title={selectedLabel ?? "Escolha uma opção"}
+        title={title}
         expanded={expanded}
         onPress={handlePress}
         left={(props) => <List.Icon {...props} icon="menu-down" />}
       >
-        {items.map((item, index) => (
-          <List.Item
-            key={index}
-            title={getLabel ? getLabel(item) : String(item)}
-            onPress={() => handleSelect(item)}
-          />
-        ))}
+        {items.length > 0 &&
+          items.map((item, index) => (
+            <List.Item
+              key={index}
+              title={getLabel ? getLabel(item) : String(item)}
+              onPress={() => handleSelect(item)}
+            />
+          ))}
       </List.Accordion>
     </List.Section>
   );
