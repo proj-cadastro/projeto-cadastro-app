@@ -1,13 +1,12 @@
 "use client";
 
 import React, { useState } from "react";
-import { SafeAreaView, View, ScrollView, Text, TextInput } from "react-native";
+import { SafeAreaView, View, ScrollView, Text } from "react-native";
 import {
   Card,
   Button,
   ProgressBar,
   MD3Colors,
-  Checkbox,
 } from "react-native-paper";
 
 import ListPicker from "../../../../components/atoms/ListPicker";
@@ -51,7 +50,7 @@ export default function StepTwo() {
       navigation.navigate("RegisterCursosFinished" as never);
       //conversar com o service para enviar o objeto completo para a api
     } catch (error: any) {
-      console.error(error.response.data);
+      console.error(error.response.data.mensagem);
     }
   };
 
@@ -90,15 +89,13 @@ export default function StepTwo() {
               />
 
               <Text style={FormStyles.label}>Coordenador</Text>
-              {/* Buscar as titulações dos professores e atribuir a lista, ou por ser estático, retornar diretamente*/}
-              {/* pegamos o valor do picker via uma funcao na props que nos retorna o valor selecionado ao clicar */}
+
               <ListPicker
                 items={professors}
                 onSelect={(id) => setCoordenadorId(id)}
                 getLabel={(prof) => prof.nome}
                 getValue={(prof) => prof.id}
               />
-
 
             </Card.Content>
 

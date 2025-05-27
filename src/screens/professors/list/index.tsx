@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   SafeAreaView,
   TextInput,
@@ -32,6 +32,8 @@ const ListProfessorScreen = () => {
 
   const { professors, refreshProfessorsData } = useProfessor()
 
+  useEffect(() => { refreshProfessorsData() }, [])
+
   const handleFiltrar = () => {
     // lógica de filtragem aqui (se quiser ajuda com isso, posso montar também)
   };
@@ -43,7 +45,8 @@ const ListProfessorScreen = () => {
   const handleDelete = async (id: number) => {
     try {
       await deleteProfessors(id)
-      await refreshProfessorsData()
+      refreshProfessorsData()
+      console.log(professors.length)
 
     } catch (error: any) {
       console.error(error.response.data.mensagem)
@@ -131,57 +134,65 @@ const ListProfessorScreen = () => {
         </View>
 
         <View style={styles.table}>
-          <View style={styles.tableHeader}>
-            <Text style={styles.headerCell}>Nome</Text>
-            <Text style={styles.headerCell}>E-mail</Text>
-            <Text style={styles.headerCell}>Titulação</Text>
-          </View>
+          {professors.length === 0 ? (<Text style={styles.emptyText}>Nenhum Professor Encontrado</Text>) : (
+            <>
+              <View style={styles.tableHeader}>
+                <Text style={styles.headerCell}>Nome</Text>
+                <Text style={styles.headerCell}>E-mail</Text>
+                <Text style={styles.headerCell}>Titulação</Text>
+              </View>
 
-          {professors.map((prof, idx) => (
-            <View key={idx}>
-              <TouchableOpacity
-                style={styles.tableRow}
-                onPress={() => setExpandedRow(expandedRow === idx ? null : idx)}
-                activeOpacity={0.7}
-              >
-                <Text style={styles.cell}>{prof.nome}</Text>
-                <Text style={styles.cell}>{prof.email}</Text>
-                <Text style={styles.cell}>{prof.titulacao}</Text>
-              </TouchableOpacity>
-              {expandedRow === idx && (
-                <View style={styles.optionsRow}>
+              {professors.map((prof, idx) => (
+                <View key={idx}>
                   <TouchableOpacity
-                    style={styles.cleanOptionBtn}
-                    onPress={() => alert(`Ver mais de ${prof.nome}`)}
+                    style={styles.tableRow}
+                    onPress={() => setExpandedRow(expandedRow === idx ? null : idx)}
+                    activeOpacity={0.7}
                   >
-                    <Text style={styles.cleanOptionText}>🔎 Ver mais</Text>
+                    <Text style={styles.cell}>{prof.nome}</Text>
+                    <Text style={styles.cell}>{prof.email}</Text>
+                    <Text style={styles.cell}>{prof.titulacao}</Text>
                   </TouchableOpacity>
-                  <TouchableOpacity
-                    style={styles.cleanOptionBtn}
-                    onPress={() => alert(`Editar ${prof.nome}`)}
-                  >
-                    <Text style={styles.cleanOptionText}>📝 Editar</Text>
-                  </TouchableOpacity>
+                  {expandedRow === idx && (
+                    <View style={styles.optionsRow}>
+                      <TouchableOpacity
+                        style={styles.cleanOptionBtn}
+                        onPress={() => alert(`Ver mais de ${prof.nome}`)}
+                      >
+                        <Text style={styles.cleanOptionText}>🔎 Ver mais</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        style={styles.cleanOptionBtn}
+                        onPress={() => alert(`Editar ${prof.nome}`)}
+                      >
+                        <Text style={styles.cleanOptionText}>📝 Editar</Text>
+                      </TouchableOpacity>
 
-                  <TouchableOpacity
-                    style={styles.cleanOptionBtn}
-                    onPress={() =>
-                      showConfirmDialog({
-                        message: `Deseja realmente excluir ${prof.nome}?`,
-                        onConfirm: () => { if (prof.id) handleDelete(prof.id) },
-                      })}
-                  >
-                    <Text style={styles.cleanOptionText}>🗑️ Remover</Text>
-                  </TouchableOpacity>
+                      <TouchableOpacity
+                        style={styles.cleanOptionBtn}
+                        onPress={() =>
+                          showConfirmDialog({
+                            message: `Deseja realmente excluir ${prof.nome}?`,
+                            onConfirm: () => { if (prof.id) handleDelete(prof.id) },
+                          })}
+                      >
+                        <Text style={styles.cleanOptionText}>🗑️ Remover</Text>
+                      </TouchableOpacity>
+                    </View>
+                  )}
+
                 </View>
-              )}
-            </View>
-          ))}
+              ))
+              }
+              <View style={styles.printButtonContainer}>
+                <Button title="Imprimir 🖨️" onPress={handleImprimir} color="#6c757d" />
+              </View>
+            </>
+          )}
+
         </View>
 
-        <View style={styles.printButtonContainer}>
-          <Button title="Imprimir 🖨️" onPress={handleImprimir} color="#6c757d" />
-        </View>
+
       </ScrollView>
     </SafeAreaView>
   );
@@ -306,6 +317,12 @@ const styles = StyleSheet.create({
   printButtonContainer: {
     alignItems: "center",
     marginVertical: 24,
+  },
+  emptyText: {
+    textAlign: "center",
+    marginVertical: 24,
+    fontSize: 16,
+    color: "#888",
   },
 });
 
