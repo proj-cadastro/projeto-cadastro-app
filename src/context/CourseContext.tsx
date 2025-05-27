@@ -21,7 +21,15 @@ export const CourseProvider = ({ children }: { children: ReactNode }) => {
             const coursesData = await getCourses()
             setCourses(coursesData)
         } catch (error: any) {
-            console.error(error.response.error.messagem)
+           //contornando o erro 404 do backend para listas vazias
+            const msg = error.response?.data?.mensagem
+
+            if (msg === "Nenhum curso encontrado") {
+                setCourses([])
+            } else {
+                console.error(msg || "Erro ao buscar Cursos")
+            }
+            //##
         } finally {
             setLoading(false)
         }
