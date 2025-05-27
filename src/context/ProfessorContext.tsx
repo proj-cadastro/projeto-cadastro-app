@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState, ReactNode, useCallback } from 'react'
 import { Professor } from "../types/professor"
-import { getProfessors } from '../services/professors/ProfessorService'
+import { getProfessors } from '../services/professors/professorService'
 
 
 type ProfessorContextType = {

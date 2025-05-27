@@ -3,7 +3,7 @@ import axios from "axios";
 
 // Base URL da sua API
 const api = axios.create({
-  baseURL: "http://192.168.15.185:3000", //rodar o backend local e adicionar o ipv4 da sua máquina, encontre via cmd/ipconfig
+  baseURL: "http://10.68.153.95:3000", //rodar o backend local e adicionar o ipv4 da sua máquina, encontre via cmd/ipconfig
   headers: {
     "Content-Type": "application/json",
   },
@@ -11,11 +11,11 @@ const api = axios.create({
 
 //intercepta cada interacao com a api e injeta o token
 api.interceptors.request.use(async (config) => {
-  const token = await AsyncStorage.getItem("token")
+  const token = await AsyncStorage.getItem("token");
 
-  if (token) config.headers.Authorization = `Bearer ${token}`
+  if (token) config.headers.Authorization = `Bearer ${token}`;
 
-  return config
-})
+  return config;
+});
 
 export default api;
