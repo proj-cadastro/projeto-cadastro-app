@@ -1,37 +1,49 @@
 import React, { useState } from "react";
-import { List, Text } from "react-native-paper";
+import { List } from "react-native-paper";
 
-type Props = {
-  items: any[];
-  onSelect: (value: any) => void 
+type Props<T> = {
+  items: T[];
+  onSelect: (value: any) => void;
+  getLabel?: (item: T) => string;
+  getValue?: (item: T) => any;
 };
 
-export default function ListPicker({ items, onSelect }: Props) {
-  const [expanded, setExpanded] = useState(false); // controla se o accordion está aberto
-  const [selected, setSelected] = useState<string | null>(null); // guarda o item selecionado
+export default function ListPicker<T>({
+  items,
+  onSelect,
+  getLabel,
+  getValue,
+}: Props<T>) {
+  const [expanded, setExpanded] = useState(false);
+  const [selectedLabel, setSelectedLabel] = useState<string | null>(null);
 
   const handlePress = () => setExpanded(!expanded);
 
-  const handleSelect = (title: string) => {
-    setSelected(title); // salva o selecionado
-    setExpanded(false); // fecha o accordion
-    onSelect(title)
+  const handleSelect = (item: T) => {
+    const label = getLabel ? getLabel(item) : String(item);
+    const value = getValue ? getValue(item) : item;
+
+    setSelectedLabel(label);
+    setExpanded(false);
+    onSelect(value);
   };
 
   return (
-    <>
-      <List.Section>
-        <List.Accordion
-          title={selected ? `${selected}` : "Escolha uma Opção"}
-          expanded={expanded}
-          onPress={handlePress}
-          left={(props) => <List.Icon {...props} icon="equal" />}
-        >
-          {items.map((item, index) => (
-            <List.Item key={index} title={item} onPress={() => handleSelect(item)} />
-          ))}
-        </List.Accordion>
-      </List.Section>
-    </>
+    <List.Section>
+      <List.Accordion
+        title={selectedLabel ?? "Escolha uma opção"}
+        expanded={expanded}
+        onPress={handlePress}
+        left={(props) => <List.Icon {...props} icon="menu-down" />}
+      >
+        {items.map((item, index) => (
+          <List.Item
+            key={index}
+            title={getLabel ? getLabel(item) : String(item)}
+            onPress={() => handleSelect(item)}
+          />
+        ))}
+      </List.Accordion>
+    </List.Section>
   );
 }

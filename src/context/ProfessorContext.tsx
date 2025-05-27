@@ -2,13 +2,13 @@
 
 import { createContext, useContext, useEffect, useState, ReactNode, useCallback } from 'react'
 import { Professor } from "../types/professor"
-import { getProfessors } from '../services/professors/ProfessorService'
+import { getProfessors } from '../services/professors/professorService'
 
 
 type ProfessorContextType = {
     professors: Professor[]
     loading: boolean
-    refreshProfessoresData: () => void
+    refreshProfessorsData: () => void
 }
 
 export const ProfessorContext = createContext<ProfessorContextType | undefined>(undefined)
@@ -33,7 +33,7 @@ export const ProfessorProvider = ({ children }: { children: ReactNode }) => {
     }, [fetchData])
 
     return (
-        <ProfessorContext.Provider value={{ professors, loading, refreshProfessoresData: fetchData }}>
+        <ProfessorContext.Provider value={{ professors, loading, refreshProfessorsData: fetchData }}>
             {children}
         </ProfessorContext.Provider>
     )

@@ -22,8 +22,8 @@ const RegisterScreen = ({ navigation }: any) => {
       await signUp({ nome, email, senha })
       navigation.navigate("Login")
     } catch (error: any) {
-      setError(error.response.data.message)
-      console.error(error.response.data.message)
+      setError(error.response.data)
+      console.error(error.response.data.detalhes)
     }
 
   };

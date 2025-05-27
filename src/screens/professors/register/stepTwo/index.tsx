@@ -19,9 +19,12 @@ import { RouteParamsProps } from "../../../../types/rootStackParamList ";
 import { FormStyles } from "../../../../style/FormStyles";
 import { postProfessor } from "../../../../services/professors/professorService";
 import { Referencia, StatusAtividade } from "../../../../enums/professors/professorEnum";
+import { useProfessor } from "../../../../context/ProfessorContext";
 
 export default function ProfessorFormStepTwo() {
   const navigation = useNavigation();
+
+  const { refreshProfessorsData } = useProfessor()
 
   const route = useRoute<RouteParamsProps<"RegisterProfessorsStepTwo">>();
   const { partialDataProfessor } = route.params;
@@ -45,6 +48,7 @@ export default function ProfessorFormStepTwo() {
       console.log(professor);
 
       await postProfessor(professor)
+      refreshProfessorsData()
 
       navigation.navigate("RegisterProfessorsFinished" as never);
       //conversar com o service para enviar o objeto completo para a api 

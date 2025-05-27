@@ -1,6 +1,7 @@
 import { Referencia, StatusAtividade, Titulacao } from "../enums/professors/professorEnum";
 
 export type Professor = {
+  id?: string
   nome: string;
   email: string;
   titulacao: string;
