@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## 1.6.0 (2025-05-27)
+
+
+### Features
+
+* implement confirmation dialog for course and professor deletion; add delete functionality in services ([b9ead71](https://github.com/proj-cadastro/projeto-cadastro-app/commit/b9ead71758f8bb72773bb423d58b14f0a26a893b))
+
 ### 1.5.9 (2025-05-27)
 
 ### 1.5.8 (2025-05-27)
