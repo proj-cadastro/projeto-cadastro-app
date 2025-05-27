@@ -12,7 +12,7 @@ import {
   Keyboard,
   TouchableWithoutFeedback,
 } from "react-native";
-import { login as loginService} from "../../services/users/authService";
+import { login as loginService } from "../../services/users/authService";
 import { userLoginSchema } from "../../validations/users/usersValidations";
 import { useAuth } from "../../context/AuthContext";
 
@@ -29,8 +29,8 @@ const LoginScreen = ({ navigation }: any) => {
         { email, senha: password },
         { abortEarly: false }
       );
-      await loginService(email, password);
-      authLogin();
+      const token = await loginService(email, password);
+      authLogin(token);
       navigation.navigate("Home");
     } catch (error: any) {
       if (error.name === "ValidationError") {
@@ -65,10 +65,7 @@ const LoginScreen = ({ navigation }: any) => {
             <Text style={styles.errorText}>{fieldErrors.email}</Text>
           )}
           <TextInput
-            style={[
-              styles.input,
-              fieldErrors.email ? styles.inputError : null,
-            ]}
+            style={[styles.input, fieldErrors.email ? styles.inputError : null]}
             placeholder="E-mail"
             value={email}
             onChangeText={setEmail}
@@ -77,10 +74,7 @@ const LoginScreen = ({ navigation }: any) => {
             <Text style={styles.errorText}>{fieldErrors.senha}</Text>
           )}
           <TextInput
-            style={[
-              styles.input,
-              fieldErrors.senha ? styles.inputError : null,
-            ]}
+            style={[styles.input, fieldErrors.senha ? styles.inputError : null]}
             placeholder="Senha"
             secureTextEntry
             value={password}
