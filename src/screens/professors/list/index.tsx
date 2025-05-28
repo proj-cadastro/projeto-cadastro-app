@@ -164,7 +164,16 @@ const ListProfessorScreen = () => {
                         style={TableStyle.cleanOptionBtn}
                         onPress={() => {
                           const detalhes =
-                            `👨‍🏫 Nome: ${prof.nome}\n✉️ Email: ${prof.email}\n🎓 Titulação: ${prof.titulacao}`;
+`
+👨‍🏫 Nome: ${prof.nome}
+✉️ Email: ${prof.email}
+🎓 Titulação: ${prof.titulacao}
+#️⃣ Id Unidade de Ensino: ${prof.idUnidade}
+⚙️ Referência: ${prof.referencia}
+🔗 Lattes: ${prof.lattes}
+🚦 Status: ${prof.statusAtividade}
+${prof.observacoes ? `📝 Observações: ${prof.observacoes}` : ""}
+`
                           alert(detalhes);
                         }}
                       >
