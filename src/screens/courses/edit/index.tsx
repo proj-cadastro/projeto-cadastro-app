@@ -18,6 +18,7 @@ import { updateCourse } from "../../../services/course/cursoService";
 import { ModeloCurso } from "../../../enums/courses/courseEnum";
 import { useProfessor } from "../../../context/ProfessorContext";
 
+
 const EditCourseScreen = () => {
   const navigation = useNavigation();
   const route = useRoute<RouteParamsProps<"EditCourses">>();

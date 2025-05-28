@@ -16,7 +16,9 @@ import { showConfirmDialog } from "../../../components/atoms/ConfirmAlert";
 import { NavigationProp } from "../../../routes/rootStackParamList ";
 import { useNavigation } from "@react-navigation/native";
 import { TableStyle } from "../../../style/TableStyle";
+
 import { useProfessor } from "../../../context/ProfessorContext";
+
 
 const ListCoursesScreen = () => {
 
@@ -137,6 +139,7 @@ const ListCoursesScreen = () => {
                     <View style={TableStyle.optionsRow}>
                       <TouchableOpacity
                         style={TableStyle.cleanOptionBtn}
+
                         onPress={() => {
                           const coordenador = getProfessorById(curso.coordenadorId)
                           const detalhes =
@@ -149,6 +152,7 @@ const ListCoursesScreen = () => {
 `;
                           alert(detalhes)
                         }}
+
                       >
                         <Text style={TableStyle.cleanOptionText}>🔎 Ver mais</Text>
                       </TouchableOpacity>

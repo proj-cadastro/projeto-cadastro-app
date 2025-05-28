@@ -64,7 +64,9 @@ const EditProfessorScreen = () => {
 
       <View style={FormStyles.container}>
       
+
         <Text style={FormStyles.title}>Atualizar {professor?.nome}</Text>
+
         <Text style={FormStyles.description}>
           Modifique os dados conforme necessário 🙂
         </Text>
