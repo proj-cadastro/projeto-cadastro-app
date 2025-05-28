@@ -9,7 +9,6 @@ import HamburgerMenu from "../../../../components/HamburgerMenu";
 
 import { useRoute } from "@react-navigation/native";
 import { useNavigation } from "@react-navigation/native";
-import { RouteParamsProps } from "../../../../types/rootStackParamListCurso";
 
 import { FormStyles } from "../../../../style/FormStyles";
 import { postCourse } from "../../../../services/course/cursoService";
@@ -17,6 +16,7 @@ import { ModeloCurso } from "../../../../enums/courses/courseEnum";
 import { useCourse } from "../../../../context/CourseContext";
 import { useProfessor } from "../../../../context/ProfessorContext";
 import { coursesRegisterStep2Schema } from "../../../../validations/coursesRegisterValidations";
+import { RouteParamsProps } from "../../../../routes/rootStackParamList ";
 
 export default function StepTwo() {
   const navigation = useNavigation();
@@ -24,7 +24,7 @@ export default function StepTwo() {
   const { refreshCoursesData } = useCourse();
   const { professors } = useProfessor();
 
-  const route = useRoute<RouteParamsProps<"RegisterCursosStepTwo">>();
+  const route = useRoute<RouteParamsProps<"RegisterCourseStepTwo">>();
   const { partialDataCurso } = route.params;
 
   const [modelo, setModelo] = useState<ModeloCurso>();
