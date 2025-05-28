@@ -63,16 +63,18 @@ const EditProfessorScreen = () => {
       </Button>
 
       <View style={FormStyles.container}>
+      
+        <Text style={FormStyles.title}>Atualizar {professor?.cursoCoordenado}</Text>
+        <Text style={FormStyles.description}>
+          Modifique os dados conforme necessário 🙂
+        </Text>
         <ScrollView
           contentContainerStyle={FormStyles.scrollContent}
           keyboardShouldPersistTaps="handled"
         >
           <Card style={FormStyles.card}>
             <Card.Content>
-              <Text style={FormStyles.title}>Atualizar {professor?.nome}</Text>
-              <Text style={FormStyles.description}>
-                Modifique os dados conforme necessário 🙂
-              </Text>
+
 
               <Text style={FormStyles.label}>Nome</Text>
               <TextInput

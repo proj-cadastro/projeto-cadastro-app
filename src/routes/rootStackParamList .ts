@@ -5,7 +5,8 @@ import { RouteProp } from "@react-navigation/native";
 
 export type RootStackParamList = {
 
-  FormProfessorStepOne: undefined;
+  //Rotas de Professor: 
+  RegisterProfessorsStepOne: undefined;
 
   RegisterProfessorsStepTwo: {
     partialDataProfessor: {
@@ -15,8 +16,24 @@ export type RootStackParamList = {
       idUnidade: string;
     };
   };
-  
+
   EditProfessors: {
+    id: number
+  }
+  //##
+
+  //Rotas de Curso
+  FormCourseStepOne: undefined
+  
+  RegisterCourseStepTwo: {
+    partialDataCurso: {
+      nome: string;
+      sigla: string;
+      codigo: string;
+
+    };
+  };
+  EditCourses: {
     id: number
   }
 };
