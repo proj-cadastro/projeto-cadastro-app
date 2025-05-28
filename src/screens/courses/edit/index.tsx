@@ -17,7 +17,6 @@ import { Course } from "../../../types/courses";
 import { updateCourse } from "../../../services/course/cursoService";
 import { ModeloCurso } from "../../../enums/courses/courseEnum";
 import { useProfessor } from "../../../context/ProfessorContext";
-import { Professor } from "../../../types/professor";
 
 const EditCourseScreen = () => {
   const navigation = useNavigation();
