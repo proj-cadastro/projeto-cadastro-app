@@ -11,12 +11,12 @@ import {
 } from "react-native";
 import { Card, Button, ProgressBar, MD3Colors } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
-import { NavigationProp } from "../../../../types/rootStackParamListCurso";
 import { FormStyles } from "../../../../style/FormStyles";
 import { coursesRegisterSchema } from "../../../../validations/coursesRegisterValidations";
+import { NavigationProp } from "../../../../routes/rootStackParamList ";
 
 export default function StepOne() {
-  const navigation = useNavigation<NavigationProp>(); // Usa a tipagem correta
+  const navigation = useNavigation<NavigationProp>();
 
   //necessário conferir os reqs da api, para ver se está batendo com o que estamos armazenando...
   const [nome, setNome] = useState("");
@@ -38,7 +38,7 @@ export default function StepOne() {
       };
 
       //enviando o objeto do curso para a próxima fase do form(StepTwo)
-      navigation.navigate("RegisterCursosStepTwo", { partialDataCurso });
+      navigation.navigate("RegisterCourseStepTwo", { partialDataCurso });
     } catch (error: any) {
       if (error.name === "ValidationError") {
         const errors: { [key: string]: string } = {};

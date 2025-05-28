@@ -16,7 +16,7 @@ import HamburgerMenu from "../../../../components/HamburgerMenu";
 
 import { useRoute } from "@react-navigation/native";
 import { useNavigation } from "@react-navigation/native";
-import { RouteParamsProps } from "../../../../types/rootStackParamList ";
+import { RouteParamsProps } from "../../../../routes/rootStackParamList ";
 
 import { FormStyles } from "../../../../style/FormStyles";
 import { postProfessor } from "../../../../services/professors/professorService";

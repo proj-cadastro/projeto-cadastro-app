@@ -1,15 +1,7 @@
 import React, { useState } from "react";
-import { View, TouchableOpacity, Text, Modal, StyleSheet } from "react-native";
+import { View, TouchableOpacity, Text, Modal, StyleSheet, ScrollView } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useAuth } from "../context/AuthContext";
-
-const menuItems = [
-  { label: "Início", route: "Home" },
-  { label: "Lista de Professores", route: "ListProfessors" },
-  { label: "Cadastrar Professores", route: "RegisterProfessorsIndex" },
-  { label: "Lista de Cursos", route: "ListCourses" },
-  { label: "Cadastrar Cursos", route: "RegisterCursosIndex" },
-];
 
 export default function HamburgerMenu() {
   const [visible, setVisible] = useState(false);
@@ -26,6 +18,7 @@ export default function HamburgerMenu() {
       <TouchableOpacity onPress={() => setVisible(true)} style={styles.icon}>
         <Text style={{ fontSize: 40 }}>☰</Text>
       </TouchableOpacity>
+
       <Modal
         transparent
         visible={visible}
@@ -38,27 +31,73 @@ export default function HamburgerMenu() {
           activeOpacity={1}
         >
           <View style={styles.menu}>
-            <View style={styles.menuItemsContainer}>
-              {menuItems.map((item) => (
+            <ScrollView contentContainerStyle={styles.menuItemsContainer}>
+              {/* Item solto */}
+              <TouchableOpacity
+                style={styles.menuItem}
+                onPress={() => {
+                  setVisible(false);
+                  navigation.navigate("Home" as never);
+                }}
+              >
+                <Text style={styles.menuText}>Início</Text>
+              </TouchableOpacity>
+
+              {/* Separador */}
+              <View style={styles.separator} />
+
+              {/* Seção Professor */}
+              <View style={styles.categoryContainer}>
+                <Text style={styles.categoryLabel}>Professor</Text>
                 <TouchableOpacity
-                  key={item.route}
+                  style={styles.menuItem}
                   onPress={() => {
                     setVisible(false);
-                    navigation.navigate(item.route as never);
+                    navigation.navigate("ListProfessors" as never);
                   }}
-                  style={styles.menuItem}
                 >
-                  <Text style={styles.menuText}>{item.label}</Text>
+                  <Text style={styles.menuText}>Lista</Text>
                 </TouchableOpacity>
-              ))}
-            </View>
-            <TouchableOpacity
-              style={styles.logoutButton}
-              onPress={handleLogout}
-            >
-              <Text style={styles.logoutText} onPress={handleLogout}>
-                Sair
-              </Text>
+                <TouchableOpacity
+                  style={styles.menuItem}
+                  onPress={() => {
+                    setVisible(false);
+                    navigation.navigate("RegisterProfessorsIndex" as never);
+                  }}
+                >
+                  <Text style={styles.menuText}>Cadastro</Text>
+                </TouchableOpacity>
+              </View>
+
+              {/* Separador */}
+              <View style={styles.separator} />
+
+              {/* Seção Curso */}
+              <View style={styles.categoryContainer}>
+                <Text style={styles.categoryLabel}>Curso</Text>
+                <TouchableOpacity
+                  style={styles.menuItem}
+                  onPress={() => {
+                    setVisible(false);
+                    navigation.navigate("ListCourses" as never);
+                  }}
+                >
+                  <Text style={styles.menuText}>Lista</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.menuItem}
+                  onPress={() => {
+                    setVisible(false);
+                    navigation.navigate("RegisterCursosIndex" as never);
+                  }}
+                >
+                  <Text style={styles.menuText}>Cadastro</Text>
+                </TouchableOpacity>
+              </View>
+            </ScrollView>
+
+            <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+              <Text style={styles.logoutText}>Sair</Text>
             </TouchableOpacity>
           </View>
         </TouchableOpacity>
@@ -81,28 +120,35 @@ const styles = StyleSheet.create({
   menu: {
     backgroundColor: "#fff",
     padding: 20,
-    marginTop: 0,
-    marginLeft: 0,
-    borderRadius: 0,
-    elevation: 5,
-    minWidth: 200,
     height: "100%",
+    width: 250,
     justifyContent: "space-between",
   },
   menuItemsContainer: {
-    flex: 1,
-    marginTop: 40,
+    paddingBottom: 20,
+  },
+  separator: {
+    height: 1,
+    backgroundColor: "#ccc",
+    marginVertical: 12,
+  },
+  categoryContainer: {
+    marginBottom: 12,
+  },
+  categoryLabel: {
+    fontWeight: "bold",
+    fontSize: 18,
+    marginBottom: 6,
   },
   menuItem: {
-    paddingVertical: 16,
-    paddingHorizontal: 8,
+    paddingVertical: 8,
+    paddingLeft: 12,
   },
   menuText: {
-    fontSize: 18,
+    fontSize: 16,
   },
   logoutButton: {
     paddingVertical: 16,
-    paddingHorizontal: 8,
     borderTopWidth: 1,
     borderTopColor: "#eee",
   },

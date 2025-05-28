@@ -12,7 +12,7 @@ import {
 import { Card, Button, ProgressBar, MD3Colors } from "react-native-paper";
 import ListPicker from "../../../../components/atoms/ListPicker";
 import { useNavigation } from "@react-navigation/native";
-import { NavigationProp } from "../../../../types/rootStackParamList ";
+import { NavigationProp } from "../../../../routes/rootStackParamList ";
 import { FormStyles } from "../../../../style/FormStyles";
 import { Titulacao } from "../../../../enums/professors/professorEnum";
 import { professorRegisterSchema } from "../../../../validations/professorsRegisterValidations";

@@ -18,9 +18,9 @@ const screens = {
   RegisterProfessorsFinished: require("../screens/professors/register/finished").default,
   RegisterCursosIndex: require("../screens/courses/register").default,
   RegisterCursosStepOne: require("../screens/courses/register/stepOne").default,
-  RegisterCursosStepTwo: require("../screens/courses/register/stepTwo").default,
+  RegisterCourseStepTwo: require("../screens/courses/register/stepTwo").default,
   RegisterCursosFinished: require("../screens/courses/register/finished").default,
-  EditCursos: require("../screens/courses/edit").default,
+  EditCourses: require("../screens/courses/edit").default,
   ListCourses: require("../screens/courses/list").default,
 };
 

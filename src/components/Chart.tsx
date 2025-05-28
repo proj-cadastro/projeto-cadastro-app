@@ -3,6 +3,7 @@ import { Dimensions, View, StyleSheet, Text } from "react-native";
 
 const screenWidth = Dimensions.get("window").width;
 
+
 type Props = {
   label: string[];
   data: number[];

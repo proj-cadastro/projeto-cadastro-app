@@ -10,7 +10,7 @@ import {
 import HamburgerMenu from "../../../components/HamburgerMenu";
 import { FormStyles } from "../../../style/FormStyles";
 import { Button, Card } from "react-native-paper";
-import { RouteParamsProps } from "../../../types/rootStackParamList ";
+import { RouteParamsProps } from "../../../routes/rootStackParamList ";
 import { useProfessor } from "../../../context/ProfessorContext";
 import ListPicker from "../../../components/atoms/ListPicker";
 import { StatusAtividade, Titulacao } from "../../../enums/professors/professorEnum";
@@ -63,16 +63,18 @@ const EditProfessorScreen = () => {
       </Button>
 
       <View style={FormStyles.container}>
+      
+        <Text style={FormStyles.title}>Atualizar {professor?.cursoCoordenado}</Text>
+        <Text style={FormStyles.description}>
+          Modifique os dados conforme necessário 🙂
+        </Text>
         <ScrollView
           contentContainerStyle={FormStyles.scrollContent}
           keyboardShouldPersistTaps="handled"
         >
           <Card style={FormStyles.card}>
             <Card.Content>
-              <Text style={FormStyles.title}>Atualizar {professor?.nome}</Text>
-              <Text style={FormStyles.description}>
-                Modifique os dados conforme necessário 🙂
-              </Text>
+
 
               <Text style={FormStyles.label}>Nome</Text>
               <TextInput
