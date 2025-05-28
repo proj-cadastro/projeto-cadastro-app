@@ -13,7 +13,7 @@ import {
   TouchableWithoutFeedback,
 } from "react-native";
 import { login as loginService } from "../../services/users/authService";
-import { userLoginSchema } from "../../validations/users/usersValidations";
+import { userLoginSchema } from "../../validations/usersValidations";
 import { useAuth } from "../../context/AuthContext";
 
 const LoginScreen = ({ navigation }: any) => {
@@ -31,7 +31,6 @@ const LoginScreen = ({ navigation }: any) => {
       );
       const token = await loginService(email, password);
       authLogin(token);
-      navigation.navigate("Home");
     } catch (error: any) {
       if (error.name === "ValidationError") {
         const errors: { [key: string]: string } = {};
