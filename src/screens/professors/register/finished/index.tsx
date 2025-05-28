@@ -1,8 +1,6 @@
 import React from "react";
 import SuccessScreen from "../../../../components/SucessScreen";
 import { useNavigation } from "@react-navigation/native";
-import { SafeAreaView, View } from "react-native";
-import { FormStyles } from "../../../../style/FormStyles";
 import HamburgerMenu from "../../../../components/HamburgerMenu";
 
 const FinishedProfessorScreen = () => {

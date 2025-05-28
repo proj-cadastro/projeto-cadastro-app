@@ -1,57 +1,63 @@
 "use client";
 
 import React, { useState } from "react";
-import { SafeAreaView, View, ScrollView, Text, TextInput } from "react-native";
-import {
-  Card,
-  Button,
-  ProgressBar,
-  MD3Colors,
-  Checkbox,
-} from "react-native-paper";
+import { SafeAreaView, View, ScrollView, Text, StyleSheet } from "react-native";
+import { Card, Button, ProgressBar, MD3Colors } from "react-native-paper";
 
 import ListPicker from "../../../../components/atoms/ListPicker";
 import HamburgerMenu from "../../../../components/HamburgerMenu";
 
 import { useRoute } from "@react-navigation/native";
 import { useNavigation } from "@react-navigation/native";
-import { RouteParamsProps } from "../../../../types/rootStackParamListCurso";
 
 import { FormStyles } from "../../../../style/FormStyles";
 import { postCourse } from "../../../../services/course/cursoService";
 import { ModeloCurso } from "../../../../enums/courses/courseEnum";
 import { useCourse } from "../../../../context/CourseContext";
 import { useProfessor } from "../../../../context/ProfessorContext";
+import { coursesRegisterStep2Schema } from "../../../../validations/coursesRegisterValidations";
+import { RouteParamsProps } from "../../../../routes/rootStackParamList ";
 
 export default function StepTwo() {
   const navigation = useNavigation();
 
-  const { refreshCoursesData } = useCourse()
-  const { professors } = useProfessor()
+  const { refreshCoursesData } = useCourse();
+  const { professors } = useProfessor();
 
-  const route = useRoute<RouteParamsProps<"RegisterCursosStepTwo">>();
+  const route = useRoute<RouteParamsProps<"RegisterCourseStepTwo">>();
   const { partialDataCurso } = route.params;
 
-  //necessário conferir os reqs da api, para ver se está batendo com o que estamos armazenando...
-  const [modelo, setModelo] = useState<ModeloCurso>(ModeloCurso.PRESENCIAL);
-  const [coordenadorId, setCoordenadorId] = useState(1);
+  const [modelo, setModelo] = useState<ModeloCurso>();
+  const [coordenadorId, setCoordenadorId] = useState();
 
+  const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
 
   const handleSubmit = async () => {
     try {
+      setFieldErrors({});
+      coursesRegisterStep2Schema.validateSync(
+        { modelo, coordenadorId },
+        { abortEarly: false }
+      );
       const curso = {
         modelo,
         coordenadorId,
         ...partialDataCurso,
       };
-      console.log(curso);
-
-      await postCourse(curso)
-      refreshCoursesData()
+      
+      await postCourse(curso);
+      refreshCoursesData();
       navigation.navigate("RegisterCursosFinished" as never);
       //conversar com o service para enviar o objeto completo para a api
     } catch (error: any) {
-      console.error(error.response.data);
+      if (error.name === "ValidationError") {
+        const errors: { [key: string]: string } = {};
+        error.inner.forEach((err: any) => {
+          if (err.path) errors[err.path] = err.message;
+        });
+        setFieldErrors(errors);
+      }
+      console.error(error.response.data.mensagem);
     }
   };
 
@@ -76,30 +82,50 @@ export default function StepTwo() {
         >
           <Card style={[FormStyles.card]} mode="elevated">
             <Card.Content>
-              {/* header */}
               <Text style={FormStyles.title}>2º Etapa</Text>
 
               <Text style={FormStyles.description}>
                 Insira os dados do curso para registrá-lo no sistema
               </Text>
 
-              {/* body */}
+              <Text style={FormStyles.label}>Modalidade</Text>
+              {fieldErrors.modelo && (
+                <Text style={styles.errorText}>{fieldErrors.modelo}</Text>
+              )}
               <ListPicker
                 items={Object.values(ModeloCurso)}
-                onSelect={(modelo) => setModelo(modelo)}
+                onSelect={(modelo) => {
+                  setModelo(modelo);
+                  if (fieldErrors.modelo)
+                    setFieldErrors((prev) => {
+                      const updated = { ...prev };
+                      delete updated.modelo;
+                      return updated;
+                    });
+                }}
               />
 
               <Text style={FormStyles.label}>Coordenador</Text>
-              {/* Buscar as titulações dos professores e atribuir a lista, ou por ser estático, retornar diretamente*/}
-              {/* pegamos o valor do picker via uma funcao na props que nos retorna o valor selecionado ao clicar */}
+              {fieldErrors.coordenadorId && (
+                <Text style={styles.errorText}>
+                  {fieldErrors.coordenadorId}
+                </Text>
+              )}  
               <ListPicker
                 items={professors}
-                onSelect={(id) => setCoordenadorId(id)}
+                onSelect={(id) => {
+                  setCoordenadorId(id);
+
+                  if (fieldErrors.coordenadorId)
+                    setFieldErrors((prev) => {
+                      const updated = { ...prev };
+                      delete updated.coordenadorId;
+                      return updated;
+                    });
+                }}
                 getLabel={(prof) => prof.nome}
                 getValue={(prof) => prof.id}
               />
-
-
             </Card.Content>
 
             <Card.Actions>
@@ -119,3 +145,17 @@ export default function StepTwo() {
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  errorText: {
+    color: "red",
+    alignSelf: "flex-start",
+    marginBottom: 8,
+    marginLeft: 2,
+    fontSize: 12,
+  },
+  inputError: {
+    borderColor: "red",
+    borderWidth: 1,
+  },
+});

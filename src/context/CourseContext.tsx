@@ -8,6 +8,7 @@ type CourseContextType = {
     courses: Course[]
     loading: boolean
     refreshCoursesData: () => void
+    getCourseById: (id: number) => Course | undefined
 }
 
 export const CourseContext = createContext<CourseContextType | undefined>(undefined)
@@ -21,19 +22,30 @@ export const CourseProvider = ({ children }: { children: ReactNode }) => {
             const coursesData = await getCourses()
             setCourses(coursesData)
         } catch (error: any) {
-            console.error(error.response.error.messagem)
+            //contornando o erro 404 do backend para listas vazias
+            const msg = error.response?.data?.mensagem
+
+            if (msg === "Nenhum curso encontrado") {
+                setCourses([])
+            } else {
+                console.error(msg || "Erro ao buscar Cursos")
+            }
+            //##
         } finally {
             setLoading(false)
         }
     }, [])
 
+    const fetchDataById = (id: number): Course | undefined => {
+        return courses.find((course) => course.id === id)
+    }
 
     useEffect(() => {
         fetchData()
     }, [fetchData])
 
     return (
-        <CourseContext.Provider value={{ courses, loading, refreshCoursesData: fetchData }}>
+        <CourseContext.Provider value={{ courses, loading, refreshCoursesData: fetchData, getCourseById: fetchDataById }}>
             {children}
         </CourseContext.Provider>
     )

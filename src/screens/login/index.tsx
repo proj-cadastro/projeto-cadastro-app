@@ -12,13 +12,15 @@ import {
   Keyboard,
   TouchableWithoutFeedback,
 } from "react-native";
-import { login } from "../../services/users/authService";
-import { userLoginSchema } from "../../validations/users/usersValidations";
+import { login as loginService } from "../../services/users/authService";
+import { userLoginSchema } from "../../validations/usersValidations";
+import { useAuth } from "../../context/AuthContext";
 
 const LoginScreen = ({ navigation }: any) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
+  const { login: authLogin } = useAuth();
 
   const handleLogin = async () => {
     try {
@@ -27,8 +29,8 @@ const LoginScreen = ({ navigation }: any) => {
         { email, senha: password },
         { abortEarly: false }
       );
-      await login(email, password);
-      navigation.navigate("Home");
+      const token = await loginService(email, password);
+      authLogin(token);
     } catch (error: any) {
       if (error.name === "ValidationError") {
         const errors: { [key: string]: string } = {};
@@ -62,10 +64,7 @@ const LoginScreen = ({ navigation }: any) => {
             <Text style={styles.errorText}>{fieldErrors.email}</Text>
           )}
           <TextInput
-            style={[
-              styles.input,
-              fieldErrors.email ? styles.inputError : null,
-            ]}
+            style={[styles.input, fieldErrors.email ? styles.inputError : null]}
             placeholder="E-mail"
             value={email}
             onChangeText={setEmail}
@@ -74,15 +73,16 @@ const LoginScreen = ({ navigation }: any) => {
             <Text style={styles.errorText}>{fieldErrors.senha}</Text>
           )}
           <TextInput
-            style={[
-              styles.input,
-              fieldErrors.senha ? styles.inputError : null,
-            ]}
+            style={[styles.input, fieldErrors.senha ? styles.inputError : null]}
             placeholder="Senha"
             secureTextEntry
             value={password}
             onChangeText={setPassword}
           />
+
+          {fieldErrors.api && (
+            <Text style={styles.errorText}>{fieldErrors.api}</Text>
+          )}
 
           <TouchableOpacity style={styles.button} onPress={handleLogin}>
             <Text style={styles.buttonText}>Entrar</Text>

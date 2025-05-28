@@ -9,6 +9,7 @@ type ProfessorContextType = {
     professors: Professor[]
     loading: boolean
     refreshProfessorsData: () => void
+    getProfessorById: (id: number) => Professor | undefined
 }
 
 export const ProfessorContext = createContext<ProfessorContextType | undefined>(undefined)
@@ -22,18 +23,30 @@ export const ProfessorProvider = ({ children }: { children: ReactNode }) => {
             const professoresData = await getProfessors()
             setProfessors(professoresData)
         } catch (error: any) {
-            console.error(error.response?.error?.messagem || "Erro ao carregar professores")
+            //contornando o erro 404 do backend para listas vazias
+            const msg = error.response?.data?.mensagem
+
+            if (msg === "Nenhum professor encontrado") {
+                setProfessors([])
+            } else {
+                console.error(msg )
+            }
+            //##
         } finally {
             setLoading(false)
         }
     }, [])
+
+    const fetchDataById = (id: number): Professor | undefined => {
+        return professors.find(professor => professor.id === id)
+    }
 
     useEffect(() => {
         fetchData()
     }, [fetchData])
 
     return (
-        <ProfessorContext.Provider value={{ professors, loading, refreshProfessorsData: fetchData }}>
+        <ProfessorContext.Provider value={{ professors, loading, refreshProfessorsData: fetchData, getProfessorById: fetchDataById }}>
             {children}
         </ProfessorContext.Provider>
     )

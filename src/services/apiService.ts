@@ -1,21 +1,29 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
+import { API_URL } from "@env";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { isTokenValid } from "../utils/jwtDecode";
+import { authEventEmitter } from "../events/AuthEventEmitter";
 
-// Base URL da sua API
 const api = axios.create({
-  baseURL: "http://10.68.153.170:3000", //rodar o backend local e adicionar o ipv4 da sua máquina, encontre via cmd/ipconfig
+  baseURL: API_URL,
   headers: {
     "Content-Type": "application/json",
   },
 });
 
-//intercepta cada interacao com a api e injeta o token
 api.interceptors.request.use(async (config) => {
-  const token = await AsyncStorage.getItem("token");
+  const token = await AsyncStorage.getItem("token")
 
-  if (token) config.headers.Authorization = `Bearer ${token}`;
-
-  return config;
-});
+  if (token) {
+    const isValid = await isTokenValid(token)
+    if (!isValid) {
+      authEventEmitter.emit("logout")
+      console.log("Vencido")
+      throw new axios.Cancel("Token Expirado, por favor faça login")
+    }
+    config.headers.Authorization = `Bearer ${token}`
+  }
+  return config
+})
 
 export default api;

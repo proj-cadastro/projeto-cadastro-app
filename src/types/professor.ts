@@ -1,7 +1,7 @@
 import { Referencia, StatusAtividade, Titulacao } from "../enums/professors/professorEnum";
 
 export type Professor = {
-  id?: string
+  id?: number
   nome: string;
   email: string;
   titulacao: string;
@@ -10,4 +10,5 @@ export type Professor = {
   lattes: string;
   statusAtividade: string;
   observacoes?: string;
+  cursoCoordenado?: any
 };
