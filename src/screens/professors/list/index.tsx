@@ -13,7 +13,7 @@ import { useProfessor } from "../../../context/ProfessorContext";
 import { showConfirmDialog } from "../../../components/atoms/ConfirmAlert";
 import { deleteProfessor } from "../../../services/professors/professorService";
 import { useNavigation } from "@react-navigation/native";
-import { NavigationProp } from "../../../types/rootStackParamList ";
+import { NavigationProp } from "../../../routes/rootStackParamList ";
 
 import { TableStyle } from "../../../style/TableStyle";
 

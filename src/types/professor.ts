@@ -10,4 +10,5 @@ export type Professor = {
   lattes: string;
   statusAtividade: string;
   observacoes?: string;
+  cursoCoordenado?: any
 };

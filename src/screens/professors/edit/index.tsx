@@ -10,7 +10,7 @@ import {
 import HamburgerMenu from "../../../components/HamburgerMenu";
 import { FormStyles } from "../../../style/FormStyles";
 import { Button, Card } from "react-native-paper";
-import { RouteParamsProps } from "../../../types/rootStackParamList ";
+import { RouteParamsProps } from "../../../routes/rootStackParamList ";
 import { useProfessor } from "../../../context/ProfessorContext";
 import ListPicker from "../../../components/atoms/ListPicker";
 import { StatusAtividade, Titulacao } from "../../../enums/professors/professorEnum";
