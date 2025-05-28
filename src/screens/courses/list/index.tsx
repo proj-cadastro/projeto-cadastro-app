@@ -17,6 +17,9 @@ import { NavigationProp } from "../../../routes/rootStackParamList ";
 import { useNavigation } from "@react-navigation/native";
 import { TableStyle } from "../../../style/TableStyle";
 
+import { useProfessor } from "../../../context/ProfessorContext";
+
+
 const ListCoursesScreen = () => {
 
   const navigation = useNavigation<NavigationProp>()
@@ -32,6 +35,7 @@ const ListCoursesScreen = () => {
   const [expandedRow, setExpandedRow] = useState<number | null>(null);
 
   const { courses, refreshCoursesData } = useCourse()
+  const { getProfessorById } = useProfessor()
 
   const handleFiltrar = () => {
     // lógica de filtragem aqui (se quiser ajuda com isso, posso montar também)
@@ -135,7 +139,20 @@ const ListCoursesScreen = () => {
                     <View style={TableStyle.optionsRow}>
                       <TouchableOpacity
                         style={TableStyle.cleanOptionBtn}
-                        onPress={() => alert(`Ver mais de ${curso.nome}`)}
+
+                        onPress={() => {
+                          const coordenador = getProfessorById(curso.coordenadorId)
+                          const detalhes =
+`
+🔠 Nome: ${curso.nome}
+🔤 Sigla: ${curso.sigla}
+#️⃣ Código: ${curso.codigo}
+🧩 Modelo: ${curso.modelo}
+🧑‍🏫 Coordenador: ${coordenador?.nome || "Não informado"}
+`;
+                          alert(detalhes)
+                        }}
+
                       >
                         <Text style={TableStyle.cleanOptionText}>🔎 Ver mais</Text>
                       </TouchableOpacity>
