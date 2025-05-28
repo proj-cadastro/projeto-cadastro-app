@@ -31,7 +31,6 @@ const LoginScreen = ({ navigation }: any) => {
       );
       const token = await loginService(email, password);
       authLogin(token);
-      navigation.navigate("Home");
     } catch (error: any) {
       if (error.name === "ValidationError") {
         const errors: { [key: string]: string } = {};
