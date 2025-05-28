@@ -28,3 +28,9 @@ export const deleteCourse = async (id: number) => {
 
     return response.data
 }
+
+export const updateCourse = async (id: number, data: Course) => {
+    const response = await api.put(`/cursos/${id}`, data)
+
+    return response.data
+}

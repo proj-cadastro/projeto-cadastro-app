@@ -27,7 +27,6 @@ export default function StepTwo() {
   const route = useRoute<RouteParamsProps<"RegisterCursosStepTwo">>();
   const { partialDataCurso } = route.params;
 
-  //necessário conferir os reqs da api, para ver se está batendo com o que estamos armazenando...
   const [modelo, setModelo] = useState<ModeloCurso>();
   const [coordenadorId, setCoordenadorId] = useState();
 
@@ -116,6 +115,7 @@ export default function StepTwo() {
                 items={professors}
                 onSelect={(id) => {
                   setCoordenadorId(id);
+
                   if (fieldErrors.coordenadorId)
                     setFieldErrors((prev) => {
                       const updated = { ...prev };

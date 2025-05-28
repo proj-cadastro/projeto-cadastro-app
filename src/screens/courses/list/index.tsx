@@ -13,7 +13,7 @@ import HamburgerMenu from "../../../components/HamburgerMenu";
 import { useCourse } from "../../../context/CourseContext";
 import { deleteCourse } from "../../../services/course/cursoService";
 import { showConfirmDialog } from "../../../components/atoms/ConfirmAlert";
-import { NavigationProp } from "../../../types/rootStackParamList ";
+import { NavigationProp } from "../../../routes/rootStackParamList ";
 import { useNavigation } from "@react-navigation/native";
 import { TableStyle } from "../../../style/TableStyle";
 
