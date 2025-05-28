@@ -13,7 +13,7 @@ import {
   TouchableWithoutFeedback,
 } from "react-native";
 import { login as loginService } from "../../services/users/authService";
-import { userLoginSchema } from "../../validations/users/usersValidations";
+import { userLoginSchema } from "../../validations/usersValidations";
 import { useAuth } from "../../context/AuthContext";
 
 const LoginScreen = ({ navigation }: any) => {
