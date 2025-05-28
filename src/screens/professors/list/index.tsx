@@ -12,7 +12,9 @@ import {
 import HamburgerMenu from "../../../components/HamburgerMenu";
 import { useProfessor } from "../../../context/ProfessorContext";
 import { showConfirmDialog } from "../../../components/atoms/ConfirmAlert";
-import { deleteProfessors } from "../../../services/professors/professorService";
+import { deleteProfessor } from "../../../services/professors/professorService";
+import { useNavigation } from "@react-navigation/native";
+import { NavigationProp } from "../../../types/rootStackParamList ";
 
 const ListProfessorScreen = () => {
   const [nome, setNome] = useState("");
@@ -30,6 +32,8 @@ const ListProfessorScreen = () => {
   const [showTitulacoes, setShowTitulacoes] = useState(false);
   const [expandedRow, setExpandedRow] = useState<number | null>(null);
 
+  const navigation = useNavigation<NavigationProp>()
+
   const { professors, refreshProfessorsData } = useProfessor()
 
   useEffect(() => { refreshProfessorsData() }, [])
@@ -44,7 +48,7 @@ const ListProfessorScreen = () => {
 
   const handleDelete = async (id: number) => {
     try {
-      await deleteProfessors(id)
+      await deleteProfessor(id)
       refreshProfessorsData()
       console.log(professors.length)
 
@@ -157,13 +161,19 @@ const ListProfessorScreen = () => {
                     <View style={styles.optionsRow}>
                       <TouchableOpacity
                         style={styles.cleanOptionBtn}
-                        onPress={() => alert(`Ver mais de ${prof.nome}`)}
+                        onPress={() => {
+                          const detalhes =
+                            `👨‍🏫 Nome: ${prof.nome}\n✉️ Email: ${prof.email}\n🎓 Titulação: ${prof.titulacao}`;
+                          alert(detalhes);
+                        }}
                       >
                         <Text style={styles.cleanOptionText}>🔎 Ver mais</Text>
                       </TouchableOpacity>
                       <TouchableOpacity
                         style={styles.cleanOptionBtn}
-                        onPress={() => alert(`Editar ${prof.nome}`)}
+                        onPress={() => {
+                          if (prof.id)
+                          navigation.navigate(`EditProfessors`, {id: prof.id})}}
                       >
                         <Text style={styles.cleanOptionText}>📝 Editar</Text>
                       </TouchableOpacity>

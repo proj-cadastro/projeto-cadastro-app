@@ -15,8 +15,15 @@ export const getProfessors = async () => {
     return response.data.data
 }
 
-export const deleteProfessors = async (id: number) => {
+
+export const deleteProfessor = async (id: number) => {
     const response = await api.delete(`/professores/${id}`)
+
+    return response.data
+}
+
+export const updateProfessor = async (id: number, data: Professor) => {
+    const response = await api.put(`/professores/${id}`, data)
 
     return response.data
 }
