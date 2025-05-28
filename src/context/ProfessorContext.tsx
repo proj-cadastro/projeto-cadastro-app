@@ -9,6 +9,7 @@ type ProfessorContextType = {
     professors: Professor[]
     loading: boolean
     refreshProfessorsData: () => void
+    getProfessorById: (id: number) => Professor | undefined
 }
 
 export const ProfessorContext = createContext<ProfessorContextType | undefined>(undefined)
@@ -28,7 +29,7 @@ export const ProfessorProvider = ({ children }: { children: ReactNode }) => {
             if (msg === "Nenhum professor encontrado") {
                 setProfessors([])
             } else {
-                console.error(msg || "Erro ao buscar professores")
+                console.error(msg )
             }
             //##
         } finally {
@@ -36,13 +37,16 @@ export const ProfessorProvider = ({ children }: { children: ReactNode }) => {
         }
     }, [])
 
+    const fetchDataById = (id: number): Professor | undefined => {
+        return professors.find(professor => professor.id === id)
+    }
 
     useEffect(() => {
         fetchData()
     }, [fetchData])
 
     return (
-        <ProfessorContext.Provider value={{ professors, loading, refreshProfessorsData: fetchData }}>
+        <ProfessorContext.Provider value={{ professors, loading, refreshProfessorsData: fetchData, getProfessorById: fetchDataById }}>
             {children}
         </ProfessorContext.Provider>
     )

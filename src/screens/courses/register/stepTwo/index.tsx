@@ -50,7 +50,7 @@ export default function StepTwo() {
       navigation.navigate("RegisterCursosFinished" as never);
       //conversar com o service para enviar o objeto completo para a api
     } catch (error: any) {
-      console.error(error.response.data.mensagem);
+      console.error(error.response.data);
     }
   };
 

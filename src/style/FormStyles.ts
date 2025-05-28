@@ -22,6 +22,7 @@ export const FormStyles = StyleSheet.create({
   description: {
     color: "#757575",
     marginTop: 4,
+    marginBottom: 10,
     fontSize: 15,
   },
   container: {
