@@ -1,34 +1,56 @@
 "use client";
 
 import React, { useState } from "react";
-import { SafeAreaView, View, ScrollView, Text, TextInput } from "react-native";
+import {
+  SafeAreaView,
+  View,
+  ScrollView,
+  Text,
+  TextInput,
+  StyleSheet,
+} from "react-native";
 import { Card, Button, ProgressBar, MD3Colors } from "react-native-paper";
 import ListPicker from "../../../../components/atoms/ListPicker";
 import { useNavigation } from "@react-navigation/native";
 import { NavigationProp } from "../../../../types/rootStackParamList ";
 import { FormStyles } from "../../../../style/FormStyles";
 import { Titulacao } from "../../../../enums/professors/professorEnum";
+import { professorRegisterSchema } from "../../../../validations/professorsRegisterValidations";
 
 export default function ProfessorFormStepOne() {
-  const navigation = useNavigation<NavigationProp>(); // Usa a tipagem correta
+  const navigation = useNavigation<NavigationProp>();
 
-  //necessário conferir os reqs da api, para ver se está batendo com o que estamos armazenando...
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
   const [titulacao, setTitulacao] = useState(Titulacao.MESTRE);
   const [idUnidade, setIdUnidade] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
 
   const handleAdvance = () => {
-    const partialDataProfessor = {
-      nome,
-      email,
-      titulacao,
-      idUnidade,
-    };
-
-    //enviando o objeto do professor para a próxima fase do form(StepTwo)
-    navigation.navigate("RegisterProfessorsStepTwo", { partialDataProfessor });
-    console.log(partialDataProfessor);
+    try {
+      setFieldErrors({});
+      professorRegisterSchema.validateSync(
+        { nome, email, titulacao, idUnidade },
+        { abortEarly: false }
+      );
+      const partialDataProfessor = {
+        nome,
+        email,
+        titulacao,
+        idUnidade,
+      };
+      navigation.navigate("RegisterProfessorsStepTwo", {
+        partialDataProfessor,
+      });
+    } catch (error: any) {
+      if (error.name === "ValidationError") {
+        const errors: { [key: string]: string } = {};
+        error.inner.forEach((err: any) => {
+          if (err.path) errors[err.path] = err.message;
+        });
+        setFieldErrors(errors);
+      }
+    }
   };
 
   return (
@@ -47,34 +69,85 @@ export default function ProfessorFormStepOne() {
               </Text>
 
               <Text style={FormStyles.label}>Nome</Text>
+              {fieldErrors.nome && (
+                <Text style={styles.errorText}>{fieldErrors.nome}</Text>
+              )}
               <TextInput
                 placeholder="value"
-                style={FormStyles.input}
+                style={[
+                  FormStyles.input,
+                  fieldErrors.nome ? styles.inputError : null,
+                ]}
                 value={nome}
-                onChangeText={setNome}
+                onChangeText={(text) => {
+                  setNome(text);
+                  if (fieldErrors.nome)
+                    setFieldErrors((prev) => {
+                      const updated = { ...prev };
+                      delete updated.nome;
+                      return updated;
+                    });
+                }}
               />
 
               <Text style={FormStyles.label}>Email</Text>
+              {fieldErrors.email && (
+                <Text style={styles.errorText}>{fieldErrors.email}</Text>
+              )}
               <TextInput
                 placeholder="value"
-                style={FormStyles.input}
-                onChangeText={setEmail}
+                style={[
+                  FormStyles.input,
+                  fieldErrors.email ? styles.inputError : null,
+                ]}
+                onChangeText={(text) => {
+                  setEmail(text);
+                  if (fieldErrors.email)
+                    setFieldErrors((prev) => {
+                      const updated = { ...prev };
+                      delete updated.email;
+                      return updated;
+                    });
+                }}
                 value={email}
               />
 
               <Text style={FormStyles.label}>Titulação</Text>
-              {/* Buscar as titulações dos professores e atribuir a lista, ou por ser estático, retornar diretamente*/}
-              {/* pegamos o valor do picker via uma funcao na props que nos retorna o valor selecionado ao clicar */}
+              {fieldErrors.titulacao && (
+                <Text style={styles.errorText}>{fieldErrors.titulacao}</Text>
+              )}
               <ListPicker
                 items={Object.values(Titulacao)}
-                onSelect={(titulacao: Titulacao) => setTitulacao(titulacao)}
+                onSelect={(titulacao: Titulacao) => {
+                  setTitulacao(titulacao);
+                  if (fieldErrors.titulacao)
+                    setFieldErrors((prev) => {
+                      const updated = { ...prev };
+                      delete updated.titulacao;
+                      return updated;
+                    });
+                }}
               />
 
               <Text style={FormStyles.label}>Código da Unidade</Text>
+              {fieldErrors.idUnidade && (
+                <Text style={styles.errorText}>{fieldErrors.idUnidade}</Text>
+              )}
               <TextInput
                 placeholder="value"
-                style={FormStyles.input}
-                onChangeText={setIdUnidade}
+                style={[
+                  FormStyles.input,
+                  fieldErrors.idUnidade ? styles.inputError : null,
+                ]}
+                onChangeText={(text) => {
+                  setIdUnidade(text);
+                  if (fieldErrors.idUnidade)
+                    setFieldErrors((prev) => {
+                      const updated = { ...prev };
+                      delete updated.idUnidade;
+                      return updated;
+                    });
+                }}
                 value={idUnidade}
               />
             </Card.Content>
@@ -85,7 +158,7 @@ export default function ProfessorFormStepOne() {
                 style={FormStyles.button}
                 onPress={handleAdvance}
               >
-                Ir para a Próxima Etapa
+                Avançar
               </Button>
             </Card.Actions>
 
@@ -96,3 +169,17 @@ export default function ProfessorFormStepOne() {
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  errorText: {
+    color: "red",
+    alignSelf: "flex-start",
+    marginBottom: 8,
+    marginLeft: 2,
+    fontSize: 12,
+  },
+  inputError: {
+    borderColor: "red",
+    borderWidth: 1,
+  },
+});

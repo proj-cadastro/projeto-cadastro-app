@@ -12,7 +12,7 @@ import {
   Platform,
 } from "react-native";
 import { signUp } from "../../services/users/userService";
-import { userRegisterSchema } from "../../validations/users/usersValidations";
+import { userRegisterSchema } from "../../validations/usersValidations";
 
 const RegisterScreen = ({ navigation }: any) => {
   const [nome, setNome] = useState("");

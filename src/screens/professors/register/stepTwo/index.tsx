@@ -1,13 +1,15 @@
 "use client";
 
 import React, { useState } from "react";
-import { SafeAreaView, View, ScrollView, Text, TextInput } from "react-native";
 import {
-  Card,
-  Button,
-  ProgressBar,
-  MD3Colors,
-} from "react-native-paper";
+  SafeAreaView,
+  View,
+  ScrollView,
+  Text,
+  TextInput,
+  StyleSheet,
+} from "react-native";
+import { Card, Button, ProgressBar, MD3Colors } from "react-native-paper";
 
 import ListPicker from "../../../../components/atoms/ListPicker";
 import HamburgerMenu from "../../../../components/HamburgerMenu";
@@ -18,13 +20,17 @@ import { RouteParamsProps } from "../../../../types/rootStackParamList ";
 
 import { FormStyles } from "../../../../style/FormStyles";
 import { postProfessor } from "../../../../services/professors/professorService";
-import { Referencia, StatusAtividade } from "../../../../enums/professors/professorEnum";
+import {
+  Referencia,
+  StatusAtividade,
+} from "../../../../enums/professors/professorEnum";
 import { useProfessor } from "../../../../context/ProfessorContext";
+import { professorRegisterStep2Schema } from "../../../../validations/professorsRegisterValidations";
 
 export default function ProfessorFormStepTwo() {
   const navigation = useNavigation();
 
-  const { refreshProfessorsData } = useProfessor()
+  const { refreshProfessorsData } = useProfessor();
 
   const route = useRoute<RouteParamsProps<"RegisterProfessorsStepTwo">>();
   const { partialDataProfessor } = route.params;
@@ -34,10 +40,15 @@ export default function ProfessorFormStepTwo() {
   const [referencia, setReferencia] = useState("");
   const [observacoes, setObservacoes] = useState("");
   const [statusAtividade, setStatusAtividade] = useState("");
-
+  const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
 
   const handleSubmit = async () => {
     try {
+      setFieldErrors({});
+      professorRegisterStep2Schema.validateSync(
+        { lattes, referencia, observacoes, professorAtivo: statusAtividade },
+        { abortEarly: false }
+      );
       const professor = {
         lattes,
         referencia,
@@ -45,15 +56,19 @@ export default function ProfessorFormStepTwo() {
         statusAtividade,
         ...partialDataProfessor,
       };
-      console.log(professor);
 
-      await postProfessor(professor)
-      refreshProfessorsData()
+      await postProfessor(professor);
+      refreshProfessorsData();
 
       navigation.navigate("RegisterProfessorsFinished" as never);
-      //conversar com o service para enviar o objeto completo para a api 
-
     } catch (error: any) {
+      if (error.name === "ValidationError") {
+        const errors: { [key: string]: string } = {};
+        error.inner.forEach((err: any) => {
+          if (err.path) errors[err.path] = err.message;
+        });
+        setFieldErrors(errors);
+      }
       console.error(error.response.data);
     }
   };
@@ -88,20 +103,32 @@ export default function ProfessorFormStepTwo() {
 
               {/* body */}
               <Text style={FormStyles.label}>Lattes</Text>
+              {fieldErrors.lattes && (
+                <Text style={styles.errorText}>{fieldErrors.lattes}</Text>
+              )}
               <TextInput
                 placeholder="https://lattesexemplo.com"
-                style={FormStyles.input}
+                style={[
+                  FormStyles.input,
+                  fieldErrors.lattes ? styles.inputError : null,
+                ]}
                 value={lattes}
                 onChangeText={setLattes}
               />
 
               <Text style={FormStyles.label}>Referência</Text>
+              {fieldErrors.referencia && (
+                <Text style={styles.errorText}>{fieldErrors.referencia}</Text>
+              )}
               <ListPicker
                 items={Object.values(Referencia)}
                 onSelect={(ref: Referencia) => setReferencia(ref)}
               />
 
               <Text style={FormStyles.label}>Observações</Text>
+              {fieldErrors.observacoes && (
+                <Text style={styles.errorText}>{fieldErrors.observacoes}</Text>
+              )}
               <TextInput
                 placeholder="Professor de licença..."
                 style={FormStyles.input}
@@ -109,10 +136,12 @@ export default function ProfessorFormStepTwo() {
                 value={observacoes}
               />
 
-
-
               <Text style={FormStyles.label}>Professor está ativo?</Text>
-              {/* pegamos o valor do picker via uma funcao na props que nos retorna o valor selecionado ao clicar */}
+              {fieldErrors.professorAtivo && (
+                <Text style={styles.errorText}>
+                  {fieldErrors.professorAtivo}
+                </Text>
+              )}
               <ListPicker
                 items={Object.values(StatusAtividade)}
                 onSelect={(status) => setStatusAtividade(status)}
@@ -136,3 +165,17 @@ export default function ProfessorFormStepTwo() {
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  errorText: {
+    color: "red",
+    alignSelf: "flex-start",
+    marginBottom: 8,
+    marginLeft: 2,
+    fontSize: 12,
+  },
+  inputError: {
+    borderColor: "red",
+    borderWidth: 1,
+  },
+});
