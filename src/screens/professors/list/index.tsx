@@ -33,15 +33,42 @@ const ListProfessorScreen = () => {
   const [showTitulacoes, setShowTitulacoes] = useState(false);
   const [expandedRow, setExpandedRow] = useState<number | null>(null);
 
-  const navigation = useNavigation<NavigationProp>()
+  const navigation = useNavigation<NavigationProp>();
 
-  const { professors, refreshProfessorsData } = useProfessor()
+  // Adicione filterProfessorsByName ao hook do contexto
+  const { professors, refreshProfessorsData, getProfessorsByName } = useProfessor();
 
-  useEffect(() => { refreshProfessorsData() }, [])
+  useEffect(() => { refreshProfessorsData() }, []);
 
-  const handleFiltrar = () => {
-    // lógica de filtragem aqui (se quiser ajuda com isso, posso montar também)
-  };
+  const cursosSelecionados = Object.entries(cursos)
+  .filter(([_, checked]) => checked)
+  .map(([curso]) => curso);
+
+  const titulacoesSelecionadas = Object.entries(titulacoes)
+  .filter(([_, checked]) => checked)
+  .map(([tit]) => tit);
+
+  // Atualize o handleFiltrar para usar o filtro do contexto
+  const handleFiltrar = async () => {
+  const cursosSelecionados = Object.entries(cursos)
+    .filter(([_, checked]) => checked)
+    .map(([curso]) => curso);
+
+  const titulacoesSelecionadas = Object.entries(titulacoes)
+    .filter(([_, checked]) => checked)
+    .map(([tit]) => tit);
+
+  await getProfessorsByName(
+    nome,
+    cursosSelecionados,
+    titulacoesSelecionadas
+  );
+  }
+
+useEffect(() => {
+  handleFiltrar();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+}, [nome, cursos, titulacoes]);
 
   const handleImprimir = () => {
     // lógica de impressão ou exportação
@@ -92,6 +119,7 @@ const ListProfessorScreen = () => {
           onChangeText={setNome}
           style={TableStyle.input}
         />
+        
 
         <View style={TableStyle.filterRow}>
           <View style={TableStyle.filterGroup}>
@@ -216,5 +244,6 @@ ${prof.observacoes ? `📝 Observações: ${prof.observacoes}` : ""}
     </SafeAreaView>
   );
 };
+
 
 export default ListProfessorScreen;

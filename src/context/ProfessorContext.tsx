@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState, ReactNode, useCallback } from 'react'
 import { Professor } from "../types/professor"
-import { getProfessors } from '../services/professors/professorService'
+import { getProfessors, getProfessorsByName as getProfessorsByNameService } from '../services/professors/professorService'
 
 
 type ProfessorContextType = {
@@ -10,6 +10,7 @@ type ProfessorContextType = {
     loading: boolean
     refreshProfessorsData: () => void
     getProfessorById: (id: number) => Professor | undefined
+    getProfessorsByName: (nome: string, cursos: string[], titulacoes: string[]) => Promise<void>
 }
 
 export const ProfessorContext = createContext<ProfessorContextType | undefined>(undefined)
@@ -37,6 +38,20 @@ export const ProfessorProvider = ({ children }: { children: ReactNode }) => {
         }
     }, [])
 
+const getProfessorsByName = useCallback(async (nome: string, cursos: string[], titulacoes: string[]) => {
+    try {
+        const professoresData = await getProfessorsByNameService(nome, cursos, titulacoes);
+        setProfessors(professoresData);
+    } catch (error: any) {
+        const msg = error.response?.data?.mensagem;
+        if (msg === "Nenhum professor encontrado") {
+            setProfessors([]);
+        } else {
+            console.error(msg);
+        }
+    }
+}, []);
+
     const fetchDataById = (id: number): Professor | undefined => {
         return professors.find(professor => professor.id === id)
     }
@@ -46,10 +61,12 @@ export const ProfessorProvider = ({ children }: { children: ReactNode }) => {
     }, [fetchData])
 
     return (
-        <ProfessorContext.Provider value={{ professors, loading, refreshProfessorsData: fetchData, getProfessorById: fetchDataById }}>
+        <ProfessorContext.Provider value={{ professors, loading, refreshProfessorsData: fetchData, getProfessorById: fetchDataById, getProfessorsByName }}>
             {children}
         </ProfessorContext.Provider>
     )
+
+
 }
 
 export const useProfessor = () => {

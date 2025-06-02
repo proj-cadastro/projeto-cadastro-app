@@ -15,6 +15,15 @@ export const getProfessors = async () => {
     return response.data.data
 }
 
+export async function getProfessorsByName(nome: string, cursos: string[], titulacoes: string[]) {
+  const params = new URLSearchParams();
+  if (nome) params.append('nome', nome);
+  if (cursos.length) params.append('cursos', cursos.join(','));
+  if (titulacoes.length) params.append('titulacoes', titulacoes.join(','));
+
+  const response = await api.get(`/professores?${params.toString()}`);
+  return response.data?.data || [];
+}
 
 export const deleteProfessor = async (id: number) => {
     const response = await api.delete(`/professores/${id}`)
