@@ -73,7 +73,7 @@ export default function ProfessorFormStepOne() {
                 <Text style={styles.errorText}>{fieldErrors.nome}</Text>
               )}
               <TextInput
-                placeholder="value"
+                placeholder="Nome"
                 style={[
                   FormStyles.input,
                   fieldErrors.nome ? styles.inputError : null,
@@ -95,7 +95,7 @@ export default function ProfessorFormStepOne() {
                 <Text style={styles.errorText}>{fieldErrors.email}</Text>
               )}
               <TextInput
-                placeholder="value"
+                placeholder="Email"
                 style={[
                   FormStyles.input,
                   fieldErrors.email ? styles.inputError : null,
@@ -134,7 +134,7 @@ export default function ProfessorFormStepOne() {
                 <Text style={styles.errorText}>{fieldErrors.idUnidade}</Text>
               )}
               <TextInput
-                placeholder="value"
+                placeholder="Código da Unidade"
                 style={[
                   FormStyles.input,
                   fieldErrors.idUnidade ? styles.inputError : null,
