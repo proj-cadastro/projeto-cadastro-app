@@ -1,17 +1,28 @@
-# Usando a imagem do Node.js
-FROM node:18
+# Etapa 1: Imagem base com Node e dependências
+FROM node:18-slim
 
-# Definindo o diretório de trabalho dentro do container
+# Instalar dependências básicas
+RUN apt-get update && \
+    apt-get install -y python3 make g++ && \
+    apt-get clean
+
+# Instalar Expo CLI global
+RUN npm install -g expo-cli
+
+# Definir diretório de trabalho dentro do container
 WORKDIR /app
 
-# Copiando os arquivos do front-end para o container
+# Copiar apenas arquivos de dependências para instalar pacotes (melhor uso de cache)
+COPY package.json package-lock.json ./
+
+# Instalar dependências do projeto
+RUN npm install
+
+# Copiar todo o restante do projeto
 COPY . .
 
-# Instalando as dependências
-RUN npm install --legacy-peer-deps
+# Expor as portas padrão do Expo
+EXPOSE 8081 19000 19001 19002
 
-# Expondo a porta do front-end (ajuste conforme necessário)
-EXPOSE 3000
-
-# Comando para rodar a aplicação
-CMD ["npm", "start"]
+# Comando para iniciar o Expo
+CMD ["npx", "expo", "start", "--tunnel"]
