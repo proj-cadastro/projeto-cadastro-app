@@ -126,6 +126,7 @@ const styles = StyleSheet.create({
   },
   menuItemsContainer: {
     paddingBottom: 20,
+    paddingTop: 40,
   },
   separator: {
     height: 1,

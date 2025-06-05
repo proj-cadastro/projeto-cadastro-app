@@ -7,7 +7,8 @@ export const coursesRegisterSchema = Yup.object().shape({
   sigla: Yup.string()
     .required("Sigla do curso é obrigatória")
     .min(2, "Mínimo 2 caracteres"),
-  codigo: Yup.number().required("Código é obrigatório"),
+  codigo: Yup.string()
+  .required("Código é obrigatório"),
 });
 
 
