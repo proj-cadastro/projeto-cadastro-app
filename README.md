@@ -126,7 +126,7 @@ Confira a seguir uma demonstração das funcionalidades do sistema:
 <span id="arquitetura">
  
 ## 🏗️ Arquitetura do projeto
-![Arquitetura Projeto](https://github.com/leonfagundes27/Assets/blob/main/Images/arquitetura%20projeto.png)
+![Arquitetura Projeto](https://github.com/lucas-adami/sistema-de-cadastro/blob/main/Gifs%20PI/ARC%20PI.png)
  
 <span id="tecnologias">
  
