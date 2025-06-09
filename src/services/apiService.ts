@@ -5,25 +5,25 @@ import { isTokenValid } from "../utils/jwtDecode";
 import { authEventEmitter } from "../events/AuthEventEmitter";
 
 const api = axios.create({
-  baseURL: API_URL,
+  baseURL: "http://192.168.1.12:3000",
   headers: {
     "Content-Type": "application/json",
   },
 });
 
 api.interceptors.request.use(async (config) => {
-  const token = await AsyncStorage.getItem("token")
+  const token = await AsyncStorage.getItem("token");
 
   if (token) {
-    const isValid = await isTokenValid(token)
+    const isValid = await isTokenValid(token);
     if (!isValid) {
-      authEventEmitter.emit("logout")
-      console.log("Vencido")
-      throw new axios.Cancel("Token Expirado, por favor faça login")
+      authEventEmitter.emit("logout");
+      console.log("Vencido");
+      throw new axios.Cancel("Token Expirado, por favor faça login");
     }
-    config.headers.Authorization = `Bearer ${token}`
+    config.headers.Authorization = `Bearer ${token}`;
   }
-  return config
-})
+  return config;
+});
 
 export default api;
