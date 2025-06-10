@@ -36,8 +36,6 @@ export const FormStyles = StyleSheet.create({
   card: {
     backgroundColor: "#fff",
     padding: 10,
-    height: "100%",
-    flex: 1,
   },
   input: {
     borderColor: "#D9D9D9",
@@ -51,7 +49,7 @@ export const FormStyles = StyleSheet.create({
     fontWeight: "bold",
   },
   button: {
-    backgroundColor: "#444",
+    backgroundColor: "#D32719",
     width: "100%",
     borderRadius: 12,
     borderWidth: 0,
@@ -59,6 +57,6 @@ export const FormStyles = StyleSheet.create({
   goBackButton: {
     marginLeft: "auto",
     margin: 10,
-    backgroundColor: "#444",
+    backgroundColor: "#D32719",
   },
 });

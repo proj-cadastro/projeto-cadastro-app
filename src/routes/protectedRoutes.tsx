@@ -16,6 +16,7 @@ const screens = {
   RegisterProfessorsStepOne: require("../screens/professors/register/stepOne").default,
   RegisterProfessorsStepTwo: require("../screens/professors/register/stepTwo").default,
   RegisterProfessorsFinished: require("../screens/professors/register/finished").default,
+  ImportProfessors: require("../screens/professors/register/import").default,
   RegisterCursosIndex: require("../screens/courses/register").default,
   RegisterCursosStepOne: require("../screens/courses/register/stepOne").default,
   RegisterCourseStepTwo: require("../screens/courses/register/stepTwo").default,
@@ -28,9 +29,9 @@ export function ProtectedRoutes() {
   return (
     <CourseProvider>
       <ProfessorProvider>
-        <Stack.Navigator 
-        initialRouteName="Home"
-        screenOptions={{ headerShown: false }}>
+        <Stack.Navigator
+          initialRouteName="Home"
+          screenOptions={{ headerShown: false }}>
           {Object.keys(screens).map((screenName) => (
             <Stack.Screen
               key={screenName}

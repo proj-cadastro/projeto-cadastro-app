@@ -16,6 +16,7 @@ import { NavigationProp } from "../../../../routes/rootStackParamList ";
 import { FormStyles } from "../../../../style/FormStyles";
 import { Titulacao } from "../../../../enums/professors/professorEnum";
 import { professorRegisterSchema } from "../../../../validations/professorsRegisterValidations";
+import HamburgerMenu from "../../../../components/HamburgerMenu";
 
 export default function ProfessorFormStepOne() {
   const navigation = useNavigation<NavigationProp>();
@@ -55,6 +56,16 @@ export default function ProfessorFormStepOne() {
 
   return (
     <SafeAreaView style={FormStyles.safeArea}>
+      <View style={FormStyles.menuContainer}>
+        <HamburgerMenu />
+      </View>
+      <Button
+        onPress={() => navigation.goBack()}
+        style={FormStyles.goBackButton}
+        labelStyle={{ color: "white" }}
+      >
+        Voltar
+      </Button>
       <View style={FormStyles.container}>
         <ScrollView
           contentContainerStyle={FormStyles.scrollContent}
