@@ -44,7 +44,7 @@ const LoginScreen = ({ navigation }: any) => {
         setFieldErrors(errors);
       } else {
         setFieldErrors({
-          api: error.response?.data?.mensagem || "Erro ao fazer login",
+          api: error.response?.data?.erro || "Erro ao fazer login",
         });
       }
       console.error(error.response?.data?.mensagem);
