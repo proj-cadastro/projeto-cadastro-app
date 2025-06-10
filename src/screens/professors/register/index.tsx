@@ -1,37 +1,84 @@
 import React from "react";
-import { SafeAreaView, Text, StyleSheet, View } from "react-native";
+import {
+  SafeAreaView,
+  View,
+  ScrollView,
+  Text,
+  TextInput,
+  StyleSheet,
+  Image
+} from "react-native";
 import HamburgerMenu from "../../../components/HamburgerMenu";
-import ProfessorFormStepOne from "./stepOne";
+
+import { FormStyles } from "../../../style/FormStyles";
+import { Button, Card } from "react-native-paper";
+import { useNavigation } from "@react-navigation/native";
 
 const RegisterProfessorScreen = () => {
+  const navigation = useNavigation();
+
+
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.menuContainer}>
+    <SafeAreaView style={FormStyles.safeArea}>
+      <View style={FormStyles.menuContainer}>
         <HamburgerMenu />
       </View>
-      <View style={styles.content}>
-        <ProfessorFormStepOne/>
+      <View style={FormStyles.container}>
+        <ScrollView
+          contentContainerStyle={FormStyles.scrollContent}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+            <Card style={[FormStyles.card, { width: "90%" }]} mode="elevated">
+              <Card.Content>
+
+                <Image
+                  source={require("../../../../assets/professor.jpg")}
+                  style={{ width: 300, height: 200, alignSelf: "center", marginBottom: 16 }}
+                  resizeMode="contain"
+                />
+
+                <Text style={FormStyles.title}>Cadastro de Professor</Text>
+
+                <Text style={FormStyles.description}>
+                  Escolha como deseja cadastrar.
+                </Text>
+              </Card.Content>
+
+              <Card.Actions
+                style={{ flexDirection: "column", gap: 10, marginTop: 10 }}
+              >
+                <Button
+                  mode="contained"
+                  buttonColor="green"
+                  labelStyle={{ color: "white" }}
+                  style={FormStyles.button}
+                  onPress={() =>
+                    navigation.navigate("RegisterProfessorsStepOne" as never)
+                  }
+                >
+                  Cadastrar Manualmente
+                </Button>
+
+                <Button
+                  mode="contained"
+                  buttonColor="blue"
+                  labelStyle={{ color: "white" }}
+                  style={FormStyles.button}
+                  onPress={() => navigation.navigate("ImportProfessors" as never)}
+                >
+                  Importar Planilha
+                </Button>
+              </Card.Actions>
+            </Card>
+          </View>
+        </ScrollView>
+
       </View>
     </SafeAreaView>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-  },
-  menuContainer: {
-    position: "absolute",
-    top: 10,
-    left: 10,
-    zIndex: 10,
-  },
-  content: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-});
+
 
 export default RegisterProfessorScreen;
