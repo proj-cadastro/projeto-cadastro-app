@@ -13,7 +13,12 @@ export const TableStyle = StyleSheet.create({
     padding: 16,
     paddingTop: 100, // ajuste o valor conforme desejar
   },
-  title: { fontSize: 18, fontWeight: "bold", textAlign: "center", marginBottom: 16 },
+  title: {
+    fontSize: 18,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginBottom: 16,
+  },
   input: {
     borderWidth: 1,
     borderColor: "#ccc",
@@ -67,7 +72,11 @@ export const TableStyle = StyleSheet.create({
   checkboxRow: { flexDirection: "row", justifyContent: "space-between" },
   checkboxGroup: { flex: 1, marginRight: 8 },
   subtitle: { fontWeight: "bold", marginBottom: 8 },
-  checkboxContainer: { flexDirection: "row", alignItems: "center", marginBottom: 8 },
+  checkboxContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 8,
+  },
   checkbox: { marginRight: 6, fontSize: 16 },
   checked: { color: "#007bff" },
   buttonRow: {
@@ -126,5 +135,78 @@ export const TableStyle = StyleSheet.create({
     marginVertical: 24,
     fontSize: 16,
     color: "#888",
+  },
+  cardList: {
+    flexDirection: "column",
+    gap: 2,
+  },
+  card: {
+    backgroundColor: "#fff",
+    borderRadius: 8,
+    padding: 15,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+    flex: 1,
+  },
+  cardContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    borderRadius: 8,
+    overflow: "hidden",
+    backgroundColor: "#fff",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+    padding: 5,
+  },
+  cardExpanded: {
+    backgroundColor: "#e6f7ff",
+  },
+  cardTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  cardSubtitle: {
+    fontSize: 14,
+    color: "#555",
+  },
+  cardActions: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 10,
+  },
+  cardActionsContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-end",
+    gap: 10,
+    paddingHorizontal: 10,
+  },
+  actionButton: {
+    backgroundColor: "#007bff",
+    padding: 10,
+    borderRadius: 5,
+  },
+  actionText: {
+    color: "#fff",
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  editButton: {
+    backgroundColor: "#4CAF50",
+    padding: 10,
+    borderRadius: 5,
+    marginRight: 5,
+  },
+  deleteButton: {
+    backgroundColor: "#F44336",
+    padding: 10,
+    borderRadius: 5,
   },
 });

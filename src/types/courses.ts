@@ -6,5 +6,5 @@ export type Course = {
   codigo: string;
   sigla: string;
   modelo: ModeloCurso | undefined;
-  coordenadorId: number;
+  coordenadorId: number | undefined;
 };

@@ -4,9 +4,8 @@ import {
   TextInput,
   Text,
   View,
-  Button,
   ScrollView,
-  TouchableOpacity
+  TouchableOpacity,
 } from "react-native";
 import HamburgerMenu from "../../../components/HamburgerMenu";
 import { useProfessor } from "../../../context/ProfessorContext";
@@ -14,6 +13,11 @@ import { showConfirmDialog } from "../../../components/atoms/ConfirmAlert";
 import { deleteProfessor } from "../../../services/professors/professorService";
 import { useNavigation } from "@react-navigation/native";
 import { NavigationProp } from "../../../routes/rootStackParamList ";
+import {
+  GestureHandlerRootView,
+  Swipeable,
+} from "react-native-gesture-handler";
+import Icon from "react-native-vector-icons/MaterialIcons";
 
 import { TableStyle } from "../../../style/TableStyle";
 
@@ -31,32 +35,24 @@ const ListProfessorScreen = () => {
   });
   const [showCursos, setShowCursos] = useState(false);
   const [showTitulacoes, setShowTitulacoes] = useState(false);
-  const [expandedRow, setExpandedRow] = useState<number | null>(null);
+  const [expandedCard, setExpandedCard] = useState<number | null>(null);
 
-  const navigation = useNavigation<NavigationProp>()
+  const navigation = useNavigation<NavigationProp>();
 
-  const { professors, refreshProfessorsData } = useProfessor()
+  const { professors, refreshProfessorsData } = useProfessor();
 
-  useEffect(() => { refreshProfessorsData() }, [])
-
-  const handleFiltrar = () => {
-    // lógica de filtragem aqui (se quiser ajuda com isso, posso montar também)
-  };
-
-  const handleImprimir = () => {
-    // lógica de impressão ou exportação
-  };
+  useEffect(() => {
+    refreshProfessorsData();
+  }, []);
 
   const handleDelete = async (id: number) => {
     try {
-      await deleteProfessor(id)
-      refreshProfessorsData()
-      console.log(professors.length)
-
+      await deleteProfessor(id);
+      refreshProfessorsData();
     } catch (error: any) {
-      console.error(error.response.data.mensagem)
+      console.error(error.response.data.mensagem);
     }
-  }
+  };
 
   const renderCheckbox = (
     label: string,
@@ -77,143 +73,122 @@ const ListProfessorScreen = () => {
     </TouchableOpacity>
   );
 
+  const toggleCardExpansion = (id: number) => {
+    setExpandedCard((prev) => (prev === id ? null : id));
+  };
+
   return (
-    <SafeAreaView style={TableStyle.container}>
-      <View style={TableStyle.menuContainer}>
-        <HamburgerMenu />
-      </View>
-
-      <ScrollView contentContainerStyle={TableStyle.scrollContent}>
-        <Text style={TableStyle.title}>Professores</Text>
-
-        <TextInput
-          placeholder="Nome do Professor"
-          value={nome}
-          onChangeText={setNome}
-          style={TableStyle.input}
-        />
-
-        <View style={TableStyle.filterRow}>
-          <View style={TableStyle.filterGroup}>
-            <TouchableOpacity
-              onPress={() => setShowCursos((prev) => !prev)}
-            >
-              <Text style={TableStyle.filterText}>Cursos ▼</Text>
-            </TouchableOpacity>
-            {showCursos && (
-              <View style={TableStyle.submenuOverlay}>
-                <View style={TableStyle.submenu}>
-                  {Object.entries(cursos).map(([curso, checked]) =>
-                    renderCheckbox(
-                      curso,
-                      checked,
-                      (val) => setCursos((prev) => ({ ...prev, [curso]: val })),
-                      curso
-                    )
-                  )}
-                </View>
-              </View>
-            )}
-          </View>
-          <View style={TableStyle.filterGroup}>
-            <TouchableOpacity
-              onPress={() => setShowTitulacoes((prev) => !prev)}
-            >
-              <Text style={TableStyle.filterText}>Titulação ▼</Text>
-            </TouchableOpacity>
-            {showTitulacoes && (
-              <View style={TableStyle.submenuOverlay}>
-                <View style={TableStyle.submenu}>
-                  {Object.entries(titulacoes).map(([tit, checked]) =>
-                    renderCheckbox(
-                      tit,
-                      checked,
-                      (val) => setTitulacoes((prev) => ({ ...prev, [tit]: val })),
-                      tit
-                    )
-                  )}
-                </View>
-              </View>
-            )}
-          </View>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <SafeAreaView style={TableStyle.container}>
+        <View style={TableStyle.menuContainer}>
+          <HamburgerMenu />
         </View>
 
-        <View style={TableStyle.table}>
-          {professors.length === 0 ? (<Text style={TableStyle.emptyText}>Nenhum Professor Encontrado</Text>) : (
-            <>
-              <View style={TableStyle.tableHeader}>
-                <Text style={TableStyle.headerCell}>Nome</Text>
-                <Text style={TableStyle.headerCell}>E-mail</Text>
-                <Text style={TableStyle.headerCell}>Titulação</Text>
-              </View>
+        <ScrollView contentContainerStyle={TableStyle.scrollContent}>
+          <Text style={TableStyle.title}>Professores</Text>
 
-              {professors.map((prof, idx) => (
-                <View key={idx}>
+          <TextInput
+            placeholder="Nome do Professor"
+            value={nome}
+            onChangeText={setNome}
+            style={TableStyle.input}
+          />
+
+          <View style={TableStyle.filterRow}>
+            <View style={TableStyle.filterGroup}>
+              <TouchableOpacity onPress={() => setShowCursos((prev) => !prev)}>
+                <Text style={TableStyle.filterText}>Cursos ▼</Text>
+              </TouchableOpacity>
+              {showCursos && (
+                <View style={TableStyle.submenuOverlay}>
+                  <View style={TableStyle.submenu}>
+                    {Object.entries(cursos).map(([curso, checked]) =>
+                      renderCheckbox(
+                        curso,
+                        checked,
+                        (val) =>
+                          setCursos((prev) => ({ ...prev, [curso]: val })),
+                        curso
+                      )
+                    )}
+                  </View>
+                </View>
+              )}
+            </View>
+            <View style={TableStyle.filterGroup}>
+              <TouchableOpacity
+                onPress={() => setShowTitulacoes((prev) => !prev)}
+              >
+                <Text style={TableStyle.filterText}>Titulação ▼</Text>
+              </TouchableOpacity>
+              {showTitulacoes && (
+                <View style={TableStyle.submenuOverlay}>
+                  <View style={TableStyle.submenu}>
+                    {Object.entries(titulacoes).map(([tit, checked]) =>
+                      renderCheckbox(
+                        tit,
+                        checked,
+                        (val) =>
+                          setTitulacoes((prev) => ({ ...prev, [tit]: val })),
+                        tit
+                      )
+                    )}
+                  </View>
+                </View>
+              )}
+            </View>
+          </View>
+
+          <View style={TableStyle.cardList}>
+            {professors.length === 0 ? (
+              <Text style={TableStyle.emptyText}>
+                Nenhum Professor Encontrado
+              </Text>
+            ) : (
+              professors.map((prof, idx) => (
+                <View key={idx} style={TableStyle.cardContainer}>
                   <TouchableOpacity
-                    style={TableStyle.tableRow}
-                    onPress={() => setExpandedRow(expandedRow === idx ? null : idx)}
-                    activeOpacity={0.7}
+                    onPress={() => prof.id && toggleCardExpansion(prof.id)}
+                    style={TableStyle.card}
                   >
-                    <Text style={TableStyle.cell}>{prof.nome}</Text>
-                    <Text style={TableStyle.cell}>{prof.email}</Text>
-                    <Text style={TableStyle.cell}>{prof.titulacao}</Text>
+                    <Text style={TableStyle.cardTitle}>{prof.nome}</Text>
+                    <Text style={TableStyle.cardSubtitle}>{prof.email}</Text>
+                    <Text style={TableStyle.cardSubtitle}>
+                      {prof.titulacao}
+                    </Text>
                   </TouchableOpacity>
-                  {expandedRow === idx && (
-                    <View style={TableStyle.optionsRow}>
+                  {expandedCard === prof.id && (
+                    <View style={TableStyle.cardActionsContainer}>
                       <TouchableOpacity
-                        style={TableStyle.cleanOptionBtn}
+                        style={[TableStyle.actionButton, TableStyle.editButton]}
                         onPress={() => {
-                          const detalhes =
-`
-👨‍🏫 Nome: ${prof.nome}
-✉️ Email: ${prof.email}
-🎓 Titulação: ${prof.titulacao}
-#️⃣ Id Unidade de Ensino: ${prof.idUnidade}
-⚙️ Referência: ${prof.referencia}
-🔗 Lattes: ${prof.lattes}
-🚦 Status: ${prof.statusAtividade}
-${prof.observacoes ? `📝 Observações: ${prof.observacoes}` : ""}
-`
-                          alert(detalhes);
+                          if (prof.id) navigation.navigate(`EditProfessors`, { id: prof.id });
                         }}
                       >
-                        <Text style={TableStyle.cleanOptionText}>🔎 Ver mais</Text>
+                        <Icon name="edit" size={24} color="#fff" />
                       </TouchableOpacity>
                       <TouchableOpacity
-                        style={TableStyle.cleanOptionBtn}
-                        onPress={() => {
-                          if (prof.id)
-                            navigation.navigate(`EditProfessors`, { id: prof.id })
-                        }}
-                      >
-                        <Text style={TableStyle.cleanOptionText}>📝 Editar</Text>
-                      </TouchableOpacity>
-
-                      <TouchableOpacity
-                        style={TableStyle.cleanOptionBtn}
+                        style={[TableStyle.actionButton, TableStyle.deleteButton]}
                         onPress={() =>
                           showConfirmDialog({
                             message: `Deseja realmente excluir ${prof.nome}?`,
-                            onConfirm: () => { if (prof.id) handleDelete(prof.id) },
-                          })}
+                            onConfirm: () => {
+                              if (prof.id) handleDelete(prof.id);
+                            },
+                          })
+                        }
                       >
-                        <Text style={TableStyle.cleanOptionText}>🗑️ Remover</Text>
+                        <Icon name="delete" size={24} color="#fff" />
                       </TouchableOpacity>
                     </View>
                   )}
-
                 </View>
               ))
-              }
-              <View style={TableStyle.printButtonContainer}>
-                <Button title="Imprimir 🖨️" onPress={handleImprimir} color="#6c757d" />
-              </View>
-            </>
-          )}
-
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+            )}
+          </View>
+        </ScrollView>
+      </SafeAreaView>
+    </GestureHandlerRootView>
   );
 };
 

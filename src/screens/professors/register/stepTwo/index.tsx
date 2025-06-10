@@ -8,6 +8,10 @@ import {
   Text,
   TextInput,
   StyleSheet,
+  KeyboardAvoidingView,
+  Platform,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from "react-native";
 import { Card, Button, ProgressBar, MD3Colors } from "react-native-paper";
 
@@ -35,7 +39,6 @@ export default function ProfessorFormStepTwo() {
   const route = useRoute<RouteParamsProps<"RegisterProfessorsStepTwo">>();
   const { partialDataProfessor } = route.params;
 
-  //necessário conferir os reqs da api, para ver se está batendo com o que estamos armazenando...
   const [lattes, setLattes] = useState("");
   const [referencia, setReferencia] = useState("");
   const [observacoes, setObservacoes] = useState("");
@@ -74,95 +77,106 @@ export default function ProfessorFormStepTwo() {
   };
 
   return (
-    <SafeAreaView style={FormStyles.safeArea}>
-      <View style={FormStyles.menuContainer}>
-        <HamburgerMenu />
-      </View>
-      <Button
-        mode="outlined"
-        onPress={() => navigation.goBack()}
-        style={FormStyles.goBackButton}
-        labelStyle={{ color: "white" }}
-      >
-        Voltar
-      </Button>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <SafeAreaView style={FormStyles.safeArea}>
+          <View style={FormStyles.menuContainer}>
+            <HamburgerMenu />
+          </View>
+          <Button
+            mode="outlined"
+            onPress={() => navigation.goBack()}
+            style={FormStyles.goBackButton}
+            labelStyle={{ color: "white" }}
+          >
+            Voltar
+          </Button>
 
-      <View style={FormStyles.container}>
-        <ScrollView
-          contentContainerStyle={FormStyles.scrollContent}
-          keyboardShouldPersistTaps="handled"
-        >
-          <Card style={[FormStyles.card]} mode="elevated">
-            <Card.Content>
-              {/* header */}
-              <Text style={FormStyles.title}>2º Etapa</Text>
+          <View style={FormStyles.container}>
+            <ScrollView
+              contentContainerStyle={FormStyles.scrollContent}
+              keyboardShouldPersistTaps="handled"
+            >
+              <Card style={[FormStyles.card]} mode="elevated">
+                <Card.Content>
+                  {/* header */}
+                  <Text style={FormStyles.title}>2º Etapa</Text>
 
-              <Text style={FormStyles.description}>
-                Insira os dados do professor para registrá-lo no sistema
-              </Text>
+                  <Text style={FormStyles.description}>
+                    Insira os dados do professor para registrá-lo no sistema
+                  </Text>
 
-              {/* body */}
-              <Text style={FormStyles.label}>Lattes</Text>
-              {fieldErrors.lattes && (
-                <Text style={styles.errorText}>{fieldErrors.lattes}</Text>
-              )}
-              <TextInput
-                placeholder="https://lattesexemplo.com"
-                style={[
-                  FormStyles.input,
-                  fieldErrors.lattes ? styles.inputError : null,
-                ]}
-                value={lattes}
-                onChangeText={setLattes}
-              />
+                  {/* body */}
+                  <Text style={FormStyles.label}>Lattes</Text>
+                  {fieldErrors.lattes && (
+                    <Text style={styles.errorText}>{fieldErrors.lattes}</Text>
+                  )}
+                  <TextInput
+                    placeholder="https://lattesexemplo.com"
+                    style={[
+                      FormStyles.input,
+                      fieldErrors.lattes ? styles.inputError : null,
+                    ]}
+                    value={lattes}
+                    onChangeText={setLattes}
+                  />
 
-              <Text style={FormStyles.label}>Referência</Text>
-              {fieldErrors.referencia && (
-                <Text style={styles.errorText}>{fieldErrors.referencia}</Text>
-              )}
-              <ListPicker
-                items={Object.values(Referencia)}
-                onSelect={(ref: Referencia) => setReferencia(ref)}
-              />
+                  <Text style={FormStyles.label}>Referência</Text>
+                  {fieldErrors.referencia && (
+                    <Text style={styles.errorText}>
+                      {fieldErrors.referencia}
+                    </Text>
+                  )}
+                  <ListPicker
+                    items={Object.values(Referencia)}
+                    onSelect={(ref: Referencia) => setReferencia(ref)}
+                  />
 
-              <Text style={FormStyles.label}>Observações</Text>
-              {fieldErrors.observacoes && (
-                <Text style={styles.errorText}>{fieldErrors.observacoes}</Text>
-              )}
-              <TextInput
-                placeholder="Professor de licença..."
-                style={FormStyles.input}
-                onChangeText={setObservacoes}
-                value={observacoes}
-              />
+                  <Text style={FormStyles.label}>Observações</Text>
+                  {fieldErrors.observacoes && (
+                    <Text style={styles.errorText}>
+                      {fieldErrors.observacoes}
+                    </Text>
+                  )}
+                  <TextInput
+                    placeholder="Professor de licença..."
+                    style={FormStyles.input}
+                    onChangeText={setObservacoes}
+                    value={observacoes}
+                  />
 
-              <Text style={FormStyles.label}>Professor está ativo?</Text>
-              {fieldErrors.professorAtivo && (
-                <Text style={styles.errorText}>
-                  {fieldErrors.professorAtivo}
-                </Text>
-              )}
-              <ListPicker
-                items={Object.values(StatusAtividade)}
-                onSelect={(status) => setStatusAtividade(status)}
-              />
-            </Card.Content>
+                  <Text style={FormStyles.label}>Professor está ativo?</Text>
+                  {fieldErrors.professorAtivo && (
+                    <Text style={styles.errorText}>
+                      {fieldErrors.professorAtivo}
+                    </Text>
+                  )}
+                  <ListPicker
+                    items={Object.values(StatusAtividade)}
+                    onSelect={(status) => setStatusAtividade(status)}
+                  />
+                </Card.Content>
 
-            <Card.Actions>
-              <Button
-                labelStyle={{ color: "white" }}
-                style={FormStyles.button}
-                onPress={handleSubmit}
-              >
-                Finalizar
-              </Button>
-            </Card.Actions>
+                <Card.Actions>
+                  <Button
+                    labelStyle={{ color: "white" }}
+                    style={FormStyles.button}
+                    onPress={handleSubmit}
+                  >
+                    Finalizar
+                  </Button>
+                </Card.Actions>
 
-            <ProgressBar progress={0.8} color={MD3Colors.neutral40} />
-          </Card>
-        </ScrollView>
-      </View>
-    </SafeAreaView>
+                <ProgressBar progress={0.8} color={MD3Colors.neutral40} />
+              </Card>
+            </ScrollView>
+          </View>
+        </SafeAreaView>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 }
 

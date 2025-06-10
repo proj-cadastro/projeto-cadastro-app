@@ -11,6 +11,7 @@ import {
   Platform,
   Keyboard,
   TouchableWithoutFeedback,
+  ActivityIndicator,
 } from "react-native";
 import { login as loginService } from "../../services/users/authService";
 import { userLoginSchema } from "../../validations/usersValidations";
@@ -20,11 +21,14 @@ const LoginScreen = ({ navigation }: any) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
+  const [isLoading, setIsLoading] = useState(false);
   const { login: authLogin } = useAuth();
 
   const handleLogin = async () => {
+    setFieldErrors({});
+    setIsLoading(true); // Ativa o estado de loading
     try {
-      setFieldErrors({});
+      await new Promise((resolve) => setTimeout(resolve, 2000)); // Timeout de 2 segundos
       await userLoginSchema.validate(
         { email, senha: password },
         { abortEarly: false }
@@ -43,7 +47,9 @@ const LoginScreen = ({ navigation }: any) => {
           api: error.response?.data?.mensagem || "Erro ao fazer login",
         });
       }
-      console.error(error.response.data.mensagem);
+      console.error(error.response?.data?.mensagem);
+    } finally {
+      setIsLoading(false); // Desativa o estado de loading
     }
   };
 
@@ -84,9 +90,17 @@ const LoginScreen = ({ navigation }: any) => {
             <Text style={styles.errorText}>{fieldErrors.api}</Text>
           )}
 
-          <TouchableOpacity style={styles.button} onPress={handleLogin}>
-            <Text style={styles.buttonText}>Entrar</Text>
-          </TouchableOpacity>
+          {isLoading ? (
+            <ActivityIndicator
+              size="large"
+              color="#007BFF"
+              style={{ marginBottom: 20 }}
+            />
+          ) : (
+            <TouchableOpacity style={styles.button} onPress={handleLogin}>
+              <Text style={styles.buttonText}>Entrar</Text>
+            </TouchableOpacity>
+          )}
 
           <TouchableOpacity onPress={() => navigation.navigate("Register")}>
             <Text style={styles.link}>Não tem uma conta? Cadastre-se aqui</Text>
@@ -153,6 +167,11 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     marginLeft: 2,
     fontSize: 12,
+  },
+  loadingText: {
+    color: "#000",
+    fontSize: 16,
+    marginBottom: 20,
   },
 });
 

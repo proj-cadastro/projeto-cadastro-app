@@ -16,6 +16,7 @@ import { showConfirmDialog } from "../../../components/atoms/ConfirmAlert";
 import { NavigationProp } from "../../../routes/rootStackParamList ";
 import { useNavigation } from "@react-navigation/native";
 import { TableStyle } from "../../../style/TableStyle";
+import Icon from "react-native-vector-icons/MaterialIcons";
 
 import { useProfessor } from "../../../context/ProfessorContext";
 
@@ -33,6 +34,7 @@ const ListCoursesScreen = () => {
   });
   const [showModalidades, setShowModalidades] = useState(false);
   const [expandedRow, setExpandedRow] = useState<number | null>(null);
+  const [expandedCard, setExpandedCard] = useState<number | null>(null);
 
   const { courses, refreshCoursesData } = useCourse()
   const { getProfessorById } = useProfessor()
@@ -77,6 +79,12 @@ const ListCoursesScreen = () => {
     </TouchableOpacity>
   );
 
+  const toggleCardExpansion = (id: number | undefined) => {
+    if (id !== undefined) {
+      setExpandedCard((prev) => (prev === id ? null : id));
+    }
+  };
+
   return (
     <SafeAreaView style={TableStyle.container}>
       <View style={TableStyle.menuContainer}>
@@ -115,73 +123,48 @@ const ListCoursesScreen = () => {
           </View>
         </View>
 
-        <View style={TableStyle.table}>
-          {courses.length === 0 ? (<Text style={TableStyle.emptyText}>Nenhum Curso Encontrado</Text>) : (
-            <>
-              <View style={TableStyle.tableHeader}>
-                <Text style={TableStyle.headerCell}>Nome</Text>
-                <Text style={TableStyle.headerCell}>Sigla</Text>
-                <Text style={TableStyle.headerCell}>Código</Text>
-              </View>
-
-              {courses.map((curso, idx) => (
-                <View key={idx}>
+        <View style={TableStyle.cardList}>
+          {courses.length === 0 ? (
+            <Text style={TableStyle.emptyText}>Nenhum Curso Encontrado</Text>
+          ) : (
+            courses.map((curso, idx) => (
+              <View key={idx} style={TableStyle.cardContainer}>
+                {curso.id && (
                   <TouchableOpacity
-                    style={TableStyle.tableRow}
-                    onPress={() => setExpandedRow(expandedRow === idx ? null : idx)}
-                    activeOpacity={0.7}
+                    onPress={() => toggleCardExpansion(curso.id)}
+                    style={TableStyle.card}
                   >
-                    <Text style={TableStyle.cell}>{curso.nome}</Text>
-                    <Text style={TableStyle.cell}>{curso.sigla}</Text>
-                    <Text style={TableStyle.cell}>{curso.codigo}</Text>
+                    <Text style={TableStyle.cardTitle}>{curso.nome}</Text>
+                    <Text style={TableStyle.cardSubtitle}>{curso.sigla}</Text>
+                    <Text style={TableStyle.cardSubtitle}>{curso.codigo}</Text>
                   </TouchableOpacity>
-                  {expandedRow === idx && (
-                    <View style={TableStyle.optionsRow}>
-                      <TouchableOpacity
-                        style={TableStyle.cleanOptionBtn}
-
-                        onPress={() => {
-                          const coordenador = getProfessorById(curso.coordenadorId)
-                          const detalhes =
-`
-🔠 Nome: ${curso.nome}
-🔤 Sigla: ${curso.sigla}
-#️⃣ Código: ${curso.codigo}
-🧩 Modelo: ${curso.modelo}
-🧑‍🏫 Coordenador: ${coordenador?.nome || "Não informado"}
-`;
-                          alert(detalhes)
-                        }}
-
-                      >
-                        <Text style={TableStyle.cleanOptionText}>🔎 Ver mais</Text>
-                      </TouchableOpacity>
-                      <TouchableOpacity
-                        style={TableStyle.cleanOptionBtn}
-                        onPress={() => { if (curso.id) navigation.navigate("EditCourses", { id: curso.id }) }}
-                      >
-                        <Text style={TableStyle.cleanOptionText}>📝 Editar</Text>
-
-                      </TouchableOpacity>
-                      <TouchableOpacity
-                        style={TableStyle.cleanOptionBtn}
-                        onPress={() =>
-                          showConfirmDialog({
-                            message: `Deseja realmente excluir ${curso.nome}?`,
-                            onConfirm: () => { if (curso.id) handleDelete(curso.id) },
-                          })}
-                      >
-                        <Text style={TableStyle.cleanOptionText}>🗑️ Remover</Text>
-                      </TouchableOpacity>
-                    </View>
-                  )}
-                </View>
-              ))}
-              <View style={TableStyle.printButtonContainer}>
-                <Button title="Imprimir 🖨️" onPress={handleImprimir} color="#6c757d" />
+                )}
+                {expandedCard === curso.id && (
+                  <View style={TableStyle.cardActionsContainer}>
+                    <TouchableOpacity
+                      style={[TableStyle.actionButton, TableStyle.editButton]}
+                      onPress={() => curso.id && navigation.navigate("EditCourses", { id: curso.id })}
+                    >
+                      <Icon name="edit" size={24} color="#fff" />
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={[TableStyle.actionButton, TableStyle.deleteButton]}
+                      onPress={() =>
+                        showConfirmDialog({
+                          message: `Deseja realmente excluir ${curso.nome}?`,
+                          onConfirm: () => {
+                            if (curso.id) handleDelete(curso.id);
+                          },
+                        })
+                      }
+                    >
+                      <Icon name="delete" size={24} color="#fff" />
+                    </TouchableOpacity>
+                  </View>
+                )}
               </View>
-            </>)}
-
+            ))
+          )}
         </View>
 
 
