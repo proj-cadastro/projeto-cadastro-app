@@ -16,3 +16,13 @@ export const userRegisterSchema = Yup.object().shape({
     .required("Senha é obrigatória")
     .min(8, "Senha deve ter pelo menos 8 caracteres"),
 });
+
+export const userEmailSchema = Yup.object().shape({
+  email: Yup.string().required("E-mail é obrigatório").email("E-mail inválido"),
+})
+
+export const userPasswordSchema = Yup.object().shape({
+  senha: Yup.string()
+    .required("Senha é obrigatória")
+    .min(8, "Senha deve ter pelo menos 8 caracteres"),
+})

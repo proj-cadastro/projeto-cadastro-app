@@ -11,3 +11,9 @@ export async function signUp(data: UserData) {
   return response.data;
 }
 
+export async function updateUser(data: Partial<UserData>, id: string) {
+  const response = await api.put(`/usuario/${id}`, data)
+
+  return response.data
+}
+
