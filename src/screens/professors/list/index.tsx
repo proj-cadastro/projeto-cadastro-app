@@ -162,13 +162,32 @@ const ListProfessorScreen = () => {
                       <TouchableOpacity
                         style={[TableStyle.actionButton, TableStyle.editButton]}
                         onPress={() => {
-                          if (prof.id) navigation.navigate(`EditProfessors`, { id: prof.id });
+                          if (prof.id)
+                            navigation.navigate('EditProfessors', {
+                              id: prof.id,
+                            });
                         }}
                       >
                         <Icon name="edit" size={24} color="#fff" />
                       </TouchableOpacity>
                       <TouchableOpacity
-                        style={[TableStyle.actionButton, TableStyle.deleteButton]}
+                        style={[
+                          TableStyle.actionButton,
+                          { backgroundColor: "#007bff", justifyContent: "center", alignItems: "center" },
+                        ]}
+                        onPress={() => {
+                          if (prof.id !== undefined) {
+                            navigation.navigate('DetailsProfessors', { id: prof.id });
+                          }
+                        }}
+                      >
+                        <Icon name="add" size={24} color="#fff" />
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        style={[
+                          TableStyle.actionButton,
+                          TableStyle.deleteButton,
+                        ]}
                         onPress={() =>
                           showConfirmDialog({
                             message: `Deseja realmente excluir ${prof.nome}?`,

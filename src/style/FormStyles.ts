@@ -43,6 +43,7 @@ export const FormStyles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 8,
     padding: 10,
+    width: "100%"
   },
   label: {
     fontSize: 17,

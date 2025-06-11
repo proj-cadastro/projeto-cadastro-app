@@ -5,6 +5,7 @@ import Chart from "../../components/Chart";
 import { useProfessor } from "../../context/ProfessorContext";
 import { groupByTitulacao } from "../../utils/filterUtilities";
 
+
 const HomeScreen = () => {
 
   const { professors } = useProfessor()

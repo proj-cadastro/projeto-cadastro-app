@@ -3,6 +3,10 @@ import HamburgerMenu from "../../../../components/HamburgerMenu"
 import { FormStyles } from "../../../../style/FormStyles"
 import { Button, Card } from "react-native-paper"
 import { useNavigation } from "@react-navigation/native"
+import { MotiView } from "moti"
+
+import LottieView from 'lottie-react-native';
+
 
 
 const ImportProfessors = () => {
@@ -24,11 +28,20 @@ const ImportProfessors = () => {
                 </Button>
                 <Card style={[FormStyles.card]} mode="elevated">
                     <Card.Content>
-                        <Image
-                            source={require("../../../../../assets/excel.jpg")}
-                            style={{ width: "100%", height: 100, alignSelf: "center", marginBottom: 16, borderRadius: 15 }}
 
+
+                        <LottieView
+                            source={require("../../../../../assets/animation2.json")}
+                            autoPlay
+                            loop
+                            style={{
+                                width: "100%",
+                                height: 150, // ou a altura que quiser
+                                alignSelf: "center",
+                                marginBottom: 16,
+                            }}
                         />
+
 
                         <Text style={FormStyles.title}>Importar Planilha</Text>
 

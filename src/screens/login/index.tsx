@@ -44,7 +44,7 @@ const LoginScreen = ({ navigation }: any) => {
         setFieldErrors(errors);
       } else {
         setFieldErrors({
-          api: error.response?.data?.mensagem || "Erro ao fazer login",
+          api: error.response?.data?.erro || "Erro ao fazer login",
         });
       }
       console.error(error.response?.data?.mensagem);
@@ -100,7 +100,12 @@ const LoginScreen = ({ navigation }: any) => {
             <TouchableOpacity style={styles.button} onPress={handleLogin}>
               <Text style={styles.buttonText}>Entrar</Text>
             </TouchableOpacity>
+
           )}
+          <TouchableOpacity onPress={() => navigation.navigate("ForgetPasswordStepOne")}>
+            <Text style={styles.link} onPress={() => navigation.navigate("ForgetPasswordStepOne")}>Esqueceu sua senha?</Text>
+          </TouchableOpacity>
+
 
           <TouchableOpacity onPress={() => navigation.navigate("Register")}>
             <Text style={styles.link}>Não tem uma conta? Cadastre-se aqui</Text>

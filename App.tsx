@@ -1,3 +1,6 @@
+import 'react-native-reanimated'
+import 'react-native-gesture-handler'
+
 import React, { useState } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -22,6 +25,7 @@ const PublicScreens = {
   Login: require("./src/screens/login").default,
   Register: require("./src/screens/register").default,
   Loading: require("./src/screens/loading").default,
+
 };
 
 const Stack = createNativeStackNavigator();
@@ -70,10 +74,10 @@ export default function App() {
   if (!fontsLoaded) {
     return <ActivityIndicator style={{ flex: 1 }} />;
   }
-{/* AuthListener Verifica se o evento global de ordem de logout foi lançado */}
+  {/* AuthListener Verifica se o evento global de ordem de logout foi lançado */ }
   return (
     <AuthProvider>
-      <AuthListener/> 
+      <AuthListener />
       <PaperProvider theme={theme}>
         <NavigationContainer>
           <Routes />
@@ -90,6 +94,8 @@ function Routes() {
     Login: require("./src/screens/login").default,
     Register: require("./src/screens/register").default,
     Loading: require("./src/screens/loading").default,
+    ForgetPasswordStepOne: require("./src/screens/forgetPassword/stepOne").default,
+    ForgetPasswordStepTwo: require("./src/screens/forgetPassword/stepTwo").default
   };
 
   const Stack = createNativeStackNavigator();
