@@ -95,7 +95,8 @@ function Routes() {
     Register: require("./src/screens/register").default,
     Loading: require("./src/screens/loading").default,
     ForgetPasswordStepOne: require("./src/screens/forgetPassword/stepOne").default,
-    ForgetPasswordStepTwo: require("./src/screens/forgetPassword/stepTwo").default
+    ForgetPasswordStepTwo: require("./src/screens/forgetPassword/stepTwo").default,
+    ForgetPasswordStepThree: require("./src/screens/forgetPassword/stepThree").default
   };
 
   const Stack = createNativeStackNavigator();

@@ -7,34 +7,39 @@ import { FormStyles } from "../../../style/FormStyles";
 import { Card, Button } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
 import { useState } from "react";
+import { updateUser } from "../../../services/users/userService";
+import { userPasswordSchema } from "../../../validations/usersValidations";
 
-import { OtpInput } from "react-native-otp-entry";
-import { compareCode } from "../../../services/users/authService";
-
-
-
-const ForgetPasswordStepTwo = () => {
-    const navigation = useNavigation()
-
-    const [code, setCode] = useState("")
-    const [loading, setLoading] = useState(false);
+const ForgetPasswordStepThree = () => {
+    const [password, setPassword] = useState("")
+    const [confirmPassword, setConfirmPassword] = useState("")
 
     const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
+    const [loading, setLoading] = useState(false)
+
+    const navigation = useNavigation()
 
     const handleSubmit = async () => {
         setFieldErrors({});
-        setLoading(true);
-
-        await new Promise((resolve) => setTimeout(resolve, 2000)); // Timeout de 2 segundos
+        setLoading(true)
 
         try {
-            await compareCode(code)
+            // Verifica se as senhas são diferentes
+            if (password !== confirmPassword) {
+                setFieldErrors({ senha: "Senhas não são iguais." });
+                return;
+            }
 
-            navigation.navigate("ForgetPasswordStepThree" as never)
+            // Valida a senha com schema do Yup
+            await userPasswordSchema.validate({ password }, { abortEarly: false });
+
+            // Chama o serviço para atualizar a senha
+            // await updateUser({ senha: password });
+
+            // Navega de volta para o login após sucesso
+            navigation.navigate("Login" as never);
 
         } catch (error: any) {
-            console.log(error.response?.data?.mensagem || error.message);
-
             if (error.name === "ValidationError") {
                 const errors: { [key: string]: string } = {};
                 error.inner.forEach((err: any) => {
@@ -43,11 +48,12 @@ const ForgetPasswordStepTwo = () => {
                 setFieldErrors(errors);
             } else {
                 setFieldErrors({
-                    api: error.response?.data?.mensagem || "Erro ao seguir com a recuperação de senha",
+                    api: error.response?.data?.erro || "Erro ao fazer login",
                 });
             }
+            console.error(error.response?.data?.mensagem || error.message);
         } finally {
-            setLoading(false);
+            setLoading(false); // Desativa o estado de loading
         }
     }
 
@@ -66,25 +72,38 @@ const ForgetPasswordStepTwo = () => {
                             resizeMode="contain"
                         />
 
+
                         <Text style={FormStyles.title}>Recuperar Senha</Text>
                         <Text style={FormStyles.description}>
-                            Insira o código enviado no seu e-mail
+                            Cadastre sua nova senha!
                         </Text>
 
+                        {/* Mensagens de erro */}
+                        {fieldErrors.senha && (
+                            <Text style={styles.errorText}>{fieldErrors.senha}</Text>
+                        )}
                         {fieldErrors.api && (
                             <Text style={styles.errorText}>{fieldErrors.api}</Text>
                         )}
-                        <OtpInput
-                            numberOfDigits={6}
-                            onTextChange={(text) => console.log(text)}
-                            placeholder="******"
-                            blurOnFilled={true}
-                            autoFocus={false}
-                            onFilled={(text) => setCode(text)}
-
+                        <Text>Senha</Text>
+                        <TextInput
+                            placeholder="Senha"
+                            secureTextEntry
+                            style={[FormStyles.input, { width: "100%" }]}
+                            value={password}
+                            onChangeText={(text) => setPassword(text)}
                         />
 
+                        <Text>Confirmar Senha</Text>
+                        <TextInput
+                            placeholder="Confirmar nova senha"
+                            secureTextEntry
+                            style={[FormStyles.input, { width: "100%" }]}
+                            value={confirmPassword}
+                            onChangeText={(text) => setConfirmPassword(text)}
+                        />
 
+                        {/* Botão ou carregamento */}
                         {loading ? (
                             <ActivityIndicator
                                 size="large"
@@ -96,27 +115,16 @@ const ForgetPasswordStepTwo = () => {
                                 mode="contained"
                                 buttonColor="blue"
                                 labelStyle={{ color: "white" }}
-                                style={[FormStyles.button, { marginTop: 30 }]}
+                                style={[FormStyles.button, { marginTop: 20 }]}
                                 onPress={handleSubmit}
                             >
-                                Verificar
+                                Concluir
                             </Button>
                         )}
-                        <Button
-                            onPress={() => navigation.navigate("Login" as never)}
-                            style={[FormStyles.button, { marginTop: 10, backgroundColor: "transparent" }]}
-                            labelStyle={{ color: "black" }}
-                        >
-                            Cancelar
-                        </Button>
-
                     </Card.Content>
-
                 </Card>
             </View>
-
         </KeyboardAvoidingView>
-
     )
 }
 
@@ -141,5 +149,4 @@ const styles = StyleSheet.create({
     },
 });
 
-
-export default ForgetPasswordStepTwo
+export default ForgetPasswordStepThree;
