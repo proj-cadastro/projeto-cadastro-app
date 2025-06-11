@@ -17,6 +17,7 @@ const screens = {
   RegisterProfessorsStepTwo: require("../screens/professors/register/stepTwo").default,
   RegisterProfessorsFinished: require("../screens/professors/register/finished").default,
   ImportProfessors: require("../screens/professors/register/import").default,
+  DetailsProfessors: require("../screens/professors/details").default,
   RegisterCursosIndex: require("../screens/courses/register").default,
   RegisterCursosStepOne: require("../screens/courses/register/stepOne").default,
   RegisterCourseStepTwo: require("../screens/courses/register/stepTwo").default,

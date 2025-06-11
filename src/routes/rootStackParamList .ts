@@ -18,8 +18,12 @@ export type RootStackParamList = {
   };
 
   EditProfessors: {
-    id: number
+    id: number 
   }
+
+  DetailsProfessors: {
+    id: number;
+  };
   //##
 
   //Rotas de Curso
