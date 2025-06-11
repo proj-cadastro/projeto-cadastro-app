@@ -1,7 +1,6 @@
 // src/routes/ProtectedRoutes.tsx
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { Screens } from "../types/screens";
 import { CourseProvider } from "../context/CourseContext";
 import { ProfessorProvider } from "../context/ProfessorContext";
 

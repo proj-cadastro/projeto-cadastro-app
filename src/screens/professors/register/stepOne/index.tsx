@@ -148,6 +148,7 @@ export default function ProfessorFormStepOne() {
                 placeholder="value"
                 style={[
                   FormStyles.input,
+                  {width: "100%"},
                   fieldErrors.idUnidade ? styles.inputError : null,
                 ]}
                 onChangeText={(text) => {

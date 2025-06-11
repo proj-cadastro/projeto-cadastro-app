@@ -30,6 +30,7 @@ const RegisterProfessorScreen = () => {
         >
           <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
             <Card style={[FormStyles.card, { width: "90%" }]} mode="elevated">
+
               <Card.Content>
 
                 <Image
