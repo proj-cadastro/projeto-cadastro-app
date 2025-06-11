@@ -1,7 +1,16 @@
 import React, { useState } from "react";
-import { View, TouchableOpacity, Text, Modal, StyleSheet, ScrollView } from "react-native";
+import {
+  View,
+  TouchableOpacity,
+  Text,
+  Modal,
+  StyleSheet,
+  ScrollView,
+  Image
+} from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useAuth } from "../context/AuthContext";
+import Icon from "react-native-vector-icons/MaterialIcons"; // 👈 Importando ícones
 
 export default function HamburgerMenu() {
   const [visible, setVisible] = useState(false);
@@ -32,6 +41,16 @@ export default function HamburgerMenu() {
         >
           <View style={styles.menu}>
             <ScrollView contentContainerStyle={styles.menuItemsContainer}>
+
+              <View style={styles.logoContainer}>
+              <Image
+                source={require("../../assets/logo_fatec_cor.png")}
+                style={styles.logo}
+                resizeMode="contain"
+              />
+            </View>
+
+
               {/* Item solto */}
               <TouchableOpacity
                 style={styles.menuItem}
@@ -40,7 +59,10 @@ export default function HamburgerMenu() {
                   navigation.navigate("Home" as never);
                 }}
               >
-                <Text style={styles.menuText}>Início</Text>
+                <View style={styles.iconRow}>
+                  <Icon name="home" size={20} style={styles.iconItem} />
+                  <Text style={styles.menuText}>Início</Text>
+                </View>
               </TouchableOpacity>
 
               {/* Separador */}
@@ -49,6 +71,7 @@ export default function HamburgerMenu() {
               {/* Seção Professor */}
               <View style={styles.categoryContainer}>
                 <Text style={styles.categoryLabel}>Professor</Text>
+
                 <TouchableOpacity
                   style={styles.menuItem}
                   onPress={() => {
@@ -56,8 +79,12 @@ export default function HamburgerMenu() {
                     navigation.navigate("ListProfessors" as never);
                   }}
                 >
-                  <Text style={styles.menuText}>Lista</Text>
+                  <View style={styles.iconRow}>
+                    <Icon name="list" size={20} style={styles.iconItem} />
+                    <Text style={styles.menuText}>Lista</Text>
+                  </View>
                 </TouchableOpacity>
+
                 <TouchableOpacity
                   style={styles.menuItem}
                   onPress={() => {
@@ -65,7 +92,10 @@ export default function HamburgerMenu() {
                     navigation.navigate("RegisterProfessorsIndex" as never);
                   }}
                 >
-                  <Text style={styles.menuText}>Cadastro</Text>
+                  <View style={styles.iconRow}>
+                    <Icon name="person-add" size={20} style={styles.iconItem} />
+                    <Text style={styles.menuText}>Cadastro</Text>
+                  </View>
                 </TouchableOpacity>
               </View>
 
@@ -75,6 +105,7 @@ export default function HamburgerMenu() {
               {/* Seção Curso */}
               <View style={styles.categoryContainer}>
                 <Text style={styles.categoryLabel}>Curso</Text>
+
                 <TouchableOpacity
                   style={styles.menuItem}
                   onPress={() => {
@@ -82,8 +113,12 @@ export default function HamburgerMenu() {
                     navigation.navigate("ListCourses" as never);
                   }}
                 >
-                  <Text style={styles.menuText}>Lista</Text>
+                  <View style={styles.iconRow}>
+                    <Icon name="list-alt" size={20} style={styles.iconItem} />
+                    <Text style={styles.menuText}>Lista</Text>
+                  </View>
                 </TouchableOpacity>
+
                 <TouchableOpacity
                   style={styles.menuItem}
                   onPress={() => {
@@ -91,13 +126,19 @@ export default function HamburgerMenu() {
                     navigation.navigate("RegisterCursosIndex" as never);
                   }}
                 >
-                  <Text style={styles.menuText}>Cadastro</Text>
+                  <View style={styles.iconRow}>
+                    <Icon name="playlist-add" size={20} style={styles.iconItem} />
+                    <Text style={styles.menuText}>Cadastro</Text>
+                  </View>
                 </TouchableOpacity>
               </View>
             </ScrollView>
 
             <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-              <Text style={styles.logoutText}>Sair</Text>
+              <View style={styles.iconRow}>
+                <Icon name="logout" size={20} color="#d00" style={styles.iconItem} />
+                <Text style={styles.logoutText}>Sair</Text>
+              </View>
             </TouchableOpacity>
           </View>
         </TouchableOpacity>
@@ -157,5 +198,20 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: "#d00",
     fontWeight: "bold",
+  },
+  iconRow: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  iconItem: {
+    marginRight: 8,
+  },
+  logoContainer: {
+  alignItems: "center",
+  marginBottom: 20,
+  },
+  logo: {
+    width: 130,
+    height: 50,
   },
 });
