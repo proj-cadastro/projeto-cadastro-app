@@ -1,5 +1,6 @@
 import { Professor } from "../../types/professor";
 import api from "../apiService";
+import { File, Paths } from 'expo-file-system/next'
 
 export const postProfessor = async (data: Professor) => {
     const response = await api.post("/professores", data)
@@ -24,6 +25,30 @@ export const deleteProfessor = async (id: number) => {
 
 export const updateProfessor = async (id: number, data: Professor) => {
     const response = await api.put(`/professores/${id}`, data)
+
+    return response.data
+}
+
+
+export const downloadFile = async () => {
+    try {
+        
+
+    } catch (error) {
+
+    }
+};
+
+
+export const uploadProfessorXslFile = async (file: any) => {
+    const formData = new FormData()
+    formData.append("file", file)
+
+    const response = await api.post("/professores/upload/xsl", formData, {
+        headers: {
+            "Content-Type": "multipart/form-data"
+        }
+    })
 
     return response.data
 }

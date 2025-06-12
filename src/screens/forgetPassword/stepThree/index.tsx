@@ -6,18 +6,40 @@ import {
 import { FormStyles } from "../../../style/FormStyles";
 import { Card, Button } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { updateUser } from "../../../services/users/userService";
 import { userPasswordSchema } from "../../../validations/usersValidations";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { decodeJwt } from "../../../utils/jwtDecode";
 
 const ForgetPasswordStepThree = () => {
     const [password, setPassword] = useState("")
     const [confirmPassword, setConfirmPassword] = useState("")
-
-    const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
     const [loading, setLoading] = useState(false)
 
+    const [payload, setPayload] = useState<any>()
+
+    const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
+
     const navigation = useNavigation()
+
+    useEffect(() => {
+        const loadToken = async () => {
+            try {
+                const storedToken = await AsyncStorage.getItem("token");
+                if (storedToken) {
+                    const data = decodeJwt(storedToken);
+                    setPayload(data)
+                } else {
+                    console.warn("Token não encontrado no AsyncStorage");
+                }
+            } catch (error) {
+                console.error("Erro ao decodificar o token:", error);
+            }
+        };
+
+        loadToken();
+    }, []);
 
     const handleSubmit = async () => {
         setFieldErrors({});
@@ -31,10 +53,10 @@ const ForgetPasswordStepThree = () => {
             }
 
             // Valida a senha com schema do Yup
-            await userPasswordSchema.validate({ password }, { abortEarly: false });
+            await userPasswordSchema.validate({ senha: password }, { abortEarly: false });
 
             // Chama o serviço para atualizar a senha
-            // await updateUser({ senha: password });
+            await updateUser({ senha: password }, String(payload.id));
 
             // Navega de volta para o login após sucesso
             navigation.navigate("Login" as never);
