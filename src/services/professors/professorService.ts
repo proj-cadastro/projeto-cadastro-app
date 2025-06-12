@@ -27,3 +27,29 @@ export const updateProfessor = async (id: number, data: Professor) => {
 
     return response.data
 }
+
+
+
+
+export const downloadFile = async () => {
+    try {
+
+
+    } catch (error) {
+
+    }
+};
+
+
+export const uploadProfessorXslFile = async (file: any) => {
+    const formData = new FormData()
+    formData.append("file", file)
+
+    const response = await api.post("/professores/upload/xsl", formData, {
+        headers: {
+            "Content-Type": "multipart/form-data"
+        }
+    })
+
+    return response.data
+}

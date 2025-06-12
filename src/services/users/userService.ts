@@ -12,7 +12,7 @@ export async function signUp(data: UserData) {
 }
 
 export async function updateUser(data: Partial<UserData>, id: string) {
-  const response = await api.put(`/usuario/${id}`, data)
+  const response = await api.put(`/usuarios/${id}`, data)
 
   return response.data
 }
