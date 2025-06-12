@@ -3,9 +3,9 @@ import HamburgerMenu from "../../../../components/HamburgerMenu"
 import { FormStyles } from "../../../../style/FormStyles"
 import { Button, Card } from "react-native-paper"
 import { useNavigation } from "@react-navigation/native"
-import { MotiView } from "moti"
 
 import LottieView from 'lottie-react-native';
+import { downloadFile } from "../../../../services/professors/professorService"
 
 
 
@@ -57,7 +57,7 @@ const ImportProfessors = () => {
                             buttonColor="green"
                             labelStyle={{ color: "white" }}
                             style={[FormStyles.button, { backgroundColor: "#0086FF" }]}
-                            onPress={() => console.log("oi")}
+                            onPress={downloadFile}
                         >
                             Baixar Planilha Modelo
                         </Button>
