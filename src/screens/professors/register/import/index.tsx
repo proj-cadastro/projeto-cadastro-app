@@ -5,7 +5,8 @@ import { Button, Card } from "react-native-paper"
 import { useNavigation } from "@react-navigation/native"
 
 import LottieView from 'lottie-react-native';
-import { downloadFile } from "../../../../services/professors/professorService"
+import { DocPicker } from "../../../../components/atoms/DocPicker"
+import { downloadProfessorXlsFile } from "../../../../services/xslxFile/xslxFileService"
 
 
 
@@ -57,7 +58,7 @@ const ImportProfessors = () => {
                             buttonColor="green"
                             labelStyle={{ color: "white" }}
                             style={[FormStyles.button, { backgroundColor: "#0086FF" }]}
-                            onPress={downloadFile}
+                            onPress={downloadProfessorXlsFile}
                         >
                             Baixar Planilha Modelo
                         </Button>
@@ -66,15 +67,7 @@ const ImportProfessors = () => {
                         <Text style={[FormStyles.description, { marginTop: 30 }]}>
                             Importe a planilha com os dados que você preencheu.
                         </Text>
-                        <Button
-                            mode="contained"
-                            buttonColor="green"
-                            labelStyle={{ color: "white" }}
-                            style={[FormStyles.button, { backgroundColor: "#08A93C" }]}
-                            onPress={() => console.log("oi")}
-                        >
-                            Importar Planilha
-                        </Button>
+                        <DocPicker />
                     </Card.Content>
 
                 </Card>
