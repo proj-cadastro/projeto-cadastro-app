@@ -72,6 +72,9 @@ const LoginScreen = ({ navigation }: any) => {
           <TextInput
             style={[styles.input, fieldErrors.email ? styles.inputError : null]}
             placeholder="E-mail"
+            autoCapitalize="none"
+            keyboardType="email-address"
+            autoComplete="email"
             value={email}
             onChangeText={setEmail}
           />
