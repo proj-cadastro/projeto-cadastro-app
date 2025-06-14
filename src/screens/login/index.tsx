@@ -1,21 +1,22 @@
 import React, { useState } from "react";
 import {
   View,
+  Image,
   Text,
   TextInput,
-  Button,
   StyleSheet,
-  TouchableOpacity,
-  Image,
   KeyboardAvoidingView,
   Platform,
+  ActivityIndicator,
+  TouchableOpacity,
   Keyboard,
   TouchableWithoutFeedback,
-  ActivityIndicator,
 } from "react-native";
+import { Card, Button } from "react-native-paper";
+import { useAuth } from "../../context/AuthContext";
 import { login as loginService } from "../../services/users/authService";
 import { userLoginSchema } from "../../validations/usersValidations";
-import { useAuth } from "../../context/AuthContext";
+import { FormStyles } from "../../style/FormStyles";
 
 const LoginScreen = ({ navigation }: any) => {
   const [email, setEmail] = useState("");
@@ -26,9 +27,9 @@ const LoginScreen = ({ navigation }: any) => {
 
   const handleLogin = async () => {
     setFieldErrors({});
-    setIsLoading(true); // Ativa o estado de loading
+    setIsLoading(true);
+    await new Promise((resolve) => setTimeout(resolve, 500));
     try {
-      await new Promise((resolve) => setTimeout(resolve, 2000)); // Timeout de 2 segundos
       await userLoginSchema.validate(
         { email, senha: password },
         { abortEarly: false }
@@ -47,9 +48,8 @@ const LoginScreen = ({ navigation }: any) => {
           api: error.response?.data?.erro || "Erro ao fazer login",
         });
       }
-      console.error(error.response?.data?.mensagem);
     } finally {
-      setIsLoading(false); // Desativa o estado de loading
+      setIsLoading(false);
     }
   };
 
@@ -59,60 +59,82 @@ const LoginScreen = ({ navigation }: any) => {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-        <View style={styles.container}>
-          <Image
-            source={require("../../../assets/logoFatecCapi.png")}
-            style={styles.logo}
-          />
-          <Text style={styles.title}>Login</Text>
-
-          {fieldErrors.email && (
-            <Text style={styles.errorText}>{fieldErrors.email}</Text>
-          )}
-          <TextInput
-            style={[styles.input, fieldErrors.email ? styles.inputError : null]}
-            placeholder="E-mail"
-            autoCapitalize="none"
-            keyboardType="email-address"
-            autoComplete="email"
-            value={email}
-            onChangeText={setEmail}
-          />
-          {fieldErrors.senha && (
-            <Text style={styles.errorText}>{fieldErrors.senha}</Text>
-          )}
-          <TextInput
-            style={[styles.input, fieldErrors.senha ? styles.inputError : null]}
-            placeholder="Senha"
-            secureTextEntry
-            value={password}
-            onChangeText={setPassword}
-          />
-
-          {fieldErrors.api && (
-            <Text style={styles.errorText}>{fieldErrors.api}</Text>
-          )}
-
-          {isLoading ? (
-            <ActivityIndicator
-              size="large"
-              color="#007BFF"
-              style={{ marginBottom: 20 }}
-            />
-          ) : (
-            <TouchableOpacity style={styles.button} onPress={handleLogin}>
-              <Text style={styles.buttonText}>Entrar</Text>
-            </TouchableOpacity>
-
-          )}
-          <TouchableOpacity onPress={() => navigation.navigate("ForgetPasswordStepOne")}>
-            <Text style={styles.link} onPress={() => navigation.navigate("ForgetPasswordStepOne")}>Esqueceu sua senha?</Text>
-          </TouchableOpacity>
-
-
-          <TouchableOpacity onPress={() => navigation.navigate("Register")}>
-            <Text style={styles.link}>Não tem uma conta? Cadastre-se aqui</Text>
-          </TouchableOpacity>
+        <View style={styles.fullScreenContainer}>
+          <Card style={[FormStyles.card, styles.card]} mode="elevated">
+            <Card.Content>
+              <Image
+                source={require("../../../assets/logoFatecCapi.png")}
+                style={styles.logo}
+                resizeMode="contain"
+              />
+              <Text style={FormStyles.title}>Login</Text>
+              <Text style={FormStyles.description}>
+                Entre com seu e-mail e senha para acessar o sistema.
+              </Text>
+            </Card.Content>
+            <Card.Actions style={{ flexDirection: "column", marginTop: 10 }}>
+              {fieldErrors.email && (
+                <Text style={styles.errorText}>{fieldErrors.email}</Text>
+              )}
+              {fieldErrors.senha && (
+                <Text style={styles.errorText}>{fieldErrors.senha}</Text>
+              )}
+              {fieldErrors.api && (
+                <Text style={styles.errorText}>{fieldErrors.api}</Text>
+              )}
+              <TextInput
+                placeholder="E-mail"
+                style={[FormStyles.input, { width: "100%" }]}
+                value={email}
+                onChangeText={setEmail}
+                autoCapitalize="none"
+                keyboardType="email-address"
+                autoComplete="email"
+              />
+              <TextInput
+                placeholder="Senha"
+                style={[FormStyles.input, { width: "100%" }]}
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry
+              />
+              {isLoading ? (
+                <ActivityIndicator
+                  size="large"
+                  color="#D32719"
+                  style={{ marginBottom: 20, marginTop: 10 }}
+                />
+              ) : (
+                <Button
+                  mode="contained"
+                  buttonColor="#D32719"
+                  labelStyle={{ color: "white" }}
+                  style={FormStyles.button}
+                  onPress={handleLogin}
+                >
+                  Entrar
+                </Button>
+              )}
+              <View style={styles.linksContainer}>
+                <Card style={styles.linkCard} mode="elevated">
+                  <TouchableOpacity
+                    onPress={() => navigation.navigate("ForgetPasswordStepOne")}
+                  >
+                    <Text style={styles.linkText}>Esqueceu sua senha?</Text>
+                  </TouchableOpacity>
+                </Card>
+                <Card style={styles.linkCard} mode="elevated">
+                  <TouchableOpacity
+                    onPress={() => navigation.navigate("Register")}
+                  >
+                    <Text style={styles.linkText}>
+                      Não tem uma conta? Cadastre-se aqui
+                    </Text>
+                  </TouchableOpacity>
+                </Card>
+              </View>
+            </Card.Actions>
+          </Card>
         </View>
       </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
@@ -120,54 +142,24 @@ const LoginScreen = ({ navigation }: any) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
+  fullScreenContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    padding: 20,
+    padding: 16,
     backgroundColor: "#fff",
   },
-  title: {
-    fontSize: 36,
-    fontWeight: "bold",
-    marginBottom: 30,
-  },
-  input: {
+  card: {
     width: "100%",
-    height: 40,
-    borderColor: "#ccc",
-    borderWidth: 1,
-    borderRadius: 5,
-    marginBottom: 20,
-    paddingLeft: 10,
-  },
-  inputError: {
-    borderColor: "red",
-  },
-  link: {
-    marginTop: 20,
-    color: "#007BFF",
-    textDecorationLine: "underline",
+    maxWidth: 400,
+    padding: 10,
+    backgroundColor: "#fff",
   },
   logo: {
-    width: 200,
+    width: 300,
     height: 200,
-    marginBottom: 20,
-    resizeMode: "contain",
-  },
-  button: {
-    width: "40%",
-    height: 40,
-    backgroundColor: "#a1a1a1",
-    borderRadius: 5,
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 20,
-  },
-  buttonText: {
-    color: "#FFFFFF",
-    fontSize: 16,
-    fontWeight: "bold",
+    alignSelf: "center",
+    marginBottom: 10,
   },
   errorText: {
     color: "red",
@@ -176,10 +168,26 @@ const styles = StyleSheet.create({
     marginLeft: 2,
     fontSize: 12,
   },
-  loadingText: {
-    color: "#000",
-    fontSize: 16,
-    marginBottom: 20,
+  linksContainer: {
+    width: "100%",
+    marginTop: 10,
+    gap: 8,
+  },
+  linkCard: {
+    backgroundColor: "#a1a1a1",
+    borderRadius: 8,
+    elevation: 2,
+    paddingVertical: 6,
+    paddingHorizontal: 8,
+    marginBottom: 4,
+    minHeight: 36,
+    justifyContent: "center",
+  },
+  linkText: {
+    color: "#fff",
+    textAlign: "center",
+    fontSize: 14,
+    // textDecorationLine: "underline",
   },
 });
 
