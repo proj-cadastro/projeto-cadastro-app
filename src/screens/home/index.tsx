@@ -1,17 +1,20 @@
-import React from "react";
-import { SafeAreaView, Text, StyleSheet, View, Image } from "react-native";
+import React, { useState } from "react";
+import { SafeAreaView, Text, StyleSheet, View, Image, TouchableOpacity } from "react-native";
 import HamburgerMenu from "../../components/HamburgerMenu";
 import Chart from "../../components/Chart";
 import { useProfessor } from "../../context/ProfessorContext";
 import { groupByTitulacao } from "../../utils/filterUtilities";
-
+import { MaterialIcons } from "@expo/vector-icons"; // ou use outro ícone
 
 const HomeScreen = () => {
+  const { professors } = useProfessor();
+  const { labels, data } = groupByTitulacao(professors);
 
-  const { professors } = useProfessor()
+  const [chartType, setChartType] = useState<"bar" | "pie">("bar");
 
-  const { labels, data } = groupByTitulacao(professors)
-
+  const toggleChartType = () => {
+    setChartType((prev) => (prev === "bar" ? "pie" : "bar"));
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -21,7 +24,14 @@ const HomeScreen = () => {
       {professors.length !== 0 ? (
         <View style={styles.content}>
           <Text style={styles.title}>Distribuição de Professores por Titulação</Text>
-          <Chart data={data} label={labels} />
+          <Chart data={data} label={labels} chartType={chartType} />
+          <TouchableOpacity style={styles.fab} onPress={toggleChartType}>
+            <MaterialIcons
+              name={chartType === "bar" ? "pie-chart" : "bar-chart"}
+              size={28}
+              color="#fff"
+            />
+          </TouchableOpacity>
         </View>
       ) : (
         <View style={styles.emptyContent}>
@@ -34,8 +44,6 @@ const HomeScreen = () => {
           </Text>
         </View>
       )}
-
-
     </SafeAreaView>
   );
 };
@@ -78,7 +86,22 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 20,
   },
-
+  fab: {
+    position: "absolute",
+    right: 24,
+    bottom: 24,
+    backgroundColor: "#F44336",
+    borderRadius: 28,
+    width: 56,
+    height: 56,
+    alignItems: "center",
+    justifyContent: "center",
+    elevation: 6,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+  },
 });
 
 export default HomeScreen;

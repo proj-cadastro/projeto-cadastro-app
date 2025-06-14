@@ -4,24 +4,29 @@ import {
   Text,
   TextInput,
   StyleSheet,
-  TouchableOpacity,
-  Image,
   Keyboard,
   TouchableWithoutFeedback,
   KeyboardAvoidingView,
   Platform,
+  Image,
+  ActivityIndicator,
+  TouchableOpacity,
 } from "react-native";
+import { Card, Button } from "react-native-paper";
 import { signUp } from "../../services/users/userService";
 import { userRegisterSchema } from "../../validations/usersValidations";
+import { FormStyles } from "../../style/FormStyles";
 
 const RegisterScreen = ({ navigation }: any) => {
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleRegister = async () => {
     setFieldErrors({});
+    setIsLoading(true);
     try {
       await userRegisterSchema.validate(
         { nome, email, senha },
@@ -42,6 +47,8 @@ const RegisterScreen = ({ navigation }: any) => {
         });
         console.error(error);
       }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -51,52 +58,80 @@ const RegisterScreen = ({ navigation }: any) => {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <View style={styles.container}>
-          <Image
-            source={require("../../../assets/logoFatecCapi.png")}
-            style={styles.logo}
-          />
-          <Text style={styles.title}>Cadastro</Text>
-          {fieldErrors.nome && (
-            <Text style={styles.errorText}>{fieldErrors.nome}</Text>
-          )}
-          <TextInput
-            style={[styles.input, fieldErrors.nome ? styles.inputError : null]}
-            placeholder="Nome"
-            value={nome}
-            onChangeText={setNome}
-          />
-          {fieldErrors.email && (
-            <Text style={styles.errorText}>{fieldErrors.email}</Text>
-          )}
-          <TextInput
-            style={[styles.input, fieldErrors.email ? styles.inputError : null]}
-            placeholder="E-mail"
-            value={email}
-            onChangeText={setEmail}
-          />
-          {fieldErrors.senha && (
-            <Text style={styles.errorText}>{fieldErrors.senha}</Text>
-          )}
-          <TextInput
-            style={[styles.input, fieldErrors.senha ? styles.inputError : null]}
-            placeholder="Senha"
-            secureTextEntry
-            value={senha}
-            onChangeText={setSenha}
-          />
-
-          {fieldErrors.api && (
-            <Text style={styles.errorText}>{fieldErrors.api}</Text>
-          )}
-
-          <TouchableOpacity style={styles.button} onPress={handleRegister}>
-            <Text style={styles.buttonText}>Cadastrar</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity onPress={() => navigation.navigate("Login")}>
-            <Text style={styles.link}>Já tem uma conta? Entrar</Text>
-          </TouchableOpacity>
+        <View style={styles.fullScreenContainer}>
+          <Card style={[FormStyles.card, styles.card]} mode="elevated">
+            <Card.Content>
+              <Image
+                source={require("../../../assets/logoFatecCapi.png")}
+                style={styles.logo}
+                resizeMode="contain"
+              />
+              <Text style={FormStyles.title}>Cadastro</Text>
+              <Text style={FormStyles.description}>
+                Preencha os campos para criar sua conta.
+              </Text>
+            </Card.Content>
+            <Card.Actions style={{ flexDirection: "column", marginTop: 10 }}>
+              {fieldErrors.nome && (
+                <Text style={styles.errorText}>{fieldErrors.nome}</Text>
+              )}
+              <TextInput
+                style={[FormStyles.input, { width: "100%" }, fieldErrors.nome ? styles.inputError : null]}
+                placeholder="Nome"
+                value={nome}
+                onChangeText={setNome}
+              />
+              {fieldErrors.email && (
+                <Text style={styles.errorText}>{fieldErrors.email}</Text>
+              )}
+              <TextInput
+                style={[FormStyles.input, { width: "100%" }, fieldErrors.email ? styles.inputError : null]}
+                placeholder="E-mail"
+                value={email}
+                onChangeText={setEmail}
+                autoCapitalize="none"
+                keyboardType="email-address"
+                autoComplete="email"
+              />
+              {fieldErrors.senha && (
+                <Text style={styles.errorText}>{fieldErrors.senha}</Text>
+              )}
+              <TextInput
+                style={[FormStyles.input, { width: "100%" }, fieldErrors.senha ? styles.inputError : null]}
+                placeholder="Senha"
+                secureTextEntry
+                value={senha}
+                onChangeText={setSenha}
+              />
+              {fieldErrors.api && (
+                <Text style={styles.errorText}>{fieldErrors.api}</Text>
+              )}
+              {isLoading ? (
+                <ActivityIndicator
+                  size="large"
+                  color="#D32719"
+                  style={{ marginBottom: 20, marginTop: 10 }}
+                />
+              ) : (
+                <Button
+                  mode="contained"
+                  buttonColor="#D32719"
+                  labelStyle={{ color: "white" }}
+                  style={FormStyles.button}
+                  onPress={handleRegister}
+                >
+                  Cadastrar
+                </Button>
+              )}
+              <View style={styles.linksContainer}>
+                <Card style={styles.linkCard} mode="elevated">
+                  <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+                    <Text style={styles.linkText}>Já tem uma conta? Entrar</Text>
+                  </TouchableOpacity>
+                </Card>
+              </View>
+            </Card.Actions>
+          </Card>
         </View>
       </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
@@ -104,54 +139,24 @@ const RegisterScreen = ({ navigation }: any) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
+  fullScreenContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    padding: 20,
+    padding: 16,
     backgroundColor: "#fff",
   },
-  title: {
-    fontSize: 36,
-    fontWeight: "bold",
-    marginBottom: 30,
-  },
-  input: {
+  card: {
     width: "100%",
-    height: 40,
-    borderColor: "#ccc",
-    borderWidth: 1,
-    borderRadius: 5,
-    marginBottom: 20,
-    paddingLeft: 10,
-  },
-  link: {
-    marginTop: 20,
-    color: "#007BFF",
-    textDecorationLine: "underline",
+    maxWidth: 400,
+    padding: 10,
+    backgroundColor: "#fff",
   },
   logo: {
-    width: 200,
+    width: 300,
     height: 200,
-    marginBottom: 20,
-    resizeMode: "contain",
-  },
-  button: {
-    width: "40%",
-    height: 40,
-    backgroundColor: "#a1a1a1",
-    borderRadius: 5,
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 20,
-  },
-  buttonText: {
-    color: "#FFFFFF",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  inputError: {
-    borderColor: "red",
+    alignSelf: "center",
+    marginBottom: 10,
   },
   errorText: {
     color: "red",
@@ -159,6 +164,30 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     marginLeft: 2,
     fontSize: 12,
+  },
+  inputError: {
+    borderColor: "red",
+  },
+  linksContainer: {
+    width: "100%",
+    marginTop: 10,
+    gap: 8,
+  },
+  linkCard: {
+    backgroundColor: "#a1a1a1",
+    borderRadius: 8,
+    elevation: 2,
+    paddingVertical: 6,
+    paddingHorizontal: 8,
+    marginBottom: 4,
+    minHeight: 36,
+    justifyContent: "center",
+  },
+  linkText: {
+    color: "#fff",
+    textAlign: "center",
+    fontSize: 14,
+    // textDecorationLine: "underline",
   },
 });
 
