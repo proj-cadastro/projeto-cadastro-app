@@ -1,6 +1,7 @@
 import React from "react";
 import { Modal, View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { TableStyle } from "../style/TableStyle";
+import { professorLabels } from "../utils/translateObject";
 
 interface ColumnSelectionModalProps {
   isVisible: boolean;
@@ -39,7 +40,7 @@ const ColumnSelectionModal: React.FC<ColumnSelectionModalProps> = ({
       >
         {selectedColumns.includes(label) ? "☑" : "☐"}
       </Text>
-      <Text>{label}</Text>
+      <Text>{professorLabels[label] || label}</Text>
     </TouchableOpacity>
   );
 
