@@ -6,6 +6,7 @@ import {
   View,
   ScrollView,
   TouchableOpacity,
+  StyleSheet
 } from "react-native";
 import HamburgerMenu from "../../../components/HamburgerMenu";
 import { useProfessor } from "../../../context/ProfessorContext";
@@ -20,6 +21,9 @@ import {
 import Icon from "react-native-vector-icons/MaterialIcons";
 
 import { TableStyle } from "../../../style/TableStyle";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import { InteractBtn } from "../../../components/atoms/InteractBtn";
+import { shareDataToPdfFile } from "../../../services/file/fileService";
 
 const ListProfessorScreen = () => {
   const [nome, setNome] = useState("");
@@ -76,6 +80,16 @@ const ListProfessorScreen = () => {
   const toggleCardExpansion = (id: number) => {
     setExpandedCard((prev) => (prev === id ? null : id));
   };
+
+  const handleShareData = async () => {
+    try {
+      console.log(professors)
+      await shareDataToPdfFile(professors)
+
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
@@ -206,9 +220,19 @@ const ListProfessorScreen = () => {
             )}
           </View>
         </ScrollView>
+
+        { /* Se existirem professores a serem exibidos, habilita o compartilhamento*/}
+        {professors.length > 0 &&
+          <InteractBtn
+            name="share"
+            onPressFn={handleShareData}
+          />}
+
       </SafeAreaView>
     </GestureHandlerRootView>
   );
 };
 
 export default ListProfessorScreen;
+
+

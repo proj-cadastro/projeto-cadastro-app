@@ -3,9 +3,9 @@ import { View, Text } from 'react-native'
 import * as DocumentPicker from 'expo-document-picker'
 import { FormStyles } from '../../style/FormStyles'
 import { Button, Modal, Portal } from 'react-native-paper'
-import { uploadFile } from '../../services/xslxFile/xslxFileService'
 import { useNavigation } from '@react-navigation/native'
 import LottieView from 'lottie-react-native'
+import { uploadFile } from '../../services/file/fileService'
 
 export const DocPicker = () => {
 

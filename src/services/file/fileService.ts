@@ -5,10 +5,15 @@ import api from "../apiService";
 
 
 import { shareAsync } from 'expo-sharing'
+import { printToFileAsync } from 'expo-print'
 
 import { API_URL } from "@env";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Platform } from "react-native";
+import { HeaderHtml } from '../../utils/pdfLayout';
+import { getLoggedUser } from '../users/userService';
+import { professorLabels } from '../../utils/translateObject';
+
 
 
 export const downloadProfessorXlsFile = async () => {
@@ -67,9 +72,81 @@ export const uploadFile = async (pickedFile: DocumentPicker.DocumentPickerAsset)
 
         return response.data
     } catch (error: any) {
-        console.error(error)
-        console.log(error.response?.data?.mensagem)
-        throw error  
+        throw error
     }
 
 }
+
+export const shareDataToPdfFile = async (data: any[]) => {
+    const user = await getLoggedUser();
+
+    const headers = Object.keys(data[0]).filter((key) => key !== "id");
+
+    const htmlContent = `
+  <html>
+    <head>
+      <meta charset="utf-8" />
+      <style>
+        @page {
+          size: A4 landscape;
+          margin: 20px;
+        }
+
+        body {
+          font-family: Verdana, sans-serif;
+          padding: 0;
+          margin: 0;
+        }
+
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          table-layout: fixed;
+          word-wrap: normal;
+        }
+
+        th, td {
+        border: 1px solid #ccc;
+        text-align: center;
+        vertical-align: top;
+        word-break: break-word;
+        max-width: 300px; /* 
+        }
+
+
+      </style>
+    </head>
+    <body>
+      <div>
+        ${HeaderHtml(user)}
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            ${headers.map((key) => `<th>${professorLabels[key] || key}</th>`).join("")}
+          </tr>
+        </thead>
+        <tbody>
+          ${data
+            .map(
+                (row) => `
+            <tr>
+              ${headers
+                        .map(
+                            (key) => `<td>${row[key] === null || row[key] === undefined ? "" : row[key]}</td>`
+                        )
+                        .join("")}
+            </tr>
+          `
+            )
+            .join("")}
+        </tbody>
+      </table>
+    </body>
+  </html>
+  `;
+
+    const { uri } = await printToFileAsync({ html: htmlContent });
+    await shareAsync(uri);
+};

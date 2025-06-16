@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { updateUser } from "../../../services/users/userService";
 import { userPasswordSchema } from "../../../validations/usersValidations";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { decodeJwt } from "../../../utils/jwtDecode";
+import { decodeJwt } from "../../../utils/jwt";
 import { KeyboardAvoidingView, Platform, View, Image, Text, TextInput, ActivityIndicator, StyleSheet } from "react-native";
 
 const ForgetPasswordStepThree = () => {
@@ -56,7 +56,7 @@ const ForgetPasswordStepThree = () => {
             await userPasswordSchema.validate({ senha: password }, { abortEarly: false });
 
             // Chama o serviço para atualizar a senha
-            await updateUser({ senha: password }, String(payload.id));
+            await updateUser({ senha: password }, String(payload.userId));
 
             // Navega de volta para o login após sucesso
             navigation.navigate("Login" as never);

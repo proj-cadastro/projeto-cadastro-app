@@ -19,6 +19,8 @@ import { TableStyle } from "../../../style/TableStyle";
 import Icon from "react-native-vector-icons/MaterialIcons";
 
 import { useProfessor } from "../../../context/ProfessorContext";
+import { InteractBtn } from "../../../components/atoms/InteractBtn";
+import { shareDataToPdfFile } from "../../../services/file/fileService";
 
 
 const ListCoursesScreen = () => {
@@ -46,6 +48,15 @@ const ListCoursesScreen = () => {
   const handleImprimir = () => {
     // lógica de impressão ou exportação
   };
+
+  const handleShareData = async () => {
+    try {
+      await shareDataToPdfFile(courses)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
 
   const handleDelete = async (id: number) => {
     try {
@@ -169,6 +180,14 @@ const ListCoursesScreen = () => {
 
 
       </ScrollView>
+
+      { /* Se existirem cursos a serem exibidos, habilita o compartilhamento*/}
+      {courses.length > 0 &&
+        <InteractBtn
+          name="share"
+          onPressFn={handleShareData}
+        />}
+
     </SafeAreaView>
 
   );
