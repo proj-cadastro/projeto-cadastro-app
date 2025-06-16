@@ -6,7 +6,8 @@ import {
   View,
   ScrollView,
   TouchableOpacity,
-  StyleSheet
+  StyleSheet,
+  ActivityIndicator,
 } from "react-native";
 import HamburgerMenu from "../../../components/HamburgerMenu";
 import { useProfessor } from "../../../context/ProfessorContext";
@@ -40,6 +41,7 @@ const ListProfessorScreen = () => {
   const [showCursos, setShowCursos] = useState(false);
   const [showTitulacoes, setShowTitulacoes] = useState(false);
   const [expandedCard, setExpandedCard] = useState<number | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const navigation = useNavigation<NavigationProp>();
 
@@ -83,13 +85,14 @@ const ListProfessorScreen = () => {
 
   const handleShareData = async () => {
     try {
-      console.log(professors)
-      await shareDataToPdfFile(professors)
-
+      setIsLoading(true);
+      await shareDataToPdfFile(professors);
     } catch (error) {
-      console.log(error)
+      console.log(error);
+    } finally {
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
@@ -177,7 +180,7 @@ const ListProfessorScreen = () => {
                         style={[TableStyle.actionButton, TableStyle.editButton]}
                         onPress={() => {
                           if (prof.id)
-                            navigation.navigate('EditProfessors', {
+                            navigation.navigate("EditProfessors", {
                               id: prof.id,
                             });
                         }}
@@ -187,11 +190,17 @@ const ListProfessorScreen = () => {
                       <TouchableOpacity
                         style={[
                           TableStyle.actionButton,
-                          { backgroundColor: "#007bff", justifyContent: "center", alignItems: "center" },
+                          {
+                            backgroundColor: "#007bff",
+                            justifyContent: "center",
+                            alignItems: "center",
+                          },
                         ]}
                         onPress={() => {
                           if (prof.id !== undefined) {
-                            navigation.navigate('DetailsProfessors', { id: prof.id });
+                            navigation.navigate("DetailsProfessors", {
+                              id: prof.id,
+                            });
                           }
                         }}
                       >
@@ -221,18 +230,16 @@ const ListProfessorScreen = () => {
           </View>
         </ScrollView>
 
-        { /* Se existirem professores a serem exibidos, habilita o compartilhamento*/}
+        {/* Se existirem professores a serem exibidos, habilita o compartilhamento*/}
         {professors.length > 0 &&
-          <InteractBtn
-            name="share"
-            onPressFn={handleShareData}
-          />}
-
+          (isLoading ? (
+            <ActivityIndicator size="large" color="#0000ff" />
+          ) : (
+            <InteractBtn name="share" onPressFn={handleShareData} />
+          ))}
       </SafeAreaView>
     </GestureHandlerRootView>
   );
 };
 
 export default ListProfessorScreen;
-
-
