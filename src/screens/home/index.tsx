@@ -5,6 +5,7 @@ import Chart from "../../components/Chart";
 import { useProfessor } from "../../context/ProfessorContext";
 import { groupByTitulacao } from "../../utils/filterUtilities";
 import { MaterialIcons } from "@expo/vector-icons"; // ou use outro ícone
+import { InteractBtn } from "../../components/atoms/InteractBtn";
 
 const HomeScreen = () => {
   const { professors } = useProfessor();
@@ -25,13 +26,12 @@ const HomeScreen = () => {
         <View style={styles.content}>
           <Text style={styles.title}>Distribuição de Professores por Titulação</Text>
           <Chart data={data} label={labels} chartType={chartType} />
-          <TouchableOpacity style={styles.fab} onPress={toggleChartType}>
-            <MaterialIcons
-              name={chartType === "bar" ? "pie-chart" : "bar-chart"}
-              size={28}
-              color="#fff"
-            />
-          </TouchableOpacity>
+
+          <InteractBtn
+            name={chartType === "bar" ? "pie-chart" : "bar-chart"}
+            onPressFn={toggleChartType}
+          />
+
         </View>
       ) : (
         <View style={styles.emptyContent}>
@@ -86,22 +86,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 20,
   },
-  fab: {
-    position: "absolute",
-    right: 24,
-    bottom: 24,
-    backgroundColor: "#F44336",
-    borderRadius: 28,
-    width: 56,
-    height: 56,
-    alignItems: "center",
-    justifyContent: "center",
-    elevation: 6,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-  },
+
 });
 
 export default HomeScreen;
