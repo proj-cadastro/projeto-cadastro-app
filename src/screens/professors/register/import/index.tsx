@@ -6,7 +6,7 @@ import { useNavigation } from "@react-navigation/native"
 
 import LottieView from 'lottie-react-native';
 import { DocPicker } from "../../../../components/atoms/DocPicker"
-import { downloadProfessorXlsFile } from "../../../../services/xslxFile/xslxFileService"
+import { downloadProfessorXlsFile } from "../../../../services/file/fileService"
 
 
 
