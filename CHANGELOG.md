@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## 1.7.0 (2025-06-16)
+
+
+### Features
+
+* add dynamic labels to ColumnSelectionModal in ListCoursesScreen and ListProfessorScreen ([ced3fa0](https://github.com/proj-cadastro/projeto-cadastro-app/commit/ced3fa09755efd6a413cec4bd35ddea212beae5f))
+
 ### 1.6.22 (2025-06-16)
 
 ### 1.6.21 (2025-06-14)
