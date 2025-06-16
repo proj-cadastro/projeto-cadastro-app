@@ -1,7 +1,7 @@
 import { jwtDecode, JwtPayload } from 'jwt-decode'
 
 interface JWTPayload {
-    id: number;
+    userId: number;
     email: string;
     iat: number;
     exp: number
@@ -21,3 +21,4 @@ export const isTokenValid = async (token: string) => {
         return false
     }
 }
+
