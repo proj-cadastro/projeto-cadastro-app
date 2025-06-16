@@ -2,9 +2,8 @@ import { Professor } from "../types/professor";
 import { IUser } from "../types/user";
 import { professorLabels } from "./translateObject";
 
-
 export const HeaderHtml = (user: IUser) => {
-  const imgSrc = "http://192.168.15.185:3000/static/cabecalho.png";
+  const imgSrc = "http://192.168.1.12:3000/static/cabecalho.png";
 
   return `
     <header>
@@ -52,31 +51,37 @@ export const HeaderHtml = (user: IUser) => {
 };
 
 export const professorContent = (data: any[]) => {
-
   const headers = Object.keys(data[0]).filter((key) => key !== "id");
 
   return `
  <table>
         <thead>
           <tr>
-            ${headers.map((key) => `<th>${professorLabels[key] || key}</th>`).join("")}
+            ${headers
+              .map((key) => `<th>${professorLabels[key] || key}</th>`)
+              .join("")}
           </tr>
         </thead>
         <tbody>
           ${data
-      .map(
-        (row) => `
+            .map(
+              (row) => `
             <tr>
               ${headers
-            .map(
-              (key) => `<td>${row[key] === null || row[key] === undefined ? "" : row[key]}</td>`
-            )
-            .join("")}
+                .map(
+                  (key) =>
+                    `<td>${
+                      row[key] === null || row[key] === undefined
+                        ? ""
+                        : row[key]
+                    }</td>`
+                )
+                .join("")}
             </tr>
           `
-      )
-      .join("")}
+            )
+            .join("")}
         </tbody>
       </table>  
-  `
-}
+  `;
+};

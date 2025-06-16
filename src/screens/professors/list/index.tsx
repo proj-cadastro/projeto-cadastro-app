@@ -25,6 +25,7 @@ import { TableStyle } from "../../../style/TableStyle";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { InteractBtn } from "../../../components/atoms/InteractBtn";
 import { shareDataToPdfFile } from "../../../services/file/fileService";
+import ColumnSelectionModal from "../../../components/ColumnSelectionModal";
 
 const ListProfessorScreen = () => {
   const [nome, setNome] = useState("");
@@ -42,6 +43,8 @@ const ListProfessorScreen = () => {
   const [showTitulacoes, setShowTitulacoes] = useState(false);
   const [expandedCard, setExpandedCard] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [selectedColumns, setSelectedColumns] = useState<string[]>([]);
 
   const navigation = useNavigation<NavigationProp>();
 
@@ -83,14 +86,23 @@ const ListProfessorScreen = () => {
     setExpandedCard((prev) => (prev === id ? null : id));
   };
 
+  const columnOptions = Object.keys(professors[0] || {}).filter(
+    (key) => key !== "id"
+  );
+
+  const handleExportClick = () => {
+    setIsModalVisible(true);
+  };
+
   const handleShareData = async () => {
     try {
       setIsLoading(true);
-      await shareDataToPdfFile(professors);
+      await shareDataToPdfFile(professors, selectedColumns);
     } catch (error) {
       console.log(error);
     } finally {
       setIsLoading(false);
+      setIsModalVisible(false);
     }
   };
 
@@ -230,13 +242,18 @@ const ListProfessorScreen = () => {
           </View>
         </ScrollView>
 
-        {/* Se existirem professores a serem exibidos, habilita o compartilhamento*/}
-        {professors.length > 0 &&
-          (isLoading ? (
-            <ActivityIndicator size="large" color="#0000ff" />
-          ) : (
-            <InteractBtn name="share" onPressFn={handleShareData} />
-          ))}
+        {professors.length > 0 && (
+          <InteractBtn name="share" onPressFn={() => setIsModalVisible(true)} />
+        )}
+
+        <ColumnSelectionModal
+          isVisible={isModalVisible}
+          onClose={() => setIsModalVisible(false)}
+          columnOptions={columnOptions}
+          selectedColumns={selectedColumns}
+          setSelectedColumns={setSelectedColumns}
+          onConfirm={handleShareData}
+        />
       </SafeAreaView>
     </GestureHandlerRootView>
   );
