@@ -7,7 +7,7 @@ import {
   View,
   Button,
   ScrollView,
-  TouchableOpacity
+  TouchableOpacity,
 } from "react-native";
 import HamburgerMenu from "../../../components/HamburgerMenu";
 import { useCourse } from "../../../context/CourseContext";
@@ -21,11 +21,11 @@ import Icon from "react-native-vector-icons/MaterialIcons";
 import { useProfessor } from "../../../context/ProfessorContext";
 import { InteractBtn } from "../../../components/atoms/InteractBtn";
 import { shareDataToPdfFile } from "../../../services/file/fileService";
-
+import ColumnSelectionModal from "../../../components/ColumnSelectionModal";
+import { courseLabels } from "../../../utils/translateObject";
 
 const ListCoursesScreen = () => {
-
-  const navigation = useNavigation<NavigationProp>()
+  const navigation = useNavigation<NavigationProp>();
 
   const [nome, setNome] = useState("");
 
@@ -37,9 +37,14 @@ const ListCoursesScreen = () => {
   const [showModalidades, setShowModalidades] = useState(false);
   const [expandedRow, setExpandedRow] = useState<number | null>(null);
   const [expandedCard, setExpandedCard] = useState<number | null>(null);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [selectedColumns, setSelectedColumns] = useState<string[]>([]);
 
-  const { courses, refreshCoursesData } = useCourse()
-  const { getProfessorById } = useProfessor()
+  const { courses, refreshCoursesData } = useCourse();
+  const { getProfessorById } = useProfessor();
+  const columnOptions = Object.keys(courses[0] || {});
+
+  console.log(courses);
 
   const handleFiltrar = () => {
     // lógica de filtragem aqui (se quiser ajuda com isso, posso montar também)
@@ -49,27 +54,33 @@ const ListCoursesScreen = () => {
     // lógica de impressão ou exportação
   };
 
+  const handleExportClick = () => {
+    setIsModalVisible(true);
+  };
+
   const handleShareData = async () => {
     try {
-      await shareDataToPdfFile(courses)
+      await shareDataToPdfFile(courses, selectedColumns);
     } catch (error) {
-      console.log(error)
+      console.log(error);
+    } finally {
+      setIsModalVisible(false);
     }
-  }
-
+  };
 
   const handleDelete = async (id: number) => {
     try {
-      await deleteCourse(id)
-      refreshCoursesData()
-      console.log(courses.length)
-
+      await deleteCourse(id);
+      refreshCoursesData();
+      console.log(courses.length);
     } catch (error: any) {
-      console.error(error.response.data.mensagem)
+      console.error(error.response.data.mensagem);
     }
-  }
+  };
 
-  useEffect(() => { refreshCoursesData() }, [])
+  useEffect(() => {
+    refreshCoursesData();
+  }, []);
 
   const renderCheckbox = (
     label: string,
@@ -114,7 +125,9 @@ const ListCoursesScreen = () => {
 
         <View style={TableStyle.filterRow}>
           <View style={TableStyle.filterGroup}>
-            <TouchableOpacity onPress={() => setShowModalidades((prev) => !prev)}>
+            <TouchableOpacity
+              onPress={() => setShowModalidades((prev) => !prev)}
+            >
               <Text style={TableStyle.filterText}>Modalidades ▼</Text>
             </TouchableOpacity>
             {showModalidades && (
@@ -124,7 +137,8 @@ const ListCoursesScreen = () => {
                     renderCheckbox(
                       mod,
                       checked,
-                      (val) => setModalidades((prev) => ({ ...prev, [mod]: val })),
+                      (val) =>
+                        setModalidades((prev) => ({ ...prev, [mod]: val })),
                       mod
                     )
                   )}
@@ -154,7 +168,10 @@ const ListCoursesScreen = () => {
                   <View style={TableStyle.cardActionsContainer}>
                     <TouchableOpacity
                       style={[TableStyle.actionButton, TableStyle.editButton]}
-                      onPress={() => curso.id && navigation.navigate("EditCourses", { id: curso.id })}
+                      onPress={() =>
+                        curso.id &&
+                        navigation.navigate("EditCourses", { id: curso.id })
+                      }
                     >
                       <Icon name="edit" size={24} color="#fff" />
                     </TouchableOpacity>
@@ -177,19 +194,23 @@ const ListCoursesScreen = () => {
             ))
           )}
         </View>
-
-
       </ScrollView>
 
-      { /* Se existirem cursos a serem exibidos, habilita o compartilhamento*/}
-      {courses.length > 0 &&
-        <InteractBtn
-          name="share"
-          onPressFn={handleShareData}
-        />}
+      {/* Se existirem cursos a serem exibidos, habilita o compartilhamento*/}
+      {courses.length > 0 && (
+        <InteractBtn name="share" onPressFn={handleExportClick} />
+      )}
 
+      <ColumnSelectionModal
+        isVisible={isModalVisible}
+        onClose={() => setIsModalVisible(false)}
+        columnOptions={columnOptions}
+        selectedColumns={selectedColumns}
+        setSelectedColumns={setSelectedColumns}
+        onConfirm={handleShareData}
+        labels={courseLabels}
+      />
     </SafeAreaView>
-
   );
 };
 

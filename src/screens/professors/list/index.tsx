@@ -26,6 +26,7 @@ import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { InteractBtn } from "../../../components/atoms/InteractBtn";
 import { shareDataToPdfFile } from "../../../services/file/fileService";
 import ColumnSelectionModal from "../../../components/ColumnSelectionModal";
+import { professorLabels } from "../../../utils/translateObject";
 
 const ListProfessorScreen = () => {
   const [nome, setNome] = useState("");
@@ -253,6 +254,7 @@ const ListProfessorScreen = () => {
           selectedColumns={selectedColumns}
           setSelectedColumns={setSelectedColumns}
           onConfirm={handleShareData}
+          labels={professorLabels}
         />
       </SafeAreaView>
     </GestureHandlerRootView>

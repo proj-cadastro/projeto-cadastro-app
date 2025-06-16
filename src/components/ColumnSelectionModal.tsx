@@ -1,7 +1,6 @@
 import React from "react";
 import { Modal, View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { TableStyle } from "../style/TableStyle";
-import { professorLabels } from "../utils/translateObject";
 
 interface ColumnSelectionModalProps {
   isVisible: boolean;
@@ -10,6 +9,7 @@ interface ColumnSelectionModalProps {
   selectedColumns: string[];
   setSelectedColumns: (columns: string[]) => void;
   onConfirm: () => void;
+  labels: Record<string, string>; // Adicionado para passar labels dinamicamente
 }
 
 const ColumnSelectionModal: React.FC<ColumnSelectionModalProps> = ({
@@ -19,6 +19,7 @@ const ColumnSelectionModal: React.FC<ColumnSelectionModalProps> = ({
   selectedColumns,
   setSelectedColumns,
   onConfirm,
+  labels,
 }) => {
   const renderColumnCheckbox = (label: string) => (
     <TouchableOpacity
@@ -40,7 +41,7 @@ const ColumnSelectionModal: React.FC<ColumnSelectionModalProps> = ({
       >
         {selectedColumns.includes(label) ? "☑" : "☐"}
       </Text>
-      <Text>{professorLabels[label] || label}</Text>
+      <Text>{labels[label] || label}</Text>
     </TouchableOpacity>
   );
 
