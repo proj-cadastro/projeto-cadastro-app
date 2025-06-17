@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useAuth } from "../context/AuthContext";
-import Icon from "react-native-vector-icons/MaterialIcons"; // 👈 Importando ícones
+import Icon from "react-native-vector-icons/MaterialIcons"; 
 
 export default function HamburgerMenu() {
   const [visible, setVisible] = useState(false);

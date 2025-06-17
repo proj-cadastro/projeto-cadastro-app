@@ -1,45 +1,37 @@
-//esquema de configuração para enviar qualquer informação via parâmetros para outra tela...
-
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RouteProp } from "@react-navigation/native";
 
+export type ProfessorIAData = {
+  nome: string;
+  email: string;
+  titulacao: string;
+  idUnidade: string;
+  referencia?: string;
+  statusAtividade?: string;
+  lattes?: string;
+};
+
 export type RootStackParamList = {
 
-  //Rotas de Professor: 
-  RegisterProfessorsStepOne: undefined;
+  RegisterProfessorsStepOne: { iaData?: ProfessorIAData };
 
-  RegisterProfessorsStepTwo: {
-    partialDataProfessor: {
-      nome: string;
-      email: string;
-      titulacao: string;
-      idUnidade: string;
-    };
-  };
+  RegisterProfessorsStepTwo: { partialDataProfessor: ProfessorIAData };
 
-  EditProfessors: {
-    id: number 
-  }
+  EditProfessors: { id: number };
 
-  DetailsProfessors: {
-    id: number;
-  };
-  //##
+  DetailsProfessors: { id: number };
 
-  //Rotas de Curso
-  FormCourseStepOne: undefined
-  
+  FormCourseStepOne: undefined;
+
   RegisterCourseStepTwo: {
     partialDataCurso: {
       nome: string;
       sigla: string;
       codigo: string;
-
     };
   };
-  EditCourses: {
-    id: number
-  }
+  
+  EditCourses: { id: number };
 };
 
 export type NavigationProp = StackNavigationProp<RootStackParamList>;
