@@ -8,7 +8,7 @@ import { printToFileAsync } from "expo-print";
 import { API_URL } from "@env";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Platform } from "react-native";
-import { HeaderHtml } from "../../utils/pdfLayout";
+import { courseContent, HeaderHtml, professorContent } from "../../utils/pdfLayout";
 import { getLoggedUser } from "../users/userService";
 import { professorLabels } from "../../utils/translateObject";
 
@@ -83,11 +83,10 @@ export const uploadFile = async (
 
 export const shareDataToPdfFile = async (
   data: any[],
-  selectedColumns: string[]
+  selectedColumns: string[],
+  type: ("professor" | "course")
 ) => {
   const user = await getLoggedUser();
-
-  const headers = selectedColumns; // Use selected columns
 
   const htmlContent = `
   <html>
@@ -126,35 +125,10 @@ export const shareDataToPdfFile = async (
         ${HeaderHtml(user)}
       </div>
 
-      <table>
-        <thead>
-          <tr>
-            ${headers
-              .map((key) => `<th>${professorLabels[key] || key}</th>`)
-              .join("")}
-          </tr>
-        </thead>
-        <tbody>
-          ${data
-            .map(
-              (row) => `
-            <tr>
-              ${headers
-                .map(
-                  (key) =>
-                    `<td>${
-                      row[key] === null || row[key] === undefined
-                        ? ""
-                        : row[key]
-                    }</td>`
-                )
-                .join("")}
-            </tr>
-          `
-            )
-            .join("")}
-        </tbody>
-      </table>
+      ${type === "professor" ? professorContent(data, selectedColumns) : ""}
+      ${type === "course" ? courseContent(data, selectedColumns) : ""}
+
+    
     </body>
   </html>
   `;

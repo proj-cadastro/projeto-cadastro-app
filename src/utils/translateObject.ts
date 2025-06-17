@@ -16,5 +16,6 @@ export const courseLabels: Record<string, string> = {
     codigo: "Código",
     sigla: "Sigla",
     modelo: "Modelo",
-    coordenadorId: "Coordenador"
+    coordenador: "Coordenador Responsável",
+    materias: "Matérias",
 }
