@@ -11,8 +11,8 @@ import {
 } from "react-native";
 import { Card, Button, ProgressBar, MD3Colors } from "react-native-paper";
 import ListPicker from "../../../../components/atoms/ListPicker";
-import { useNavigation } from "@react-navigation/native";
-import { NavigationProp } from "../../../../routes/rootStackParamList ";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import { NavigationProp, RouteParamsProps } from "../../../../routes/rootStackParamList ";
 import { FormStyles } from "../../../../style/FormStyles";
 import { Titulacao } from "../../../../enums/professors/professorEnum";
 import { professorRegisterSchema } from "../../../../validations/professorsRegisterValidations";
@@ -20,11 +20,13 @@ import HamburgerMenu from "../../../../components/HamburgerMenu";
 
 export default function ProfessorFormStepOne() {
   const navigation = useNavigation<NavigationProp>();
+  const route = useRoute<RouteParamsProps<"RegisterProfessorsStepOne">>();
+  const iaData = route.params?.iaData;
 
-  const [nome, setNome] = useState("");
-  const [email, setEmail] = useState("");
-  const [titulacao, setTitulacao] = useState(Titulacao.MESTRE);
-  const [idUnidade, setIdUnidade] = useState("");
+  const [nome, setNome] = useState(iaData?.nome || "");
+  const [email, setEmail] = useState(iaData?.email || "");
+  const [titulacao, setTitulacao] = useState(iaData?.titulacao || "");
+  const [idUnidade, setIdUnidade] = useState(iaData?.idUnidade || "");
   const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
 
   const handleAdvance = () => {
@@ -34,14 +36,16 @@ export default function ProfessorFormStepOne() {
         { nome, email, titulacao, idUnidade },
         { abortEarly: false }
       );
-      const partialDataProfessor = {
-        nome,
-        email,
-        titulacao,
-        idUnidade,
-      };
       navigation.navigate("RegisterProfessorsStepTwo", {
-        partialDataProfessor,
+        partialDataProfessor: {
+          nome,
+          email,
+          titulacao,
+          idUnidade,
+          referencia: iaData?.referencia,
+          statusAtividade: iaData?.statusAtividade,
+          lattes: iaData?.lattes,
+        },
       });
     } catch (error: any) {
       if (error.name === "ValidationError") {
@@ -74,17 +78,15 @@ export default function ProfessorFormStepOne() {
           <Card style={FormStyles.card} mode="elevated">
             <Card.Content>
               <Text style={FormStyles.title}>Cadastro de Professor</Text>
-
               <Text style={FormStyles.description}>
                 Insira os dados do professor para registrá-lo no sistema
               </Text>
-
               <Text style={FormStyles.label}>Nome</Text>
               {fieldErrors.nome && (
                 <Text style={styles.errorText}>{fieldErrors.nome}</Text>
               )}
               <TextInput
-                placeholder="value"
+                placeholder="ex: José Maria da Silva"
                 style={[
                   FormStyles.input,
                   fieldErrors.nome ? styles.inputError : null,
@@ -100,13 +102,12 @@ export default function ProfessorFormStepOne() {
                     });
                 }}
               />
-
               <Text style={FormStyles.label}>Email</Text>
               {fieldErrors.email && (
                 <Text style={styles.errorText}>{fieldErrors.email}</Text>
               )}
               <TextInput
-                placeholder="value"
+                placeholder="ex: jose.maria@fatec.sp.gov.br"
                 style={[
                   FormStyles.input,
                   fieldErrors.email ? styles.inputError : null,
@@ -122,33 +123,32 @@ export default function ProfessorFormStepOne() {
                 }}
                 value={email}
               />
-
               <Text style={FormStyles.label}>Titulação</Text>
               {fieldErrors.titulacao && (
                 <Text style={styles.errorText}>{fieldErrors.titulacao}</Text>
               )}
               <ListPicker
                 items={Object.values(Titulacao)}
+                selected={titulacao}
                 onSelect={(titulacao: Titulacao) => {
-                  setTitulacao(titulacao);
-                  if (fieldErrors.titulacao)
-                    setFieldErrors((prev) => {
-                      const updated = { ...prev };
-                      delete updated.titulacao;
-                      return updated;
-                    });
+                    setTitulacao(titulacao);
+                    if (fieldErrors.titulacao)
+                        setFieldErrors((prev) => {
+                            const updated = { ...prev };
+                            delete updated.titulacao;
+                            return updated;
+                        });
                 }}
-              />
-
+            />
               <Text style={FormStyles.label}>Código da Unidade</Text>
               {fieldErrors.idUnidade && (
                 <Text style={styles.errorText}>{fieldErrors.idUnidade}</Text>
               )}
               <TextInput
-                placeholder="value"
+                placeholder="ex: 301"
                 style={[
                   FormStyles.input,
-                  {width: "100%"},
+                  { width: "100%" },
                   fieldErrors.idUnidade ? styles.inputError : null,
                 ]}
                 onChangeText={(text) => {
@@ -169,12 +169,13 @@ export default function ProfessorFormStepOne() {
                 labelStyle={{ color: "white" }}
                 style={FormStyles.button}
                 onPress={handleAdvance}
-              >
+            >
                 Avançar
-              </Button>
+            </Button>
             </Card.Actions>
 
             <ProgressBar progress={0.5} color={MD3Colors.neutral40} />
+
           </Card>
         </ScrollView>
       </View>

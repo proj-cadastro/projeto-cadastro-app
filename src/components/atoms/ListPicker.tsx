@@ -4,7 +4,7 @@ import { List } from "react-native-paper";
 type Props<T> = {
   items: T[];
   onSelect: (value: any) => void;
-  selected?: T; // ✅ nova prop
+  selected?: T;
   getLabel?: (item: T) => string;
   getValue?: (item: T) => any;
 };
@@ -19,7 +19,6 @@ export default function ListPicker<T>({
   const [expanded, setExpanded] = useState(false);
   const [selectedLabel, setSelectedLabel] = useState<string | null>(null);
 
-  // Atualiza o label quando a prop `selected` mudar
   useEffect(() => {
     if (selected) {
       const label = getLabel ? getLabel(selected) : String(selected);
