@@ -19,6 +19,6 @@ export const professorRegisterStep2Schema = Yup.object().shape({
     .required("Link do Lattes é obrigatório"),
   referencia: Yup.string()
     .required("Referência é obrigatória"),
-  professorAtivo: Yup.string()
+  statusAtividade: Yup.string()
     .required("Status do professor é obrigatório")
 });
