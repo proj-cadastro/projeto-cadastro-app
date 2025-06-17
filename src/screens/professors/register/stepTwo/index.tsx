@@ -39,7 +39,7 @@ export default function ProfessorFormStepTwo() {
   const [observacoes, setObservacoes] = useState("");
 
   const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
-  
+
   const [modalVisible, setModalVisible] = useState(false);
   const [modalMsg, setModalMsg] = useState("");
   const [missingFields, setMissingFields] = useState<string[]>([]);
@@ -49,15 +49,15 @@ export default function ProfessorFormStepTwo() {
       setFieldErrors({});
       setMissingFields([]);
       await professorRegisterStep2Schema.validate(
-        { lattes, referencia, observacoes, professorAtivo: statusAtividade },
+        { lattes, referencia, observacoes, statusAtividade },
         { abortEarly: false }
       );
       const professor = {
+        ...partialDataProfessor,
         lattes,
         referencia,
         observacoes,
         statusAtividade,
-        ...partialDataProfessor,
       };
 
       const response = await postProfessor(professor);
@@ -125,6 +125,8 @@ export default function ProfessorFormStepTwo() {
                   <Text style={FormStyles.description}>
                     Insira os dados do professor para registrá-lo no sistema
                   </Text>
+
+
                   <Text style={FormStyles.label}>Lattes</Text>
                   {fieldErrors.lattes && (
                     <Text style={styles.errorText}>{fieldErrors.lattes}</Text>
@@ -137,7 +139,12 @@ export default function ProfessorFormStepTwo() {
                     ]}
                     value={lattes}
                     onChangeText={setLattes}
+                    autoCapitalize="none"
+                    keyboardType="email-address"
+                    autoComplete="email"
                   />
+
+
                   <Text style={FormStyles.label}>Referência</Text>
                   {fieldErrors.referencia && (
                     <Text style={styles.errorText}>
@@ -145,10 +152,12 @@ export default function ProfessorFormStepTwo() {
                     </Text>
                   )}
                   <ListPicker
-                      items={Object.values(Referencia)}
-                      selected={referencia} 
-                      onSelect={(ref: Referencia) => setReferencia(ref)}
+                    items={Object.values(Referencia)}
+                    selected={referencia}
+                    onSelect={(ref: Referencia) => setReferencia(ref)}
                   />
+
+
                   <Text style={FormStyles.label}>Observações</Text>
                   {fieldErrors.observacoes && (
                     <Text style={styles.errorText}>
@@ -161,6 +170,8 @@ export default function ProfessorFormStepTwo() {
                     onChangeText={setObservacoes}
                     value={observacoes}
                   />
+
+
                   <Text style={FormStyles.label}>Professor está ativo?</Text>
                   {fieldErrors.professorAtivo && (
                     <Text style={styles.errorText}>
@@ -168,10 +179,12 @@ export default function ProfessorFormStepTwo() {
                     </Text>
                   )}
                   <ListPicker
-                      items={Object.values(StatusAtividade)}
-                      selected={statusAtividade} // <-- Adicione esta prop
-                      onSelect={(status) => setStatusAtividade(status)}
+                    items={Object.values(StatusAtividade)}
+                    selected={statusAtividade} // <-- Adicione esta prop
+                    onSelect={(status) => setStatusAtividade(status)}
                   />
+
+
                 </Card.Content>
                 <Card.Actions>
                   <Button
