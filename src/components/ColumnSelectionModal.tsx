@@ -26,9 +26,13 @@ const ColumnSelectionModal: React.FC<ColumnSelectionModalProps> = ({
       key={label}
       style={TableStyle.checkboxContainer}
       onPress={() => {
+        //aqui precisa organizar as colunas antes de enviar para o pdf,
+        //por exemplo, usuário clica de forma aleatória e a coluna é dimensionada conforme ele clicou,
+        //na minha concepção é necessário que sua organização seja conforme ilustrado na selecao
         const updatedColumns = selectedColumns.includes(label)
           ? selectedColumns.filter((col) => col !== label)
           : [...selectedColumns, label];
+          console.log("colunas selecionadas: ", updatedColumns)
         setSelectedColumns(updatedColumns);
       }}
       activeOpacity={0.7}
