@@ -26,11 +26,7 @@ export const ProfessorProvider = ({ children }: { children: ReactNode }) => {
             //contornando o erro 404 do backend para listas vazias
             const msg = error.response?.data?.mensagem
 
-            if (msg === "Nenhum professor encontrado") {
-                setProfessors([])
-            } else {
-                console.error(msg )
-            }
+            console.error(msg)
             //##
         } finally {
             setLoading(false)
