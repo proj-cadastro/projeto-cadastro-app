@@ -51,8 +51,6 @@ const ListProfessorScreen = () => {
 
   const { professors, refreshProfessorsData } = useProfessor();
 
-  console.log(professors)
-
   useEffect(() => {
     refreshProfessorsData();
   }, []);

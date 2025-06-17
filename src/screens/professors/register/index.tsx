@@ -106,38 +106,39 @@ const RegisterProfessorScreen = () => {
                 >
                   Importar Planilha
                 </Button>
-
                 
-                <AnimatedGradientButton onPress={() => setModalVisible(true)} children={
-                  <View
-                    style={[{
-                      flexDirection: "row",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }]}
-                  >
-                    <Text
+                <View style={{ alignItems: "center", width: "100%" }}>
+                  <AnimatedGradientButton onPress={() => setModalVisible(true)}>
+                    <View
                       style={{
-                        color: "white",
-                        fontWeight: "bold",
+                        flexDirection: "row",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        height: 48, // 
+                        minWidth: 150,
+                        paddingHorizontal: 16,
                       }}
                     >
-                      Gerar com IA
-                    </Text>
-
-                    <LottieView
-                      source={require("../../../../assets/ai2.json")}
-                      autoPlay
-                      loop
-                      style={{
-                        width: 40,
-                        height: 40,
-                      }}
-                    />
-                  </View>
-                } />
-
-
+                      <Text
+                        style={{
+                          color: "white",
+                          fontWeight: "bold",
+                        }}
+                      >
+                        Gerar com IA
+                      </Text>
+                      <LottieView
+                        source={require("../../../../assets/bot.json")}
+                        autoPlay
+                        loop
+                        style={{
+                          width: 40,
+                          height: 38
+                        }}
+                      />
+                    </View>
+                  </AnimatedGradientButton>
+                </View>
               </Card.Actions>
             </Card>
           </View>
