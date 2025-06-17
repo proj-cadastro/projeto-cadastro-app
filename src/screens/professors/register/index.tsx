@@ -6,7 +6,8 @@ import {
   Text,
   TextInput,
   StyleSheet,
-  Image
+  Image,
+  TouchableOpacity
 } from "react-native";
 import HamburgerMenu from "../../../components/HamburgerMenu";
 
@@ -17,7 +18,8 @@ import { useNavigation } from "@react-navigation/native";
 import { NavigationProp } from "../../../routes/rootStackParamList ";
 
 import { gerarProfessorIA } from "../../../services/ia/iaService";
-
+import LottieView from "lottie-react-native";
+import { AnimatedGradientButton } from "../../../components/atoms/AnimatedLinearGradient";
 
 const RegisterProfessorScreen = () => {
   const navigation = useNavigation<NavigationProp>();
@@ -105,15 +107,36 @@ const RegisterProfessorScreen = () => {
                   Importar Planilha
                 </Button>
 
-                <Button
-                  mode="contained"
-                  buttonColor="#FF9800"
-                  labelStyle={{ color: "white" }}
-                  style={FormStyles.button}
-                  onPress={() => setModalVisible(true)}
-                >
-                  Gerar com IA
-                </Button>
+                
+                <AnimatedGradientButton onPress={() => setModalVisible(true)} children={
+                  <View
+                    style={[{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }]}
+                  >
+                    <Text
+                      style={{
+                        color: "white",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      Gerar com IA
+                    </Text>
+
+                    <LottieView
+                      source={require("../../../../assets/ai2.json")}
+                      autoPlay
+                      loop
+                      style={{
+                        width: 40,
+                        height: 40,
+                      }}
+                    />
+                  </View>
+                } />
+
 
               </Card.Actions>
             </Card>
@@ -224,6 +247,7 @@ const styles = StyleSheet.create({
   confirmButtonLabel: {
     color: "white",
   },
+
 });
 
 export default RegisterProfessorScreen;
