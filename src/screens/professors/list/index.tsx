@@ -6,7 +6,6 @@ import {
   View,
   ScrollView,
   TouchableOpacity,
-  StyleSheet,
   ActivityIndicator,
 } from "react-native";
 import HamburgerMenu from "../../../components/HamburgerMenu";
@@ -17,16 +16,14 @@ import { useNavigation } from "@react-navigation/native";
 import { NavigationProp } from "../../../routes/rootStackParamList ";
 import {
   GestureHandlerRootView,
-  Swipeable,
 } from "react-native-gesture-handler";
 import Icon from "react-native-vector-icons/MaterialIcons";
-
 import { TableStyle } from "../../../style/TableStyle";
-import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { InteractBtn } from "../../../components/atoms/InteractBtn";
 import { shareDataToPdfFile } from "../../../services/file/fileService";
 import ColumnSelectionModal from "../../../components/ColumnSelectionModal";
 import { professorLabels } from "../../../utils/translateObject";
+import { useTheme } from "react-native-paper"; // <-- Importa o tema
 
 const ListProfessorScreen = () => {
   const [nome, setNome] = useState("");
@@ -48,8 +45,8 @@ const ListProfessorScreen = () => {
   const [selectedColumns, setSelectedColumns] = useState<string[]>([]);
 
   const navigation = useNavigation<NavigationProp>();
-
   const { professors, refreshProfessorsData } = useProfessor();
+  const { colors } = useTheme(); // <-- Hook do tema
 
   useEffect(() => {
     refreshProfessorsData();
@@ -76,10 +73,10 @@ const ListProfessorScreen = () => {
       onPress={() => onChange(!checked)}
       activeOpacity={0.7}
     >
-      <Text style={[TableStyle.checkbox, checked && TableStyle.checked]}>
+      <Text style={[TableStyle.checkbox, checked && TableStyle.checked, { color: colors.primary }]}>
         {checked ? "☑" : "☐"}
       </Text>
-      <Text>{label}</Text>
+      <Text style={{ color: colors.onBackground }}>{label}</Text>
     </TouchableOpacity>
   );
 
@@ -109,25 +106,26 @@ const ListProfessorScreen = () => {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaView style={TableStyle.container}>
+      <SafeAreaView style={[TableStyle.container, { backgroundColor: colors.background }]}>
         <View style={TableStyle.menuContainer}>
           <HamburgerMenu />
         </View>
 
         <ScrollView contentContainerStyle={TableStyle.scrollContent}>
-          <Text style={TableStyle.title}>Professores</Text>
+          <Text style={[TableStyle.title, { color: colors.onBackground }]}>Professores</Text>
 
           <TextInput
             placeholder="Nome do Professor"
             value={nome}
             onChangeText={setNome}
-            style={TableStyle.input}
+            style={[TableStyle.input, { color: colors.onBackground, backgroundColor: colors.surface, borderColor: colors.outline }]}
+            placeholderTextColor={colors.onSurfaceVariant}
           />
 
           <View style={TableStyle.filterRow}>
             <View style={TableStyle.filterGroup}>
               <TouchableOpacity onPress={() => setShowCursos((prev) => !prev)}>
-                <Text style={TableStyle.filterText}>Cursos ▼</Text>
+                <Text style={[TableStyle.filterText, { color: colors.primary }]}>Cursos ▼</Text>
               </TouchableOpacity>
               {showCursos && (
                 <View style={TableStyle.submenuOverlay}>
@@ -149,7 +147,7 @@ const ListProfessorScreen = () => {
               <TouchableOpacity
                 onPress={() => setShowTitulacoes((prev) => !prev)}
               >
-                <Text style={TableStyle.filterText}>Titulação ▼</Text>
+                <Text style={[TableStyle.filterText, { color: colors.primary }]}>Titulação ▼</Text>
               </TouchableOpacity>
               {showTitulacoes && (
                 <View style={TableStyle.submenuOverlay}>
@@ -171,7 +169,7 @@ const ListProfessorScreen = () => {
 
           <View style={TableStyle.cardList}>
             {professors.length === 0 ? (
-              <Text style={TableStyle.emptyText}>
+              <Text style={[TableStyle.emptyText, { color: colors.onSurfaceVariant }]}>
                 Nenhum Professor Encontrado
               </Text>
             ) : (
@@ -179,18 +177,18 @@ const ListProfessorScreen = () => {
                 <View key={idx} style={TableStyle.cardContainer}>
                   <TouchableOpacity
                     onPress={() => prof.id && toggleCardExpansion(prof.id)}
-                    style={TableStyle.card}
+                    style={[TableStyle.card, { backgroundColor: colors.elevation.level1 }]}
                   >
-                    <Text style={TableStyle.cardTitle}>{prof.nome}</Text>
-                    <Text style={TableStyle.cardSubtitle}>{prof.email}</Text>
-                    <Text style={TableStyle.cardSubtitle}>
+                    <Text style={[TableStyle.cardTitle, { color: colors.onBackground }]}>{prof.nome}</Text>
+                    <Text style={[TableStyle.cardSubtitle, { color: colors.onSurfaceVariant }]}>{prof.email}</Text>
+                    <Text style={[TableStyle.cardSubtitle, { color: colors.onSurfaceVariant }]}>
                       {prof.titulacao}
                     </Text>
                   </TouchableOpacity>
                   {expandedCard === prof.id && (
                     <View style={TableStyle.cardActionsContainer}>
                       <TouchableOpacity
-                        style={[TableStyle.actionButton, TableStyle.editButton]}
+                        style={[TableStyle.actionButton, TableStyle.editButton, { backgroundColor: colors.secondary }]}
                         onPress={() => {
                           if (prof.id)
                             navigation.navigate("EditProfessors", {
@@ -203,11 +201,7 @@ const ListProfessorScreen = () => {
                       <TouchableOpacity
                         style={[
                           TableStyle.actionButton,
-                          {
-                            backgroundColor: "#007bff",
-                            justifyContent: "center",
-                            alignItems: "center",
-                          },
+                          { backgroundColor: colors.primary, justifyContent: "center", alignItems: "center" },
                         ]}
                         onPress={() => {
                           if (prof.id !== undefined) {
@@ -223,6 +217,7 @@ const ListProfessorScreen = () => {
                         style={[
                           TableStyle.actionButton,
                           TableStyle.deleteButton,
+                          { backgroundColor: colors.error },
                         ]}
                         onPress={() =>
                           showConfirmDialog({

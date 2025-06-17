@@ -12,7 +12,7 @@ import {
   ActivityIndicator,
   TouchableOpacity,
 } from "react-native";
-import { Card, Button } from "react-native-paper";
+import { Card, Button, useTheme } from "react-native-paper";
 import { signUp } from "../../services/users/userService";
 import { userRegisterSchema } from "../../validations/usersValidations";
 import { FormStyles } from "../../style/FormStyles";
@@ -23,6 +23,7 @@ const RegisterScreen = ({ navigation }: any) => {
   const [senha, setSenha] = useState("");
   const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
   const [isLoading, setIsLoading] = useState(false);
+  const { colors } = useTheme();
 
   const handleRegister = async () => {
     setFieldErrors({});
@@ -58,16 +59,16 @@ const RegisterScreen = ({ navigation }: any) => {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <View style={styles.fullScreenContainer}>
-          <Card style={[FormStyles.card, styles.card]} mode="elevated">
+        <View style={[styles.fullScreenContainer, { backgroundColor: colors.background }]}>
+          <Card style={[FormStyles.card, styles.card, { backgroundColor: colors.elevation.level1 }]} mode="elevated">
             <Card.Content>
               <Image
                 source={require("../../../assets/logoFatecCapi.png")}
                 style={styles.logo}
                 resizeMode="contain"
               />
-              <Text style={FormStyles.title}>Cadastro</Text>
-              <Text style={FormStyles.description}>
+              <Text style={[FormStyles.title, { color: colors.onBackground }]}>Cadastro</Text>
+              <Text style={[FormStyles.description, { color: colors.onBackground }]}>
                 Preencha os campos para criar sua conta.
               </Text>
             </Card.Content>
@@ -76,8 +77,13 @@ const RegisterScreen = ({ navigation }: any) => {
                 <Text style={styles.errorText}>{fieldErrors.nome}</Text>
               )}
               <TextInput
-                style={[FormStyles.input, { width: "100%" }, fieldErrors.nome ? styles.inputError : null]}
+                style={[
+                  FormStyles.input,
+                  { width: "100%", color: colors.onBackground, borderColor: colors.outline, backgroundColor: colors.surface },
+                  fieldErrors.nome ? styles.inputError : null
+                ]}
                 placeholder="Nome"
+                placeholderTextColor={colors.onSurfaceVariant}
                 value={nome}
                 onChangeText={setNome}
               />
@@ -85,8 +91,13 @@ const RegisterScreen = ({ navigation }: any) => {
                 <Text style={styles.errorText}>{fieldErrors.email}</Text>
               )}
               <TextInput
-                style={[FormStyles.input, { width: "100%" }, fieldErrors.email ? styles.inputError : null]}
+                style={[
+                  FormStyles.input,
+                  { width: "100%", color: colors.onBackground, borderColor: colors.outline, backgroundColor: colors.surface },
+                  fieldErrors.email ? styles.inputError : null
+                ]}
                 placeholder="E-mail"
+                placeholderTextColor={colors.onSurfaceVariant}
                 value={email}
                 onChangeText={setEmail}
                 autoCapitalize="none"
@@ -97,8 +108,13 @@ const RegisterScreen = ({ navigation }: any) => {
                 <Text style={styles.errorText}>{fieldErrors.senha}</Text>
               )}
               <TextInput
-                style={[FormStyles.input, { width: "100%" }, fieldErrors.senha ? styles.inputError : null]}
+                style={[
+                  FormStyles.input,
+                  { width: "100%", color: colors.onBackground, borderColor: colors.outline, backgroundColor: colors.surface },
+                  fieldErrors.senha ? styles.inputError : null
+                ]}
                 placeholder="Senha"
+                placeholderTextColor={colors.onSurfaceVariant}
                 secureTextEntry
                 value={senha}
                 onChangeText={setSenha}
@@ -109,14 +125,14 @@ const RegisterScreen = ({ navigation }: any) => {
               {isLoading ? (
                 <ActivityIndicator
                   size="large"
-                  color="#D32719"
+                  color={colors.primary}
                   style={{ marginBottom: 20, marginTop: 10 }}
                 />
               ) : (
                 <Button
                   mode="contained"
-                  buttonColor="#D32719"
-                  labelStyle={{ color: "white" }}
+                  buttonColor={colors.primary}
+                  labelStyle={{ color: colors.onPrimary }}
                   style={FormStyles.button}
                   onPress={handleRegister}
                 >
@@ -124,9 +140,9 @@ const RegisterScreen = ({ navigation }: any) => {
                 </Button>
               )}
               <View style={styles.linksContainer}>
-                <Card style={styles.linkCard} mode="elevated">
+                <Card style={[styles.linkCard, { backgroundColor: colors.secondary }]} mode="elevated">
                   <TouchableOpacity onPress={() => navigation.navigate("Login")}>
-                    <Text style={styles.linkText}>Já tem uma conta? Entrar</Text>
+                    <Text style={[styles.linkText, { color: colors.onSecondary }]}>Já tem uma conta? Entrar</Text>
                   </TouchableOpacity>
                 </Card>
               </View>
@@ -144,13 +160,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     padding: 16,
-    backgroundColor: "#fff",
   },
   card: {
     width: "100%",
     maxWidth: 400,
     padding: 10,
-    backgroundColor: "#fff",
   },
   logo: {
     width: 300,
@@ -174,7 +188,6 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   linkCard: {
-    backgroundColor: "#a1a1a1",
     borderRadius: 8,
     elevation: 2,
     paddingVertical: 6,
@@ -184,10 +197,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   linkText: {
-    color: "#fff",
     textAlign: "center",
     fontSize: 14,
-    // textDecorationLine: "underline",
   },
 });
 

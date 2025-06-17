@@ -1,7 +1,6 @@
 import 'react-native-reanimated'
 import 'react-native-gesture-handler'
-
-import React, { useState } from "react";
+import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import {
@@ -12,59 +11,22 @@ import {
 } from "@expo-google-fonts/inter";
 import {
   Provider as PaperProvider,
-  MD3LightTheme as DefaultTheme,
   ActivityIndicator,
+  Button,
+  useTheme, // <-- Para usar o tema nas telas
+  Text,     // <-- Usando o Text do Paper para herdar o tema
 } from "react-native-paper";
+import { View, StyleSheet } from "react-native";
 
 import { ProtectedRoutes } from "./src/routes/protectedRoutes";
 import { AuthProvider, useAuth } from "./src/context/AuthContext";
 import { AuthListener } from "./src/components/AuthListener";
-
-// Telas públicas
-const PublicScreens = {
-  Login: require("./src/screens/login").default,
-  Register: require("./src/screens/register").default,
-  Loading: require("./src/screens/loading").default,
-
-};
+import { ThemeProvider, useThemeMode } from "./src/context/ThemeContext";
 
 const Stack = createNativeStackNavigator();
 
-const theme = {
-  ...DefaultTheme,
-  fonts: {
-    ...DefaultTheme.fonts,
-    bodyLarge: {
-      ...DefaultTheme.fonts.bodyLarge,
-      fontFamily: "Inter_400Regular",
-    },
-    bodyMedium: {
-      ...DefaultTheme.fonts.bodyMedium,
-      fontFamily: "Inter_400Regular",
-    },
-    bodySmall: {
-      ...DefaultTheme.fonts.bodySmall,
-      fontFamily: "Inter_400Regular",
-    },
-    titleLarge: {
-      ...DefaultTheme.fonts.titleLarge,
-      fontFamily: "Inter_700Bold",
-    },
-    titleMedium: {
-      ...DefaultTheme.fonts.titleMedium,
-      fontFamily: "Inter_500Medium",
-    },
-    titleSmall: {
-      ...DefaultTheme.fonts.titleSmall,
-      fontFamily: "Inter_500Medium",
-    },
-  },
-};
-
 export default function App() {
-
-
-
+  // Carrega as fontes customizadas
   const [fontsLoaded] = useFonts({
     Inter_400Regular,
     Inter_500Medium,
@@ -74,19 +36,67 @@ export default function App() {
   if (!fontsLoaded) {
     return <ActivityIndicator style={{ flex: 1 }} />;
   }
-  {/* AuthListener Verifica se o evento global de ordem de logout foi lançado */ }
+
+  // Envolve tudo com AuthProvider e ThemeProvider
   return (
     <AuthProvider>
       <AuthListener />
-      <PaperProvider theme={theme}>
-        <NavigationContainer>
-          <Routes />
-        </NavigationContainer>
-      </PaperProvider>
+      <ThemeProvider>
+        <Main />
+      </ThemeProvider>
     </AuthProvider>
   );
 }
 
+// Componente principal que aplica o tema global
+function Main() {
+  const { theme, toggleTheme, isDarkMode } = useThemeMode();
+
+  // Personaliza as fontes do tema
+  const customTheme = {
+    ...theme,
+    fonts: {
+      ...theme.fonts,
+      bodyLarge: { ...theme.fonts.bodyLarge, fontFamily: "Inter_400Regular" },
+      bodyMedium: { ...theme.fonts.bodyMedium, fontFamily: "Inter_400Regular" },
+      bodySmall: { ...theme.fonts.bodySmall, fontFamily: "Inter_400Regular" },
+      titleLarge: { ...theme.fonts.titleLarge, fontFamily: "Inter_700Bold" },
+      titleMedium: { ...theme.fonts.titleMedium, fontFamily: "Inter_500Medium" },
+      titleSmall: { ...theme.fonts.titleSmall, fontFamily: "Inter_500Medium" },
+    },
+  };
+
+  return (
+    // Aplica o tema global do PaperProvider
+    <PaperProvider theme={customTheme}>
+      <NavigationContainer>
+        {/* Exemplo de tela principal usando as cores do tema */}
+        <View style={[styles.themeDemo, { backgroundColor: customTheme.colors.background }]}>
+          <Button mode="contained-tonal" onPress={toggleTheme}>
+            {isDarkMode ? "Modo Claro" : "Modo Escuro"}
+          </Button>
+          
+        </View>
+        <Routes />
+      </NavigationContainer>
+    </PaperProvider>
+  );
+}
+
+const styles = StyleSheet.create({
+  themeDemo: {
+    position: "absolute",
+    top: 40,
+    right: 20,
+    zIndex: 999,
+    alignItems: "center",
+    padding: 8,
+    borderRadius: 8,
+    // Não defina cor fixa aqui!
+  },
+});
+
+// Rotas públicas e protegidas
 function Routes() {
   const { isAuthenticated } = useAuth();
 
@@ -120,3 +130,4 @@ function Routes() {
     </Stack.Navigator>
   );
 }
+

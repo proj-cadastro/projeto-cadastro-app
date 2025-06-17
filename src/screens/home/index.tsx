@@ -1,37 +1,37 @@
 import React, { useState } from "react";
-import { SafeAreaView, Text, StyleSheet, View, Image, TouchableOpacity } from "react-native";
+import { SafeAreaView, Text, StyleSheet, View, Image } from "react-native";
 import HamburgerMenu from "../../components/HamburgerMenu";
 import Chart from "../../components/Chart";
 import { useProfessor } from "../../context/ProfessorContext";
 import { groupByTitulacao } from "../../utils/filterUtilities";
-import { MaterialIcons } from "@expo/vector-icons"; // ou use outro ícone
 import { InteractBtn } from "../../components/atoms/InteractBtn";
+import { useTheme } from "react-native-paper"; // ou do seu context de tema
 
 const HomeScreen = () => {
   const { professors } = useProfessor();
   const { labels, data } = groupByTitulacao(professors);
-
   const [chartType, setChartType] = useState<"bar" | "pie">("bar");
+  const { colors } = useTheme(); // Hook do tema
 
   const toggleChartType = () => {
     setChartType((prev) => (prev === "bar" ? "pie" : "bar"));
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       <View style={styles.menuContainer}>
         <HamburgerMenu />
       </View>
       {professors.length !== 0 ? (
         <View style={styles.content}>
-          <Text style={styles.title}>Distribuição de Professores por Titulação</Text>
+          <Text style={[styles.title, { color: colors.onBackground }]}>
+            Distribuição de Professores por Titulação
+          </Text>
           <Chart data={data} label={labels} chartType={chartType} />
-
           <InteractBtn
             name={chartType === "bar" ? "pie-chart" : "bar-chart"}
             onPressFn={toggleChartType}
           />
-
         </View>
       ) : (
         <View style={styles.emptyContent}>
@@ -39,7 +39,7 @@ const HomeScreen = () => {
             source={require("../../../assets/logoFatecCapi.png")}
             style={styles.logo}
           />
-          <Text style={styles.title}>
+          <Text style={[styles.title, { color: colors.onBackground }]}>
             Bem vindo ao Sistema Gerenciador de Professores da Fatec Votorantim!
           </Text>
         </View>
@@ -51,8 +51,6 @@ const HomeScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
-
   },
   menuContainer: {
     position: "absolute",
@@ -71,9 +69,8 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: "bold",
     marginBottom: 24,
-    color: "#333",
     alignSelf: "center",
-    textAlign: 'center'
+    textAlign: "center",
   },
   logo: {
     width: 200,
@@ -86,7 +83,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 20,
   },
-
 });
 
 export default HomeScreen;

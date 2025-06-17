@@ -5,12 +5,10 @@ import { isTokenValid } from "../utils/jwt";
 import { authEventEmitter } from "../events/AuthEventEmitter";
 
 const api = axios.create({
-<<<<<<< Updated upstream
-  baseURL: API_URL,
-=======
-  baseURL: 'http://10.1.22.133:3000',
+
+  baseURL: 'http://192.168.1.124:3000',
   // baseURL: API_URL,
->>>>>>> Stashed changes
+
   headers: {
     "Content-Type": "application/json",
   },

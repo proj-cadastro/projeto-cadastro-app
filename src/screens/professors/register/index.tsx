@@ -9,18 +9,15 @@ import {
   Image
 } from "react-native";
 import HamburgerMenu from "../../../components/HamburgerMenu";
-
 import { FormStyles } from "../../../style/FormStyles";
-import { Button, Card, Modal, Portal, ActivityIndicator } from "react-native-paper";
+import { Button, Card, Modal, Portal, ActivityIndicator, useTheme } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
-
 import { NavigationProp } from "../../../routes/rootStackParamList ";
-
 import { gerarProfessorIA } from "../../../services/ia/iaService";
-
 
 const RegisterProfessorScreen = () => {
   const navigation = useNavigation<NavigationProp>();
+  const { colors } = useTheme(); // <-- Hook do tema
 
   const [errorMsg, setErrorMsg] = React.useState<string | null>(null);
   const [modalVisible, setModalVisible] = React.useState(false);
@@ -53,40 +50,35 @@ const RegisterProfessorScreen = () => {
   };
 
   return (
-    <SafeAreaView style={FormStyles.safeArea}>
+    <SafeAreaView style={[FormStyles.safeArea, { backgroundColor: colors.background }]}>
       <View style={FormStyles.menuContainer}>
         <HamburgerMenu />
       </View>
-      <View style={FormStyles.container}>
+      <View style={[FormStyles.container, { backgroundColor: colors.background }]}>
         <ScrollView
           contentContainerStyle={FormStyles.scrollContent}
           keyboardShouldPersistTaps="handled"
         >
           <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-            <Card style={[FormStyles.card, { width: "90%" }]} mode="elevated">
-
+            <Card style={[FormStyles.card, { width: "90%", backgroundColor: colors.elevation.level1 }]} mode="elevated">
               <Card.Content>
-
                 <Image
                   source={require("../../../../assets/professor.jpg")}
                   style={{ width: 300, height: 200, alignSelf: "center", marginBottom: 16 }}
                   resizeMode="contain"
                 />
-
-                <Text style={FormStyles.title}>Cadastro de Professor</Text>
-
-                <Text style={FormStyles.description}>
+                <Text style={[FormStyles.title, { color: colors.onBackground }]}>Cadastro de Professor</Text>
+                <Text style={[FormStyles.description, { color: colors.onBackground }]}>
                   Escolha como deseja cadastrar.
                 </Text>
               </Card.Content>
-
               <Card.Actions
                 style={{ flexDirection: "column", gap: 10, marginTop: 10 }}
               >
                 <Button
                   mode="contained"
-                  buttonColor="green"
-                  labelStyle={{ color: "white" }}
+                  buttonColor={colors.primary}
+                  labelStyle={{ color: colors.onPrimary }}
                   style={FormStyles.button}
                   onPress={() =>
                     navigation.navigate("RegisterProfessorsStepOne" as never)
@@ -94,32 +86,28 @@ const RegisterProfessorScreen = () => {
                 >
                   Cadastrar Manualmente
                 </Button>
-
                 <Button
                   mode="contained"
-                  buttonColor="blue"
-                  labelStyle={{ color: "white" }}
+                  buttonColor={colors.secondary}
+                  labelStyle={{ color: colors.onSecondary }}
                   style={FormStyles.button}
                   onPress={() => navigation.navigate("ImportProfessors" as never)}
                 >
                   Importar Planilha
                 </Button>
-
                 <Button
                   mode="contained"
-                  buttonColor="#FF9800"
-                  labelStyle={{ color: "white" }}
+                  buttonColor={colors.tertiary || "#FF9800"}
+                  labelStyle={{ color: colors.onTertiary || "#fff" }}
                   style={FormStyles.button}
                   onPress={() => setModalVisible(true)}
                 >
                   Gerar com IA
                 </Button>
-
               </Card.Actions>
             </Card>
           </View>
         </ScrollView>
-
         <Portal>
           <Modal
             visible={modalVisible}
@@ -127,17 +115,17 @@ const RegisterProfessorScreen = () => {
               setModalVisible(false);
               setErrorMsg(null);
             }}
-            contentContainerStyle={styles.modalContainer}
+            contentContainerStyle={[styles.modalContainer, { backgroundColor: colors.elevation.level2 }]}
           >
             {loading ? (
               <View style={{ alignItems: "center" }}>
-                <ActivityIndicator size="large" color="#D32719" />
-                <Text style={{ marginTop: 16 }}>{loadingMsg}</Text>
+                <ActivityIndicator size="large" color={colors.primary} />
+                <Text style={{ marginTop: 16, color: colors.onBackground }}>{loadingMsg}</Text>
               </View>
             ) : (
               <>
-                <Text style={styles.modalTitle}>Gerar Professor com IA</Text>
-                <Text style={styles.modalDescription}>
+                <Text style={[styles.modalTitle, { color: colors.onBackground }]}>Gerar Professor com IA</Text>
+                <Text style={[styles.modalDescription, { color: colors.onBackground }]}>
                   A IA irá preencher automaticamente os campos:{" "}
                   <Text style={styles.bold}>Nome</Text>,{" "}
                   <Text style={styles.bold}>Titulação</Text>,{" "}
@@ -146,7 +134,7 @@ const RegisterProfessorScreen = () => {
                   <Text style={styles.bold}>Lattes</Text>. Você poderá revisar e completar os demais campos.
                 </Text>
                 {errorMsg && (
-                  <Text style={{ color: "red", marginBottom: 10 }}>{errorMsg}</Text>
+                  <Text style={{ color: colors.error, marginBottom: 10 }}>{errorMsg}</Text>
                 )}
                 <View style={styles.modalButtonRow}>
                   <Button
@@ -155,15 +143,15 @@ const RegisterProfessorScreen = () => {
                       setModalVisible(false);
                       setErrorMsg(null);
                     }}
-                    style={styles.cancelButton}
-                    labelStyle={styles.cancelButtonLabel}
+                    style={[styles.cancelButton, { borderColor: colors.outline }]}
+                    labelStyle={[styles.cancelButtonLabel, { color: colors.onBackground }]}
                   >
                     Cancelar
                   </Button>
                   <Button
                     mode="contained"
-                    buttonColor={FormStyles.button.backgroundColor}
-                    labelStyle={styles.confirmButtonLabel}
+                    buttonColor={colors.primary}
+                    labelStyle={[styles.confirmButtonLabel, { color: colors.onPrimary }]}
                     style={styles.confirmButton}
                     onPress={handleGerarIA}
                   >
@@ -174,7 +162,6 @@ const RegisterProfessorScreen = () => {
             )}
           </Modal>
         </Portal>
-
       </View>
     </SafeAreaView>
   );
@@ -182,7 +169,7 @@ const RegisterProfessorScreen = () => {
 
 const styles = StyleSheet.create({
   modalContainer: {
-    backgroundColor: "white",
+    // backgroundColor: "white", // agora vem do tema
     padding: 20,
     margin: 20,
     borderRadius: 10,
@@ -209,12 +196,11 @@ const styles = StyleSheet.create({
   cancelButton: {
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: "black",
     flex: 1,
     marginRight: 8,
   },
   cancelButtonLabel: {
-    color: "black",
+    // color: "black", // agora vem do tema
   },
   confirmButton: {
     borderRadius: 8,
@@ -222,7 +208,7 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
   confirmButtonLabel: {
-    color: "white",
+    // color: "white", // agora vem do tema
   },
 });
 

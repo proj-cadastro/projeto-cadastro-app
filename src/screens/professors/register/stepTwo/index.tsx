@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useState } from "react";
 import {
   SafeAreaView,
@@ -13,7 +11,7 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
 } from "react-native";
-import { Card, Button, ProgressBar, MD3Colors, Modal, Portal } from "react-native-paper";
+import { Card, Button, ProgressBar, MD3Colors, Modal, Portal, useTheme } from "react-native-paper";
 import ListPicker from "../../../../components/atoms/ListPicker";
 import HamburgerMenu from "../../../../components/HamburgerMenu";
 import { useRoute, useNavigation } from "@react-navigation/native";
@@ -29,6 +27,7 @@ import { professorRegisterStep2Schema } from "../../../../validations/professors
 
 export default function ProfessorFormStepTwo() {
   const navigation = useNavigation();
+  const { colors } = useTheme(); // <-- Hook do tema
   const { refreshProfessorsData } = useProfessor();
   const route = useRoute<RouteParamsProps<"RegisterProfessorsStepTwo">>();
   const { partialDataProfessor } = route.params;
@@ -39,7 +38,6 @@ export default function ProfessorFormStepTwo() {
   const [observacoes, setObservacoes] = useState("");
 
   const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
-  
   const [modalVisible, setModalVisible] = useState(false);
   const [modalMsg, setModalMsg] = useState("");
   const [missingFields, setMissingFields] = useState<string[]>([]);
@@ -102,7 +100,7 @@ export default function ProfessorFormStepTwo() {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <SafeAreaView style={FormStyles.safeArea}>
+        <SafeAreaView style={[FormStyles.safeArea, { backgroundColor: colors.background }]}>
           <View style={FormStyles.menuContainer}>
             <HamburgerMenu />
           </View>
@@ -110,79 +108,85 @@ export default function ProfessorFormStepTwo() {
             mode="outlined"
             onPress={() => navigation.goBack()}
             style={FormStyles.goBackButton}
-            labelStyle={{ color: "white" }}
+            labelStyle={{ color: colors.onPrimary }}
           >
             Voltar
           </Button>
-          <View style={FormStyles.container}>
+          <View style={[FormStyles.container, { backgroundColor: colors.background }]}>
             <ScrollView
               contentContainerStyle={FormStyles.scrollContent}
               keyboardShouldPersistTaps="handled"
             >
-              <Card style={[FormStyles.card]} mode="elevated">
+              <Card style={[FormStyles.card, { backgroundColor: colors.elevation.level1 }]} mode="elevated">
                 <Card.Content>
-                  <Text style={FormStyles.title}>2º Etapa</Text>
-                  <Text style={FormStyles.description}>
+                  <Text style={[FormStyles.title, { color: colors.onBackground }]}>2º Etapa</Text>
+                  <Text style={[FormStyles.description, { color: colors.onBackground }]}>
                     Insira os dados do professor para registrá-lo no sistema
                   </Text>
-                  <Text style={FormStyles.label}>Lattes</Text>
+                  <Text style={[FormStyles.label, { color: colors.onBackground }]}>Lattes</Text>
                   {fieldErrors.lattes && (
-                    <Text style={styles.errorText}>{fieldErrors.lattes}</Text>
+                    <Text style={[styles.errorText, { color: colors.error }]}>{fieldErrors.lattes}</Text>
                   )}
                   <TextInput
                     placeholder="ex: http://lattes.cnpq.br/7144753485915650"
                     style={[
                       FormStyles.input,
+                      { color: colors.onBackground, backgroundColor: colors.surface, borderColor: colors.outline },
                       fieldErrors.lattes ? styles.inputError : null,
                     ]}
+                    placeholderTextColor={colors.onSurfaceVariant}
                     value={lattes}
                     onChangeText={setLattes}
                   />
-                  <Text style={FormStyles.label}>Referência</Text>
+                  <Text style={[FormStyles.label, { color: colors.onBackground }]}>Referência</Text>
                   {fieldErrors.referencia && (
-                    <Text style={styles.errorText}>
+                    <Text style={[styles.errorText, { color: colors.error }]}>
                       {fieldErrors.referencia}
                     </Text>
                   )}
                   <ListPicker
-                      items={Object.values(Referencia)}
-                      selected={referencia} 
-                      onSelect={(ref: Referencia) => setReferencia(ref)}
+                    items={Object.values(Referencia)}
+                    selected={referencia}
+                    onSelect={(ref: Referencia) => setReferencia(ref)}
                   />
-                  <Text style={FormStyles.label}>Observações</Text>
+                  <Text style={[FormStyles.label, { color: colors.onBackground }]}>Observações</Text>
                   {fieldErrors.observacoes && (
-                    <Text style={styles.errorText}>
+                    <Text style={[styles.errorText, { color: colors.error }]}>
                       {fieldErrors.observacoes}
                     </Text>
                   )}
                   <TextInput
                     placeholder="Professor de licença..."
-                    style={FormStyles.input}
+                    style={[
+                      FormStyles.input,
+                      { color: colors.onBackground, backgroundColor: colors.surface, borderColor: colors.outline }
+                    ]}
+                    placeholderTextColor={colors.onSurfaceVariant}
                     onChangeText={setObservacoes}
                     value={observacoes}
                   />
-                  <Text style={FormStyles.label}>Professor está ativo?</Text>
+                  <Text style={[FormStyles.label, { color: colors.onBackground }]}>Professor está ativo?</Text>
                   {fieldErrors.professorAtivo && (
-                    <Text style={styles.errorText}>
+                    <Text style={[styles.errorText, { color: colors.error }]}>
                       {fieldErrors.professorAtivo}
                     </Text>
                   )}
                   <ListPicker
-                      items={Object.values(StatusAtividade)}
-                      selected={statusAtividade} // <-- Adicione esta prop
-                      onSelect={(status) => setStatusAtividade(status)}
+                    items={Object.values(StatusAtividade)}
+                    selected={statusAtividade}
+                    onSelect={(status) => setStatusAtividade(status)}
                   />
                 </Card.Content>
                 <Card.Actions>
                   <Button
-                    labelStyle={{ color: "white" }}
-                    style={FormStyles.button}
+                    labelStyle={{ color: colors.onPrimary }}
+                    style={[FormStyles.button, { backgroundColor: colors.primary }]}
                     onPress={handleSubmit}
                   >
                     Finalizar
                   </Button>
                 </Card.Actions>
-                <ProgressBar progress={0.8} color={MD3Colors.neutral40} />
+                <ProgressBar progress={0.8} color={colors.primary} />
               </Card>
             </ScrollView>
           </View>
@@ -191,34 +195,34 @@ export default function ProfessorFormStepTwo() {
               visible={modalVisible}
               onDismiss={() => setModalVisible(false)}
               contentContainerStyle={{
-                backgroundColor: "white",
+                backgroundColor: colors.elevation.level2,
                 padding: 20,
                 margin: 20,
                 borderRadius: 10,
               }}
             >
-              <Text style={styles.modalTitle}>
+              <Text style={[styles.modalTitle, { color: colors.onBackground }]}>
                 Erro ao cadastrar professor
               </Text>
               {missingFields.length > 0 ? (
                 <>
-                  <Text style={{ marginBottom: 10 }}>
+                  <Text style={{ marginBottom: 10, color: colors.onBackground }}>
                     Preencha corretamente os campos obrigatórios:
                   </Text>
                   {missingFields.map((msg, idx) => (
-                    <Text key={idx} style={{ color: "red", marginBottom: 2 }}>
+                    <Text key={idx} style={{ color: colors.error, marginBottom: 2 }}>
                       - {msg}
                     </Text>
                   ))}
                   <View style={{ height: 15 }} />
                 </>
               ) : (
-                <Text style={{ marginBottom: 35 }}>{modalMsg}</Text>
+                <Text style={{ marginBottom: 35, color: colors.onBackground }}>{modalMsg}</Text>
               )}
               <Button
                 mode="contained"
-                buttonColor={FormStyles.button.backgroundColor}
-                labelStyle={{ color: "white" }}
+                buttonColor={colors.primary}
+                labelStyle={{ color: colors.onPrimary }}
                 style={FormStyles.button}
                 onPress={() => setModalVisible(false)}
               >
@@ -226,7 +230,6 @@ export default function ProfessorFormStepTwo() {
               </Button>
             </Modal>
           </Portal>
-
         </SafeAreaView>
       </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
@@ -235,7 +238,6 @@ export default function ProfessorFormStepTwo() {
 
 const styles = StyleSheet.create({
   errorText: {
-    color: "red",
     alignSelf: "flex-start",
     marginBottom: 8,
     marginLeft: 2,

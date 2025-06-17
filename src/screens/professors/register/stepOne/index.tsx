@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useState } from "react";
 import {
   SafeAreaView,
@@ -9,7 +7,7 @@ import {
   TextInput,
   StyleSheet,
 } from "react-native";
-import { Card, Button, ProgressBar, MD3Colors } from "react-native-paper";
+import { Card, Button, ProgressBar, useTheme } from "react-native-paper";
 import ListPicker from "../../../../components/atoms/ListPicker";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { NavigationProp, RouteParamsProps } from "../../../../routes/rootStackParamList ";
@@ -22,6 +20,7 @@ export default function ProfessorFormStepOne() {
   const navigation = useNavigation<NavigationProp>();
   const route = useRoute<RouteParamsProps<"RegisterProfessorsStepOne">>();
   const iaData = route.params?.iaData;
+  const { colors } = useTheme(); // <-- Hook do tema
 
   const [nome, setNome] = useState(iaData?.nome || "");
   const [email, setEmail] = useState(iaData?.email || "");
@@ -59,38 +58,40 @@ export default function ProfessorFormStepOne() {
   };
 
   return (
-    <SafeAreaView style={FormStyles.safeArea}>
+    <SafeAreaView style={[FormStyles.safeArea, { backgroundColor: colors.background }]}>
       <View style={FormStyles.menuContainer}>
         <HamburgerMenu />
       </View>
       <Button
         onPress={() => navigation.goBack()}
         style={FormStyles.goBackButton}
-        labelStyle={{ color: "white" }}
+        labelStyle={{ color: colors.onPrimary }}
       >
         Voltar
       </Button>
-      <View style={FormStyles.container}>
+      <View style={[FormStyles.container, { backgroundColor: colors.background }]}>
         <ScrollView
           contentContainerStyle={FormStyles.scrollContent}
           keyboardShouldPersistTaps="handled"
         >
-          <Card style={FormStyles.card} mode="elevated">
+          <Card style={[FormStyles.card, { backgroundColor: colors.elevation.level1 }]} mode="elevated">
             <Card.Content>
-              <Text style={FormStyles.title}>Cadastro de Professor</Text>
-              <Text style={FormStyles.description}>
+              <Text style={[FormStyles.title, { color: colors.onBackground }]}>Cadastro de Professor</Text>
+              <Text style={[FormStyles.description, { color: colors.onBackground }]}>
                 Insira os dados do professor para registrá-lo no sistema
               </Text>
-              <Text style={FormStyles.label}>Nome</Text>
+              <Text style={[FormStyles.label, { color: colors.onBackground }]}>Nome</Text>
               {fieldErrors.nome && (
-                <Text style={styles.errorText}>{fieldErrors.nome}</Text>
+                <Text style={[styles.errorText, { color: colors.error }]}>{fieldErrors.nome}</Text>
               )}
               <TextInput
                 placeholder="ex: José Maria da Silva"
                 style={[
                   FormStyles.input,
+                  { color: colors.onBackground, backgroundColor: colors.surface, borderColor: colors.outline },
                   fieldErrors.nome ? styles.inputError : null,
                 ]}
+                placeholderTextColor={colors.onSurfaceVariant}
                 value={nome}
                 onChangeText={(text) => {
                   setNome(text);
@@ -102,16 +103,18 @@ export default function ProfessorFormStepOne() {
                     });
                 }}
               />
-              <Text style={FormStyles.label}>Email</Text>
+              <Text style={[FormStyles.label, { color: colors.onBackground }]}>Email</Text>
               {fieldErrors.email && (
-                <Text style={styles.errorText}>{fieldErrors.email}</Text>
+                <Text style={[styles.errorText, { color: colors.error }]}>{fieldErrors.email}</Text>
               )}
               <TextInput
                 placeholder="ex: jose.maria@fatec.sp.gov.br"
                 style={[
                   FormStyles.input,
+                  { color: colors.onBackground, backgroundColor: colors.surface, borderColor: colors.outline },
                   fieldErrors.email ? styles.inputError : null,
                 ]}
+                placeholderTextColor={colors.onSurfaceVariant}
                 onChangeText={(text) => {
                   setEmail(text);
                   if (fieldErrors.email)
@@ -123,34 +126,35 @@ export default function ProfessorFormStepOne() {
                 }}
                 value={email}
               />
-              <Text style={FormStyles.label}>Titulação</Text>
+              <Text style={[FormStyles.label, { color: colors.onBackground }]}>Titulação</Text>
               {fieldErrors.titulacao && (
-                <Text style={styles.errorText}>{fieldErrors.titulacao}</Text>
+                <Text style={[styles.errorText, { color: colors.error }]}>{fieldErrors.titulacao}</Text>
               )}
               <ListPicker
                 items={Object.values(Titulacao)}
                 selected={titulacao}
                 onSelect={(titulacao: Titulacao) => {
-                    setTitulacao(titulacao);
-                    if (fieldErrors.titulacao)
-                        setFieldErrors((prev) => {
-                            const updated = { ...prev };
-                            delete updated.titulacao;
-                            return updated;
-                        });
+                  setTitulacao(titulacao);
+                  if (fieldErrors.titulacao)
+                    setFieldErrors((prev) => {
+                      const updated = { ...prev };
+                      delete updated.titulacao;
+                      return updated;
+                    });
                 }}
-            />
-              <Text style={FormStyles.label}>Código da Unidade</Text>
+              />
+              <Text style={[FormStyles.label, { color: colors.onBackground }]}>Código da Unidade</Text>
               {fieldErrors.idUnidade && (
-                <Text style={styles.errorText}>{fieldErrors.idUnidade}</Text>
+                <Text style={[styles.errorText, { color: colors.error }]}>{fieldErrors.idUnidade}</Text>
               )}
               <TextInput
                 placeholder="ex: 301"
                 style={[
                   FormStyles.input,
-                  { width: "100%" },
+                  { width: "100%", color: colors.onBackground, backgroundColor: colors.surface, borderColor: colors.outline },
                   fieldErrors.idUnidade ? styles.inputError : null,
                 ]}
+                placeholderTextColor={colors.onSurfaceVariant}
                 onChangeText={(text) => {
                   setIdUnidade(text);
                   if (fieldErrors.idUnidade)
@@ -166,15 +170,15 @@ export default function ProfessorFormStepOne() {
 
             <Card.Actions>
               <Button
-                labelStyle={{ color: "white" }}
-                style={FormStyles.button}
+                labelStyle={{ color: colors.onPrimary }}
+                style={[FormStyles.button, { backgroundColor: colors.primary }]}
                 onPress={handleAdvance}
-            >
+              >
                 Avançar
-            </Button>
+              </Button>
             </Card.Actions>
 
-            <ProgressBar progress={0.5} color={MD3Colors.neutral40} />
+            <ProgressBar progress={0.5} color={colors.primary} />
 
           </Card>
         </ScrollView>
@@ -185,7 +189,6 @@ export default function ProfessorFormStepOne() {
 
 const styles = StyleSheet.create({
   errorText: {
-    color: "red",
     alignSelf: "flex-start",
     marginBottom: 8,
     marginLeft: 2,

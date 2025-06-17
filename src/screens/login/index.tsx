@@ -12,7 +12,7 @@ import {
   Keyboard,
   TouchableWithoutFeedback,
 } from "react-native";
-import { Card, Button } from "react-native-paper";
+import { Card, Button, useTheme } from "react-native-paper"; // <-- useTheme importado
 import { useAuth } from "../../context/AuthContext";
 import { login as loginService } from "../../services/users/authService";
 import { userLoginSchema } from "../../validations/usersValidations";
@@ -24,6 +24,7 @@ const LoginScreen = ({ navigation }: any) => {
   const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
   const [isLoading, setIsLoading] = useState(false);
   const { login: authLogin } = useAuth();
+  const { colors } = useTheme(); // <-- Hook do tema
 
   const handleLogin = async () => {
     setFieldErrors({});
@@ -59,16 +60,19 @@ const LoginScreen = ({ navigation }: any) => {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-        <View style={styles.fullScreenContainer}>
-          <Card style={[FormStyles.card, styles.card]} mode="elevated">
+        {/* Troque o backgroundColor fixo pelo do tema */}
+        <View style={[styles.fullScreenContainer, { backgroundColor: colors.background }]}>
+          {/* Troque o backgroundColor do Card pelo do tema */}
+          <Card style={[FormStyles.card, styles.card, { backgroundColor: colors.elevation.level1 }]} mode="elevated">
             <Card.Content>
               <Image
                 source={require("../../../assets/logoFatecCapi.png")}
                 style={styles.logo}
                 resizeMode="contain"
               />
-              <Text style={FormStyles.title}>Login</Text>
-              <Text style={FormStyles.description}>
+              {/* Troque a cor do texto pelo do tema */}
+              <Text style={[FormStyles.title, { color: colors.onBackground }]}>Login</Text>
+              <Text style={[FormStyles.description, { color: colors.onBackground }]}>
                 Entre com seu e-mail e senha para acessar o sistema.
               </Text>
             </Card.Content>
@@ -84,7 +88,11 @@ const LoginScreen = ({ navigation }: any) => {
               )}
               <TextInput
                 placeholder="E-mail"
-                style={[FormStyles.input, { width: "100%" }]}
+                style={[
+                  FormStyles.input,
+                  { width: "100%", color: colors.onBackground, borderColor: colors.outline, backgroundColor: colors.surface }
+                ]}
+                placeholderTextColor={colors.onSurfaceVariant}
                 value={email}
                 onChangeText={setEmail}
                 autoCapitalize="none"
@@ -93,7 +101,11 @@ const LoginScreen = ({ navigation }: any) => {
               />
               <TextInput
                 placeholder="Senha"
-                style={[FormStyles.input, { width: "100%" }]}
+                style={[
+                  FormStyles.input,
+                  { width: "100%", color: colors.onBackground, borderColor: colors.outline, backgroundColor: colors.surface }
+                ]}
+                placeholderTextColor={colors.onSurfaceVariant}
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry
@@ -101,14 +113,14 @@ const LoginScreen = ({ navigation }: any) => {
               {isLoading ? (
                 <ActivityIndicator
                   size="large"
-                  color="#D32719"
+                  color={colors.primary}
                   style={{ marginBottom: 20, marginTop: 10 }}
                 />
               ) : (
                 <Button
                   mode="contained"
-                  buttonColor="#D32719"
-                  labelStyle={{ color: "white" }}
+                  buttonColor={colors.primary}
+                  labelStyle={{ color: colors.onPrimary }}
                   style={FormStyles.button}
                   onPress={handleLogin}
                 >
@@ -116,18 +128,19 @@ const LoginScreen = ({ navigation }: any) => {
                 </Button>
               )}
               <View style={styles.linksContainer}>
-                <Card style={styles.linkCard} mode="elevated">
+                {/* Troque o backgroundColor do Card pelo do tema */}
+                <Card style={[styles.linkCard, { backgroundColor: colors.secondary }]} mode="elevated">
                   <TouchableOpacity
                     onPress={() => navigation.navigate("ForgetPasswordStepOne")}
                   >
-                    <Text style={styles.linkText}>Esqueceu sua senha?</Text>
+                    <Text style={[styles.linkText, { color: colors.onSecondary }]}>Esqueceu sua senha?</Text>
                   </TouchableOpacity>
                 </Card>
-                <Card style={styles.linkCard} mode="elevated">
+                <Card style={[styles.linkCard, { backgroundColor: colors.secondary }]} mode="elevated">
                   <TouchableOpacity
                     onPress={() => navigation.navigate("Register")}
                   >
-                    <Text style={styles.linkText}>
+                    <Text style={[styles.linkText, { color: colors.onSecondary }]}>
                       Não tem uma conta? Cadastre-se aqui
                     </Text>
                   </TouchableOpacity>
@@ -147,13 +160,13 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     padding: 16,
-    backgroundColor: "#fff",
+    // backgroundColor: "#fff", // REMOVIDO
   },
   card: {
     width: "100%",
     maxWidth: 400,
     padding: 10,
-    backgroundColor: "#fff",
+    // backgroundColor: "#fff", // REMOVIDO
   },
   logo: {
     width: 300,
@@ -174,7 +187,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   linkCard: {
-    backgroundColor: "#a1a1a1",
+    // backgroundColor: "#a1a1a1", // REMOVIDO
     borderRadius: 8,
     elevation: 2,
     paddingVertical: 6,
@@ -184,10 +197,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   linkText: {
-    color: "#fff",
+    // color: "#fff", // REMOVIDO
     textAlign: "center",
     fontSize: 14,
-    // textDecorationLine: "underline",
   },
 });
 
