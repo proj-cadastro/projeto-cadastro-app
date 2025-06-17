@@ -35,24 +35,19 @@ const ListCoursesScreen = () => {
     EAD: false,
   });
   const [showModalidades, setShowModalidades] = useState(false);
-  const [expandedRow, setExpandedRow] = useState<number | null>(null);
   const [expandedCard, setExpandedCard] = useState<number | null>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedColumns, setSelectedColumns] = useState<string[]>([]);
 
   const { courses, refreshCoursesData } = useCourse();
   const { getProfessorById } = useProfessor();
-  const columnOptions = Object.keys(courses[0] || {});
 
-  console.log(courses);
+  const columnOptions = Object.keys(courses[0] || {}).filter(
+    (key) => key !== "id" && key !== "coordenadorId"
+  );
 
-  const handleFiltrar = () => {
-    // lógica de filtragem aqui (se quiser ajuda com isso, posso montar também)
-  };
 
-  const handleImprimir = () => {
-    // lógica de impressão ou exportação
-  };
+
 
   const handleExportClick = () => {
     setIsModalVisible(true);
@@ -60,7 +55,7 @@ const ListCoursesScreen = () => {
 
   const handleShareData = async () => {
     try {
-      await shareDataToPdfFile(courses, selectedColumns);
+      await shareDataToPdfFile(courses, selectedColumns, "course");
     } catch (error) {
       console.log(error);
     } finally {

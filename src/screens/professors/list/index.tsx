@@ -51,6 +51,8 @@ const ListProfessorScreen = () => {
 
   const { professors, refreshProfessorsData } = useProfessor();
 
+  console.log(professors)
+
   useEffect(() => {
     refreshProfessorsData();
   }, []);
@@ -98,7 +100,7 @@ const ListProfessorScreen = () => {
   const handleShareData = async () => {
     try {
       setIsLoading(true);
-      await shareDataToPdfFile(professors, selectedColumns);
+      await shareDataToPdfFile(professors, selectedColumns, "professor");
     } catch (error) {
       console.log(error);
     } finally {
