@@ -2,7 +2,7 @@
   "expo": {
     "name": "projeto-cadastro-app",
     "slug": "projeto-cadastro-app",
-    "version": "1.7.1",
+    "version": "1.7.2",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
