@@ -122,6 +122,9 @@ export default function ProfessorFormStepOne() {
                     });
                 }}
                 value={email}
+                autoCapitalize="none"
+                keyboardType="email-address"
+                autoComplete="email"
               />
               <Text style={FormStyles.label}>Titulação</Text>
               {fieldErrors.titulacao && (
@@ -131,15 +134,15 @@ export default function ProfessorFormStepOne() {
                 items={Object.values(Titulacao)}
                 selected={titulacao}
                 onSelect={(titulacao: Titulacao) => {
-                    setTitulacao(titulacao);
-                    if (fieldErrors.titulacao)
-                        setFieldErrors((prev) => {
-                            const updated = { ...prev };
-                            delete updated.titulacao;
-                            return updated;
-                        });
+                  setTitulacao(titulacao);
+                  if (fieldErrors.titulacao)
+                    setFieldErrors((prev) => {
+                      const updated = { ...prev };
+                      delete updated.titulacao;
+                      return updated;
+                    });
                 }}
-            />
+              />
               <Text style={FormStyles.label}>Código da Unidade</Text>
               {fieldErrors.idUnidade && (
                 <Text style={styles.errorText}>{fieldErrors.idUnidade}</Text>
@@ -169,9 +172,9 @@ export default function ProfessorFormStepOne() {
                 labelStyle={{ color: "white" }}
                 style={FormStyles.button}
                 onPress={handleAdvance}
-            >
+              >
                 Avançar
-            </Button>
+              </Button>
             </Card.Actions>
 
             <ProgressBar progress={0.5} color={MD3Colors.neutral40} />
