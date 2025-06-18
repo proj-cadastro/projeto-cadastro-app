@@ -27,6 +27,7 @@ import ColumnSelectionModal from "../../../components/ColumnSelectionModal";
 import { professorLabels } from "../../../utils/translateObject";
 import ProximityNotification from "../../../components/ProximityNotification";
 import { buscarOuCacheUnidadeProxima } from "../../../services/unit-location/unitService";
+import { Portal } from "react-native-paper";
 
 const ListProfessorScreen = () => {
   const [nome, setNome] = useState("");
@@ -274,9 +275,12 @@ const ListProfessorScreen = () => {
           setSelectedColumns={setSelectedColumns}
           onConfirm={handleShareData}
           labels={professorLabels}
+          loading={isLoading}
         />
+
+
       </SafeAreaView>
-    </GestureHandlerRootView>
+    </GestureHandlerRootView >
   );
 };
 
@@ -290,3 +294,5 @@ const styles = StyleSheet.create({
 });
 
 export default ListProfessorScreen;;
+
+

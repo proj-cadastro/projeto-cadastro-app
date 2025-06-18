@@ -32,8 +32,6 @@ export const downloadProfessorXlsFile = async () => {
             });
           })
           .catch((e) => console.log(e));
-      } else {
-        shareAsync(uri);
       }
     } else {
       shareAsync(uri);

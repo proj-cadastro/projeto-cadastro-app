@@ -39,6 +39,7 @@ const ListCoursesScreen = () => {
   const [expandedCard, setExpandedCard] = useState<number | null>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedColumns, setSelectedColumns] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(false)
   const [unidadeNome, setUnidadeNome] = useState<string | null>(null);
 
   const { courses, refreshCoursesData } = useCourse();
@@ -68,11 +69,13 @@ const ListCoursesScreen = () => {
 
   const handleShareData = async () => {
     try {
+      setIsLoading(true)
       await shareDataToPdfFile(courses, selectedColumns, "course");
     } catch (error) {
       console.log(error);
     } finally {
       setIsModalVisible(false);
+      setIsLoading(false)
     }
   };
 
@@ -215,6 +218,7 @@ const ListCoursesScreen = () => {
         setSelectedColumns={setSelectedColumns}
         onConfirm={handleShareData}
         labels={courseLabels}
+        loading={isLoading}
       />
     </SafeAreaView>
   );
