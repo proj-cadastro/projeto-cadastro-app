@@ -27,6 +27,7 @@ import { InteractBtn } from "../../../components/atoms/InteractBtn";
 import { shareDataToPdfFile } from "../../../services/file/fileService";
 import ColumnSelectionModal from "../../../components/ColumnSelectionModal";
 import { professorLabels } from "../../../utils/translateObject";
+import { Portal } from "react-native-paper";
 
 const ListProfessorScreen = () => {
   const [nome, setNome] = useState("");
@@ -257,10 +258,16 @@ const ListProfessorScreen = () => {
           setSelectedColumns={setSelectedColumns}
           onConfirm={handleShareData}
           labels={professorLabels}
+          loading={isLoading}
         />
+
+
       </SafeAreaView>
-    </GestureHandlerRootView>
+    </GestureHandlerRootView >
   );
 };
 
 export default ListProfessorScreen;
+
+
+

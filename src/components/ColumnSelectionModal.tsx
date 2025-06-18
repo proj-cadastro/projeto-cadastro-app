@@ -1,6 +1,7 @@
 import React from "react";
-import { Modal, View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { Modal, View, Text, TouchableOpacity, StyleSheet, ActivityIndicator } from "react-native";
 import { TableStyle } from "../style/TableStyle";
+import { Portal } from "react-native-paper";
 
 interface ColumnSelectionModalProps {
   isVisible: boolean;
@@ -10,6 +11,7 @@ interface ColumnSelectionModalProps {
   setSelectedColumns: (columns: string[]) => void;
   onConfirm: () => void;
   labels: Record<string, string>; // Adicionado para passar labels dinamicamente
+  loading: boolean
 }
 
 const ColumnSelectionModal: React.FC<ColumnSelectionModalProps> = ({
@@ -20,6 +22,7 @@ const ColumnSelectionModal: React.FC<ColumnSelectionModalProps> = ({
   setSelectedColumns,
   onConfirm,
   labels,
+  loading,
 }) => {
   const renderColumnCheckbox = (label: string) => (
     <TouchableOpacity
@@ -32,7 +35,7 @@ const ColumnSelectionModal: React.FC<ColumnSelectionModalProps> = ({
         const updatedColumns = selectedColumns.includes(label)
           ? selectedColumns.filter((col) => col !== label)
           : [...selectedColumns, label];
-          console.log("colunas selecionadas: ", updatedColumns)
+        console.log("colunas selecionadas: ", updatedColumns)
         setSelectedColumns(updatedColumns);
       }}
       activeOpacity={0.7}
@@ -50,28 +53,38 @@ const ColumnSelectionModal: React.FC<ColumnSelectionModalProps> = ({
   );
 
   return (
-    <Modal visible={isVisible} transparent animationType="slide">
-      <View style={styles.modalOverlay}>
-        <View style={styles.modalContent}>
-          <Text style={styles.modalTitle}>Selecionar colunas</Text>
-          <View style={styles.filterGroup}>
-            {columnOptions.length > 0 ? (
-              columnOptions.map((col) => renderColumnCheckbox(col))
-            ) : (
-              <Text style={styles.emptyText}>Nenhuma coluna disponível</Text>
-            )}
+    <>
+      {loading ?
+        <Portal>
+          < View style={styles.loadingOverlay}>
+            <ActivityIndicator size="large" color="#fff" />
           </View>
-          <View style={styles.modalActions}>
-            <TouchableOpacity style={styles.confirmButton} onPress={onConfirm}>
-              <Text style={styles.confirmText}>Confirmar</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.cancelButton} onPress={onClose}>
-              <Text style={styles.cancelText}>Cancelar</Text>
-            </TouchableOpacity>
+
+        </Portal> : <Modal visible={isVisible} transparent animationType="slide">
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>Selecionar colunas</Text>
+              <View style={styles.filterGroup}>
+                {columnOptions.length > 0 ? (
+                  columnOptions.map((col) => renderColumnCheckbox(col))
+                ) : (
+                  <Text style={styles.emptyText}>Nenhuma coluna disponível</Text>
+                )}
+              </View>
+              <View style={styles.modalActions}>
+                <TouchableOpacity style={styles.confirmButton} onPress={onConfirm}>
+                  <Text style={styles.confirmText}>Confirmar</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.cancelButton} onPress={onClose}>
+                  <Text style={styles.cancelText}>Cancelar</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
           </View>
-        </View>
-      </View>
-    </Modal>
+        </Modal>
+      }
+    </>
+
   );
 };
 
@@ -131,6 +144,17 @@ const styles = StyleSheet.create({
   emptyText: {
     color: "red",
     fontWeight: "bold",
+  },
+  loadingOverlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 999,
   },
 });
 
