@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import {
     TouchableOpacity,
     StyleSheet
 } from "react-native";
-
 
 type Props = {
     name: string,
@@ -13,14 +12,13 @@ type Props = {
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 
 export const InteractBtn = ({ name, onPressFn }: Props) => {
-
     return (
-
         <TouchableOpacity style={styles.fab} onPress={onPressFn}>
             <MaterialIcons
                 name={name}
                 size={28}
                 color="#fff"
+                style={name === "share" ? styles.iconShare : undefined}
             />
         </TouchableOpacity>
     )
@@ -28,9 +26,6 @@ export const InteractBtn = ({ name, onPressFn }: Props) => {
 
 const styles = StyleSheet.create({
     fab: {
-        position: "absolute",
-        right: 24,
-        bottom: 80,
         backgroundColor: "#F44336",
         borderRadius: 28,
         width: 56,
@@ -42,5 +37,9 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.2,
         shadowRadius: 4,
+    },
+    iconShare: {
+        alignSelf: "flex-start",
+        marginLeft: 12, 
     },
 });

@@ -1,42 +1,42 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios from 'axios';
 import { getUserLocation } from './locationService';
 import { UnidadeSugerida } from '../../types/unit';
-import { isExpirado } from '../../utils/isExpirado';
 import api from '../apiService';
 
 const STORAGE_KEY = '@unidade_sugerida';
-const VALIDADE_MINUTOS = 15;
+const LAST_UPDATE_KEY = '@unidade_sugerida_last_update';
+const INTERVALO_ATUALIZACAO_MS = 180000;
 
-export async function buscarOuCacheUnidadeProxima(): Promise<{ id: number; nome: string } | null> {
+export async function buscarOuCacheUnidadeProxima(): Promise<{ id: string; nome: string } | null> {
   try {
-    const cache = await AsyncStorage.getItem(STORAGE_KEY);
-    if (cache) {
+    const [cache, lastUpdateStr] = await Promise.all([
+      AsyncStorage.getItem(STORAGE_KEY),
+      AsyncStorage.getItem(LAST_UPDATE_KEY),
+    ]);
+
+    const now = Date.now();
+    const lastUpdate = lastUpdateStr ? parseInt(lastUpdateStr, 10) : 0;
+
+    if (cache && now - lastUpdate < INTERVALO_ATUALIZACAO_MS) {
       const unidadeSalva: UnidadeSugerida = JSON.parse(cache);
-      if (!isExpirado(unidadeSalva.timestamp, VALIDADE_MINUTOS)) {
-        return { id: unidadeSalva.id, nome: unidadeSalva.nome };
-      }
+      return { id: unidadeSalva.id, nome: unidadeSalva.nome };
     }
 
     const { latitude, longitude } = await getUserLocation();
+    const response = await api.post('/unidades', { latitude, longitude });
 
-    const response = await api.post('/unidade-proxima', {
-      latitude,
-      longitude,
-    });
-
-    if (response.data) {
+    if (response.data && response.data.sucesso && response.data.dados) {
       const unidade: UnidadeSugerida = {
-        ...response.data,
-        timestamp: Date.now(),
+        ...response.data.dados,
+        timestamp: now,
       };
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(unidade));
+      await AsyncStorage.setItem(LAST_UPDATE_KEY, now.toString());
       return { id: unidade.id, nome: unidade.nome };
     }
 
     return null;
   } catch (err) {
-    console.error('Erro ao buscar unidade próxima:', err);
     return null;
   }
 }

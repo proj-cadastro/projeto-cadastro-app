@@ -1,5 +1,5 @@
 export type UnidadeSugerida = {
-  id: number;
+  id: string;
   nome: string;
   timestamp: number;
 };

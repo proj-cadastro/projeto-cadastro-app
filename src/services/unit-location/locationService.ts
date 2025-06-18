@@ -11,4 +11,8 @@ export async function getUserLocation(): Promise<{ latitude: number; longitude: 
     latitude: location.coords.latitude,
     longitude: location.coords.longitude,
   };
+  // return {
+  //   latitude: -23.545000,
+  //   longitude: -47.445000
+  // };
 }

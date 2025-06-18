@@ -22,10 +22,10 @@ export const CourseProvider = ({ children }: { children: ReactNode }) => {
             const coursesData = await getCourses()
             setCourses(coursesData)
         } catch (error: any) {
-            const msg = error.response?.data?.mensagem
-
-            console.error(msg)
-            //##
+            const apiResponse = error.response?.data
+            if (apiResponse && apiResponse.success === false) {
+                console.error(apiResponse.mensagem)
+            }
         } finally {
             setLoading(false)
         }
