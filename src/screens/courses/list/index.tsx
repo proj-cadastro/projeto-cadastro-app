@@ -23,12 +23,13 @@ import { InteractBtn } from "../../../components/atoms/InteractBtn";
 import { shareDataToPdfFile } from "../../../services/file/fileService";
 import ColumnSelectionModal from "../../../components/ColumnSelectionModal";
 import { courseLabels } from "../../../utils/translateObject";
+import ProximityNotification from "../../../components/ProximityNotification";
+import { buscarOuCacheUnidadeProxima } from "../../../services/unit-location/unitService";
 
 const ListCoursesScreen = () => {
   const navigation = useNavigation<NavigationProp>();
 
   const [nome, setNome] = useState("");
-
   const [modalidades, setModalidades] = useState({
     Presencial: true,
     Híbrido: true,
@@ -38,6 +39,7 @@ const ListCoursesScreen = () => {
   const [expandedCard, setExpandedCard] = useState<number | null>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedColumns, setSelectedColumns] = useState<string[]>([]);
+  const [unidadeNome, setUnidadeNome] = useState<string | null>(null);
 
   const { courses, refreshCoursesData } = useCourse();
   const { getProfessorById } = useProfessor();
@@ -46,8 +48,19 @@ const ListCoursesScreen = () => {
     (key) => key !== "id" && key !== "coordenadorId"
   );
 
-
-
+  useEffect(() => {
+    const fetchUnidade = async () => {
+      try {
+        const unidade = await buscarOuCacheUnidadeProxima();
+        setUnidadeNome(unidade?.nome ?? null);
+      } catch {
+        setUnidadeNome(null);
+      }
+    };
+    fetchUnidade();
+    const interval = setInterval(fetchUnidade, 180000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleExportClick = () => {
     setIsModalVisible(true);
@@ -67,15 +80,10 @@ const ListCoursesScreen = () => {
     try {
       await deleteCourse(id);
       refreshCoursesData();
-      console.log(courses.length);
     } catch (error: any) {
       console.error(error.response.data.mensagem);
     }
   };
-
-  useEffect(() => {
-    refreshCoursesData();
-  }, []);
 
   const renderCheckbox = (
     label: string,
@@ -107,6 +115,8 @@ const ListCoursesScreen = () => {
       <View style={TableStyle.menuContainer}>
         <HamburgerMenu />
       </View>
+
+      {unidadeNome && <ProximityNotification unidadeNome={unidadeNome} />}
 
       <ScrollView contentContainerStyle={TableStyle.scrollContent}>
         <Text style={TableStyle.title}>Cursos</Text>
@@ -191,9 +201,10 @@ const ListCoursesScreen = () => {
         </View>
       </ScrollView>
 
-      {/* Se existirem cursos a serem exibidos, habilita o compartilhamento*/}
       {courses.length > 0 && (
-        <InteractBtn name="share" onPressFn={handleExportClick} />
+        <View style={styles.fabContainer}>
+          <InteractBtn name="share" onPressFn={handleExportClick} />
+        </View>
       )}
 
       <ColumnSelectionModal
@@ -208,5 +219,14 @@ const ListCoursesScreen = () => {
     </SafeAreaView>
   );
 };
+
+const styles = StyleSheet.create({
+  fabContainer: {
+    position: "absolute",
+    bottom: 38,
+    right: 35,
+    zIndex: 20,
+  },
+});
 
 export default ListCoursesScreen;

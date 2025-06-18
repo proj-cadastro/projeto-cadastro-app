@@ -17,16 +17,16 @@ import { useNavigation } from "@react-navigation/native";
 import { NavigationProp } from "../../../routes/rootStackParamList ";
 import {
   GestureHandlerRootView,
-  Swipeable,
 } from "react-native-gesture-handler";
 import Icon from "react-native-vector-icons/MaterialIcons";
 
 import { TableStyle } from "../../../style/TableStyle";
-import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { InteractBtn } from "../../../components/atoms/InteractBtn";
 import { shareDataToPdfFile } from "../../../services/file/fileService";
 import ColumnSelectionModal from "../../../components/ColumnSelectionModal";
 import { professorLabels } from "../../../utils/translateObject";
+import ProximityNotification from "../../../components/ProximityNotification";
+import { buscarOuCacheUnidadeProxima } from "../../../services/unit-location/unitService";
 
 const ListProfessorScreen = () => {
   const [nome, setNome] = useState("");
@@ -46,15 +46,28 @@ const ListProfessorScreen = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedColumns, setSelectedColumns] = useState<string[]>([]);
+  const [unidadeNome, setUnidadeNome] = useState<string | null>(null);
 
   const navigation = useNavigation<NavigationProp>();
 
   const { professors, refreshProfessorsData } = useProfessor();
 
-  console.log(professors)
-
   useEffect(() => {
     refreshProfessorsData();
+  }, []);
+
+  useEffect(() => {
+    const fetchUnidade = async () => {
+      try {
+        const unidade = await buscarOuCacheUnidadeProxima();
+        setUnidadeNome(unidade?.nome ?? null);
+      } catch {
+        setUnidadeNome(null);
+      }
+    };
+    fetchUnidade();
+    const interval = setInterval(fetchUnidade, 180000);
+    return () => clearInterval(interval);
   }, []);
 
   const handleDelete = async (id: number) => {
@@ -115,6 +128,8 @@ const ListProfessorScreen = () => {
         <View style={TableStyle.menuContainer}>
           <HamburgerMenu />
         </View>
+
+        {unidadeNome && <ProximityNotification unidadeNome={unidadeNome} />}
 
         <ScrollView contentContainerStyle={TableStyle.scrollContent}>
           <Text style={TableStyle.title}>Professores</Text>
@@ -246,7 +261,9 @@ const ListProfessorScreen = () => {
         </ScrollView>
 
         {professors.length > 0 && (
-          <InteractBtn name="share" onPressFn={() => setIsModalVisible(true)} />
+          <View style={styles.fabContainer}>
+            <InteractBtn name="share" onPressFn={handleExportClick} />
+          </View>
         )}
 
         <ColumnSelectionModal
@@ -263,4 +280,13 @@ const ListProfessorScreen = () => {
   );
 };
 
-export default ListProfessorScreen;
+const styles = StyleSheet.create({
+  fabContainer: {
+    position: "absolute",
+    bottom: 40,
+    right: 35,
+    zIndex: 20,
+  },
+});
+
+export default ListProfessorScreen;;
