@@ -9,6 +9,7 @@ const Stack = createNativeStackNavigator();
 
 const screens = {
   Home: require("../screens/home").default,
+  SupportPage: require("../screens/support").default,
   ListProfessors: require("../screens/professors/list").default,
   EditProfessors: require("../screens/professors/edit").default,
   RegisterProfessorsIndex: require("../screens/professors/register").default,
