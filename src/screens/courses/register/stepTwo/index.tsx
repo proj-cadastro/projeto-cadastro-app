@@ -44,11 +44,10 @@ export default function StepTwo() {
         coordenadorId,
         ...partialDataCurso,
       };
-      
+
       await postCourse(curso);
       refreshCoursesData();
       navigation.navigate("RegisterCursosFinished" as never);
-      //conversar com o service para enviar o objeto completo para a api
     } catch (error: any) {
       if (error.name === "ValidationError") {
         const errors: { [key: string]: string } = {};
@@ -57,7 +56,7 @@ export default function StepTwo() {
         });
         setFieldErrors(errors);
       }
-      console.error(error.response.data.mensagem);
+      console.error(error.response?.data?.mensagem);
     }
   };
 
@@ -74,72 +73,73 @@ export default function StepTwo() {
       >
         Voltar
       </Button>
-
-      <View style={FormStyles.container}>
+      <View style={[FormStyles.container, styles.centerContainer]}>
         <ScrollView
           contentContainerStyle={FormStyles.scrollContent}
           keyboardShouldPersistTaps="handled"
         >
-          <Card style={[FormStyles.card]} mode="elevated">
-            <Card.Content>
-              <Text style={FormStyles.title}>2º Etapa</Text>
+          <View style={styles.cardWrapper}>
+            <Card style={[FormStyles.card]} mode="elevated">
+              <Card.Content>
+                <Text style={FormStyles.title}>2º Etapa</Text>
 
-              <Text style={FormStyles.description}>
-                Insira os dados do curso para registrá-lo no sistema
-              </Text>
-
-              <Text style={FormStyles.label}>Modalidade</Text>
-              {fieldErrors.modelo && (
-                <Text style={styles.errorText}>{fieldErrors.modelo}</Text>
-              )}
-              <ListPicker
-                items={Object.values(ModeloCurso)}
-                onSelect={(modelo) => {
-                  setModelo(modelo);
-                  if (fieldErrors.modelo)
-                    setFieldErrors((prev) => {
-                      const updated = { ...prev };
-                      delete updated.modelo;
-                      return updated;
-                    });
-                }}
-              />
-
-              <Text style={FormStyles.label}>Coordenador</Text>
-              {fieldErrors.coordenadorId && (
-                <Text style={styles.errorText}>
-                  {fieldErrors.coordenadorId}
+                <Text style={FormStyles.description}>
+                  Insira os dados do curso para registrá-lo no sistema
                 </Text>
-              )}  
-              <ListPicker
-                items={professors}
-                onSelect={(id) => {
-                  setCoordenadorId(id);
 
-                  if (fieldErrors.coordenadorId)
-                    setFieldErrors((prev) => {
-                      const updated = { ...prev };
-                      delete updated.coordenadorId;
-                      return updated;
-                    });
-                }}
-                getLabel={(prof) => prof.nome}
-                getValue={(prof) => prof.id}
-              />
-            </Card.Content>
+                <Text style={FormStyles.label}>Modalidade</Text>
+                {fieldErrors.modelo && (
+                  <Text style={styles.errorText}>{fieldErrors.modelo}</Text>
+                )}
+                <ListPicker
+                  items={Object.values(ModeloCurso)}
+                  onSelect={(modelo) => {
+                    setModelo(modelo);
+                    if (fieldErrors.modelo)
+                      setFieldErrors((prev) => {
+                        const updated = { ...prev };
+                        delete updated.modelo;
+                        return updated;
+                      });
+                  }}
+                />
 
-            <Card.Actions>
-              <Button
-                labelStyle={{ color: "white" }}
-                style={FormStyles.button}
-                onPress={handleSubmit}
-              >
-                Finalizar
-              </Button>
-            </Card.Actions>
+                <Text style={FormStyles.label}>Coordenador</Text>
+                {fieldErrors.coordenadorId && (
+                  <Text style={styles.errorText}>
+                    {fieldErrors.coordenadorId}
+                  </Text>
+                )}
+                <ListPicker
+                  items={professors}
+                  onSelect={(id) => {
+                    setCoordenadorId(id);
 
-            <ProgressBar progress={0.8} color={MD3Colors.neutral40} />
-          </Card>
+                    if (fieldErrors.coordenadorId)
+                      setFieldErrors((prev) => {
+                        const updated = { ...prev };
+                        delete updated.coordenadorId;
+                        return updated;
+                      });
+                  }}
+                  getLabel={(prof) => prof.nome}
+                  getValue={(prof) => prof.id}
+                />
+              </Card.Content>
+
+              <Card.Actions>
+                <Button
+                  labelStyle={{ color: "white" }}
+                  style={FormStyles.button}
+                  onPress={handleSubmit}
+                >
+                  Finalizar
+                </Button>
+              </Card.Actions>
+
+              <ProgressBar progress={0.8} color={MD3Colors.neutral40} />
+            </Card>
+          </View>
         </ScrollView>
       </View>
     </SafeAreaView>
@@ -157,5 +157,16 @@ const styles = StyleSheet.create({
   inputError: {
     borderColor: "red",
     borderWidth: 1,
+  },
+  centerContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  cardWrapper: {
+    width: "96%",
+    alignSelf: "center",
+    justifyContent: "center",
+    flex: 1,
   },
 });
