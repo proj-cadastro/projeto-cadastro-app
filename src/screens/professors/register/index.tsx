@@ -82,10 +82,15 @@ const RegisterProfessorScreen = () => {
           <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
             <Card style={[FormStyles.card, { width: "90%" }]} mode="elevated">
               <Card.Content>
-                <Image
-                  source={require("../../../../assets/professor.jpg")}
-                  style={{ width: 300, height: 200, alignSelf: "center", marginBottom: 16 }}
-                  resizeMode="contain"
+                <LottieView
+                  source={require("../../../../assets/register.json")}
+                  autoPlay
+                  loop
+                  speed={0.3}
+                  style={{
+                    width: "100%",
+                    height: 150
+                  }}
                 />
                 <Text style={FormStyles.title}>Cadastro de Professor</Text>
                 <Text style={FormStyles.description}>
@@ -97,7 +102,6 @@ const RegisterProfessorScreen = () => {
               >
                 <Button
                   mode="contained"
-                  buttonColor="green"
                   labelStyle={{ color: "white" }}
                   style={FormStyles.button}
                   onPress={() =>
@@ -108,9 +112,8 @@ const RegisterProfessorScreen = () => {
                 </Button>
                 <Button
                   mode="contained"
-                  buttonColor="blue"
                   labelStyle={{ color: "white" }}
-                  style={FormStyles.button}
+                  style={[FormStyles.button]}
                   onPress={() => navigation.navigate("ImportProfessors" as never)}
                 >
                   Importar Planilha
