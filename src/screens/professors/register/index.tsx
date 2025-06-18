@@ -10,16 +10,15 @@ import {
   TouchableOpacity
 } from "react-native";
 import HamburgerMenu from "../../../components/HamburgerMenu";
-
 import { FormStyles } from "../../../style/FormStyles";
 import { Button, Card, Modal, Portal, ActivityIndicator } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
-
 import { NavigationProp } from "../../../routes/rootStackParamList ";
-
 import { gerarProfessorIA } from "../../../services/ia/iaService";
 import LottieView from "lottie-react-native";
 import { AnimatedGradientButton } from "../../../components/atoms/AnimatedLinearGradient";
+import ProximityNotification from "../../../components/ProximityNotification";
+import { buscarOuCacheUnidadeProxima } from "../../../services/unit-location/unitService";
 
 const RegisterProfessorScreen = () => {
   const navigation = useNavigation<NavigationProp>();
@@ -28,6 +27,21 @@ const RegisterProfessorScreen = () => {
   const [modalVisible, setModalVisible] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
   const [loadingMsg, setLoadingMsg] = React.useState("Gerando professor...");
+  const [unidadeNome, setUnidadeNome] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    const fetchUnidade = async () => {
+      try {
+        const unidade = await buscarOuCacheUnidadeProxima();
+        setUnidadeNome(unidade?.nome ?? null);
+      } catch {
+        setUnidadeNome(null);
+      }
+    };
+    fetchUnidade();
+    const interval = setInterval(fetchUnidade, 180000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleGerarIA = async () => {
     setLoading(true);
@@ -59,6 +73,7 @@ const RegisterProfessorScreen = () => {
       <View style={FormStyles.menuContainer}>
         <HamburgerMenu />
       </View>
+      {unidadeNome && <ProximityNotification unidadeNome={unidadeNome} />}
       <View style={FormStyles.container}>
         <ScrollView
           contentContainerStyle={FormStyles.scrollContent}
@@ -66,28 +81,27 @@ const RegisterProfessorScreen = () => {
         >
           <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
             <Card style={[FormStyles.card, { width: "90%" }]} mode="elevated">
-
               <Card.Content>
-
-                <Image
-                  source={require("../../../../assets/professor.jpg")}
-                  style={{ width: 300, height: 200, alignSelf: "center", marginBottom: 16 }}
-                  resizeMode="contain"
+                <LottieView
+                  source={require("../../../../assets/register.json")}
+                  autoPlay
+                  loop
+                  speed={0.3}
+                  style={{
+                    width: "100%",
+                    height: 150
+                  }}
                 />
-
                 <Text style={FormStyles.title}>Cadastro de Professor</Text>
-
                 <Text style={FormStyles.description}>
                   Escolha como deseja cadastrar.
                 </Text>
               </Card.Content>
-
               <Card.Actions
                 style={{ flexDirection: "column", gap: 10, marginTop: 10 }}
               >
                 <Button
                   mode="contained"
-                  buttonColor="green"
                   labelStyle={{ color: "white" }}
                   style={FormStyles.button}
                   onPress={() =>
@@ -96,53 +110,50 @@ const RegisterProfessorScreen = () => {
                 >
                   Cadastrar Manualmente
                 </Button>
-
                 <Button
                   mode="contained"
-                  buttonColor="blue"
                   labelStyle={{ color: "white" }}
-                  style={FormStyles.button}
+                  style={[FormStyles.button]}
                   onPress={() => navigation.navigate("ImportProfessors" as never)}
                 >
                   Importar Planilha
                 </Button>
-
-                
-                <AnimatedGradientButton onPress={() => setModalVisible(true)} children={
-                  <View
-                    style={[{
-                      flexDirection: "row",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }]}
-                  >
-                    <Text
+                <View style={{ alignItems: "center", width: "100%" }}>
+                  <AnimatedGradientButton onPress={() => setModalVisible(true)}>
+                    <View
                       style={{
-                        color: "white",
-                        fontWeight: "bold",
+                        flexDirection: "row",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        height: 48,
+                        minWidth: 150,
+                        paddingHorizontal: 16,
                       }}
                     >
-                      Gerar com IA
-                    </Text>
-
-                    <LottieView
-                      source={require("../../../../assets/ai2.json")}
-                      autoPlay
-                      loop
-                      style={{
-                        width: 40,
-                        height: 40,
-                      }}
-                    />
-                  </View>
-                } />
-
-
+                      <Text
+                        style={{
+                          color: "white",
+                          fontWeight: "bold",
+                        }}
+                      >
+                        Gerar com IA
+                      </Text>
+                      <LottieView
+                        source={require("../../../../assets/bot.json")}
+                        autoPlay
+                        loop
+                        style={{
+                          width: 40,
+                          height: 38
+                        }}
+                      />
+                    </View>
+                  </AnimatedGradientButton>
+                </View>
               </Card.Actions>
             </Card>
           </View>
         </ScrollView>
-
         <Portal>
           <Modal
             visible={modalVisible}
@@ -197,7 +208,6 @@ const RegisterProfessorScreen = () => {
             )}
           </Modal>
         </Portal>
-
       </View>
     </SafeAreaView>
   );
@@ -247,7 +257,6 @@ const styles = StyleSheet.create({
   confirmButtonLabel: {
     color: "white",
   },
-
 });
 
 export default RegisterProfessorScreen;

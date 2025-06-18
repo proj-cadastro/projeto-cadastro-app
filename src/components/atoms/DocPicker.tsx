@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { View, Text } from 'react-native'
+import { View, Text, ActivityIndicator, StyleSheet } from 'react-native'
 import * as DocumentPicker from 'expo-document-picker'
 import { FormStyles } from '../../style/FormStyles'
 import { Button, Modal, Portal } from 'react-native-paper'
@@ -12,6 +12,7 @@ export const DocPicker = () => {
     const navigation = useNavigation()
 
     const [file, setFile] = useState<DocumentPicker.DocumentPickerAsset>()
+    const [loading, setLoading] = useState(false)
     const [error, setError] = useState("")
 
     const [errorModalVisibility, setErrorModalVisibility] = useState(false)
@@ -19,21 +20,32 @@ export const DocPicker = () => {
     const [successModalVisibility, setSuccessModalVisibility] = useState(false)
 
     const pick = async () => {
-        const result = await DocumentPicker.getDocumentAsync({
-            type: '*/*',
-        })
 
-        if (!result.canceled) {
-            const data = result.assets[0]
-            console.log('name', data.name)
-            console.log('size', data.size)
-            console.log('uri', data.uri)
+        try {
+            setLoading(true)
+            await new Promise(resolve => setTimeout(resolve, 2000)) // espera 3 segundos
+            const result = await DocumentPicker.getDocumentAsync({
+                type: '*/*',
+            })
 
-            setFile(data)
-            setConfirmationModalVisibility(true)
-        } else {
-            setErrorModalVisibility(true)
+            if (!result.canceled) {
+                const data = result.assets[0]
+                console.log('name', data.name)
+                console.log('size', data.size)
+                console.log('uri', data.uri)
+
+                setFile(data)
+                setConfirmationModalVisibility(true)
+            } else {
+                setErrorModalVisibility(true)
+            }
+        } catch (error) {
+
+        } finally {
+            setLoading(false)
         }
+
+
     }
 
 
@@ -48,6 +60,7 @@ export const DocPicker = () => {
             setErrorModalVisibility(true)
             setError(error.response?.data?.mensagem)
         } finally {
+            setLoading(false)
             setConfirmationModalVisibility(false)
         }
     }
@@ -181,6 +194,28 @@ export const DocPicker = () => {
                 </Modal>
             </Portal>
 
+            <Portal>
+                {loading && (
+                    <View style={styles.loadingOverlay}>
+                        <ActivityIndicator size="large" color="#fff" />
+                    </View>
+                )}
+            </Portal>
+
         </View>
     )
 }
+
+const styles = StyleSheet.create({
+    loadingOverlay: {
+        position: "absolute",
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: "rgba(0, 0, 0, 0.5)", // fundo semi-transparente
+        justifyContent: "center",
+        alignItems: "center",
+        zIndex: 9999,
+    },
+});

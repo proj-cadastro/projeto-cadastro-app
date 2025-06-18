@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useAuth } from "../context/AuthContext";
-import Icon from "react-native-vector-icons/MaterialIcons"; 
+import Icon from "react-native-vector-icons/MaterialIcons";
 
 export default function HamburgerMenu() {
   const [visible, setVisible] = useState(false);
@@ -43,12 +43,12 @@ export default function HamburgerMenu() {
             <ScrollView contentContainerStyle={styles.menuItemsContainer}>
 
               <View style={styles.logoContainer}>
-              <Image
-                source={require("../../assets/logo_fatec_cor.png")}
-                style={styles.logo}
-                resizeMode="contain"
-              />
-            </View>
+                <Image
+                  source={require("../../assets/logo_fatec_cor.png")}
+                  style={styles.logo}
+                  resizeMode="contain"
+                />
+              </View>
 
 
               {/* Item solto */}
@@ -134,12 +134,25 @@ export default function HamburgerMenu() {
               </View>
             </ScrollView>
 
-            <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-              <View style={styles.iconRow}>
-                <Icon name="logout" size={20} color="#d00" style={styles.iconItem} />
-                <Text style={styles.logoutText}>Sair</Text>
-              </View>
-            </TouchableOpacity>
+            <View style={styles.logoutButton}>
+              <TouchableOpacity onPress={() => {
+                setVisible(false)
+                navigation.navigate("SupportPage" as never)
+              }}>
+                <View style={[styles.iconRow, { marginBottom: 30 }]}>
+                  <Icon name="contact-support" size={20} style={styles.iconItem} />
+                  <Text style={styles.menuText}>Falar com Suporte</Text>
+                </View>
+              </TouchableOpacity>
+
+              <TouchableOpacity onPress={handleLogout}>
+                <View style={styles.iconRow}>
+                  <Icon name="logout" size={20} color="#d00" style={styles.iconItem} />
+                  <Text style={styles.logoutText}>Sair</Text>
+                </View>
+              </TouchableOpacity>
+
+            </View>
           </View>
         </TouchableOpacity>
       </Modal>
@@ -207,8 +220,8 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   logoContainer: {
-  alignItems: "center",
-  marginBottom: 20,
+    alignItems: "center",
+    marginBottom: 20,
   },
   logo: {
     width: 130,
