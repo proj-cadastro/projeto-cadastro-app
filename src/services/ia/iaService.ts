@@ -2,7 +2,7 @@ import { API_IA_URL, API_IA_KEY } from "@env";
 import axios from "axios";
 
 const apiIA = axios.create({
-  baseURL: 'http://10.1.22.133:8000',
+  baseURL: 'http://10.68.153.132:8000',
   // baseURL: API_IA_URL,
   headers: {
     "Content-Type": "application/json",

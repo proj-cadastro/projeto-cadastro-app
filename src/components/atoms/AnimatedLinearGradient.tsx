@@ -50,7 +50,7 @@ export const AnimatedGradientButton = ({ onPress, children }: Props) => {
 
     return (
         <AnimatedLinearGradient
-            colors={['#330000', '#8B0000', '#FF4500']}
+            colors={['#330000', '#8B0000', '#D32719']}
 
             start={start}
             end={end}
