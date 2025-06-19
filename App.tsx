@@ -20,7 +20,6 @@ import { ProtectedRoutes } from "./src/routes/protectedRoutes";
 import { AuthProvider, useAuth } from "./src/context/AuthContext";
 import { AuthListener } from "./src/components/AuthListener";
 
-// Telas públicas
 const PublicScreens = {
   Login: require("./src/screens/login").default,
   Register: require("./src/screens/register").default,

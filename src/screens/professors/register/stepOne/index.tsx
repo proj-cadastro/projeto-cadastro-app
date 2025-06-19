@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   SafeAreaView,
   View,
@@ -17,6 +17,10 @@ import { FormStyles } from "../../../../style/FormStyles";
 import { Titulacao } from "../../../../enums/professors/professorEnum";
 import { professorRegisterSchema } from "../../../../validations/professorsRegisterValidations";
 import HamburgerMenu from "../../../../components/HamburgerMenu";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import locationAnimation from "../../../../../assets/location-icon.json";
+import { UnitSuggestionButton } from "../../../../components/UnitSuggestionButton";
+import { SuggestionSwitch } from "../../../../components/SuggestionSwitch";
 
 export default function ProfessorFormStepOne() {
   const navigation = useNavigation<NavigationProp>();
@@ -28,6 +32,29 @@ export default function ProfessorFormStepOne() {
   const [titulacao, setTitulacao] = useState(iaData?.titulacao || "");
   const [idUnidade, setIdUnidade] = useState(iaData?.idUnidade || "");
   const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
+  const [unidadeSugerida, setUnidadeSugerida] = useState<{ id: string; nome: string } | null>(null);
+  const [showSuggestion, setShowSuggestion] = useState(false);
+  const [suggestionEnabled, setSuggestionEnabled] = useState(false);
+
+  useEffect(() => {
+    let timeout: NodeJS.Timeout;
+    if (suggestionEnabled) {
+      AsyncStorage.getItem("@unidade_sugerida").then((data) => {
+        if (data) {
+          try {
+            const unidade = JSON.parse(data);
+            timeout = setTimeout(() => {
+              setUnidadeSugerida({ id: unidade.id, nome: unidade.nome });
+              setShowSuggestion(true);
+            }, 2000);
+          } catch {}
+        }
+      });
+    } else {
+      setShowSuggestion(false);
+    }
+    return () => clearTimeout(timeout);
+  }, [suggestionEnabled]);
 
   const handleAdvance = () => {
     try {
@@ -46,6 +73,7 @@ export default function ProfessorFormStepOne() {
           statusAtividade: iaData?.statusAtividade,
           lattes: iaData?.lattes,
         },
+        suggestionEnabled,
       });
     } catch (error: any) {
       if (error.name === "ValidationError") {
@@ -147,26 +175,45 @@ export default function ProfessorFormStepOne() {
               {fieldErrors.idUnidade && (
                 <Text style={styles.errorText}>{fieldErrors.idUnidade}</Text>
               )}
-              <TextInput
-                placeholder="ex: 301"
-                style={[
-                  FormStyles.input,
-                  { width: "100%" },
-                  fieldErrors.idUnidade ? styles.inputError : null,
-                ]}
-                onChangeText={(text) => {
-                  setIdUnidade(text);
-                  if (fieldErrors.idUnidade)
-                    setFieldErrors((prev) => {
-                      const updated = { ...prev };
-                      delete updated.idUnidade;
-                      return updated;
-                    });
-                }}
-                value={idUnidade}
-              />
+              <View style={styles.inputRow}>
+                <TextInput
+                  placeholder={
+                    showSuggestion && unidadeSugerida?.id
+                      ? `${unidadeSugerida.id}`
+                      : "ex: 301"
+                  }
+                  style={[
+                    FormStyles.input,
+                    styles.inputFlex,
+                    !idUnidade && showSuggestion && unidadeSugerida?.id
+                      ? styles.suggestionPlaceholder
+                      : null,
+                    fieldErrors.idUnidade ? styles.inputError : null,
+                  ]}
+                  placeholderTextColor={
+                    showSuggestion && unidadeSugerida?.id
+                      ? "#D32719"
+                      : "#888"
+                  }
+                  onChangeText={(text) => {
+                    setIdUnidade(text);
+                    if (fieldErrors.idUnidade)
+                      setFieldErrors((prev) => {
+                        const updated = { ...prev };
+                        delete updated.idUnidade;
+                        return updated;
+                      });
+                  }}
+                  value={idUnidade}
+                />
+                {showSuggestion && unidadeSugerida?.id && !idUnidade && (
+                  <UnitSuggestionButton
+                    onPress={() => setIdUnidade(unidadeSugerida.id)}
+                    lottieSource={locationAnimation}
+                  />
+                )}
+              </View>
             </Card.Content>
-
             <Card.Actions>
               <Button
                 labelStyle={{ color: "white" }}
@@ -176,10 +223,14 @@ export default function ProfessorFormStepOne() {
                 Avançar
               </Button>
             </Card.Actions>
-
             <ProgressBar progress={0.5} color={MD3Colors.neutral40} />
-
           </Card>
+
+          <SuggestionSwitch
+            value={suggestionEnabled}
+            onValueChange={setSuggestionEnabled}
+          />
+
         </ScrollView>
       </View>
     </SafeAreaView>
@@ -197,5 +248,16 @@ const styles = StyleSheet.create({
   inputError: {
     borderColor: "red",
     borderWidth: 1,
+  },
+  inputRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 12,
+  },
+  inputFlex: {
+    flex: 1,
+  },
+  suggestionPlaceholder: {
+    fontStyle: "italic",
   },
 });

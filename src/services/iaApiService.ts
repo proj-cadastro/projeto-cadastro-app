@@ -2,12 +2,10 @@ import { API_IA_URL, API_IA_KEY } from "@env";
 import axios from "axios";
 
 export const apiIA = axios.create({
-  baseURL: 'http://10.68.153.132:8000',
-  // baseURL: API_IA_URL,
+  baseURL: API_IA_URL.trim(),
   headers: {
     "Content-Type": "application/json",
-    "API_KEY": `PALMEIRAS`
-    // "API_KEY": `${API_IA_KEY}`
+    "API_KEY": `${API_IA_KEY.trim()}`
   },
 });
 
