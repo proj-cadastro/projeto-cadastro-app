@@ -1,11 +1,25 @@
 "use client";
 
 import React, { useState } from "react";
-import { SafeAreaView, View, ScrollView, Text, StyleSheet } from "react-native";
-import { Card, Button, ProgressBar, MD3Colors } from "react-native-paper";
+import {
+  SafeAreaView,
+  View,
+  ScrollView,
+  Text,
+  StyleSheet,
+  Modal,
+} from "react-native";
+import {
+  Card,
+  Button,
+  ProgressBar,
+  MD3Colors,
+  TextInput,
+} from "react-native-paper";
 
 import ListPicker from "../../../../components/atoms/ListPicker";
 import HamburgerMenu from "../../../../components/HamburgerMenu";
+import AddMateriaModal from "../../../../components/modals/AddMateriaModal";
 
 import { useRoute } from "@react-navigation/native";
 import { useNavigation } from "@react-navigation/native";
@@ -17,6 +31,7 @@ import { useCourse } from "../../../../context/CourseContext";
 import { useProfessor } from "../../../../context/ProfessorContext";
 import { coursesRegisterStep2Schema } from "../../../../validations/coursesRegisterValidations";
 import { RouteParamsProps } from "../../../../routes/rootStackParamList ";
+import { Materia } from "../../../../types/materia";
 
 export default function StepTwo() {
   const navigation = useNavigation();
@@ -32,6 +47,13 @@ export default function StepTwo() {
 
   const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
 
+  const [isMateriaModalVisible, setMateriaModalVisible] = useState(false);
+  const [materias, setMaterias] = useState<Materia[]>([]);
+
+  const handleAddMateria = (materia: Materia) => {
+    setMaterias([...materias, materia]);
+  };
+
   const handleSubmit = async () => {
     try {
       setFieldErrors({});
@@ -42,6 +64,7 @@ export default function StepTwo() {
       const curso = {
         modelo,
         coordenadorId,
+        materias,
         ...partialDataCurso,
       };
 
@@ -125,6 +148,27 @@ export default function StepTwo() {
                   getLabel={(prof) => prof.nome}
                   getValue={(prof) => prof.id}
                 />
+                <Text style={FormStyles.label}>Matérias Adicionadas</Text>
+                {materias.map((materia, index) => (
+                  <Text key={index} style={styles.materiaItem}>
+                    {materia.nome} - {materia.cargaHoraria}h
+                  </Text>
+                ))}
+
+                <Button
+                  mode="outlined"
+                  onPress={() => setMateriaModalVisible(true)}
+                  style={{ marginVertical: 10 }}
+                >
+                  Adicionar Matéria
+                </Button>
+
+                <AddMateriaModal
+                  visible={isMateriaModalVisible}
+                  onClose={() => setMateriaModalVisible(false)}
+                  onAddMateria={handleAddMateria}
+                  professors={professors}
+                />
               </Card.Content>
 
               <Card.Actions>
@@ -168,5 +212,9 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     justifyContent: "center",
     flex: 1,
+  },
+  materiaItem: {
+    fontSize: 14,
+    marginVertical: 5,
   },
 });
