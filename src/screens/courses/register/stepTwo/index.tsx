@@ -3,13 +3,10 @@
 import React, { useState } from "react";
 import { SafeAreaView, View, ScrollView, Text, StyleSheet } from "react-native";
 import { Card, Button, ProgressBar, MD3Colors } from "react-native-paper";
-
 import ListPicker from "../../../../components/atoms/ListPicker";
 import HamburgerMenu from "../../../../components/HamburgerMenu";
-
 import { useRoute } from "@react-navigation/native";
 import { useNavigation } from "@react-navigation/native";
-
 import { FormStyles } from "../../../../style/FormStyles";
 import { postCourse } from "../../../../services/course/cursoService";
 import { ModeloCurso } from "../../../../enums/courses/courseEnum";
@@ -17,20 +14,21 @@ import { useCourse } from "../../../../context/CourseContext";
 import { useProfessor } from "../../../../context/ProfessorContext";
 import { coursesRegisterStep2Schema } from "../../../../validations/coursesRegisterValidations";
 import { RouteParamsProps } from "../../../../routes/rootStackParamList ";
+import { useThemeMode } from "../../../../context/ThemeContext"; // Importa o contexto do tema
 
 export default function StepTwo() {
   const navigation = useNavigation();
-
   const { refreshCoursesData } = useCourse();
   const { professors } = useProfessor();
-
   const route = useRoute<RouteParamsProps<"RegisterCourseStepTwo">>();
   const { partialDataCurso } = route.params;
 
   const [modelo, setModelo] = useState<ModeloCurso>();
   const [coordenadorId, setCoordenadorId] = useState();
-
   const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
+
+  // Usa o contexto do tema
+  const { isDarkMode } = useThemeMode();
 
   const handleSubmit = async () => {
     try {
@@ -61,7 +59,10 @@ export default function StepTwo() {
   };
 
   return (
-    <SafeAreaView style={FormStyles.safeArea}>
+    <SafeAreaView style={[
+      FormStyles.safeArea,
+      { backgroundColor: isDarkMode ? "#181818" : "#fff" }
+    ]}>
       <View style={FormStyles.menuContainer}>
         <HamburgerMenu />
       </View>
@@ -79,15 +80,27 @@ export default function StepTwo() {
           keyboardShouldPersistTaps="handled"
         >
           <View style={styles.cardWrapper}>
-            <Card style={[FormStyles.card]} mode="elevated">
+            <Card style={[
+              FormStyles.card,
+              { backgroundColor: isDarkMode ? "#232323" : "#fff" }
+            ]} mode="elevated">
               <Card.Content>
-                <Text style={FormStyles.title}>2º Etapa</Text>
+                <Text style={[
+                  FormStyles.title,
+                  { color: isDarkMode ? "#fff" : "#000" }
+                ]}>2º Etapa</Text>
 
-                <Text style={FormStyles.description}>
+                <Text style={[
+                  FormStyles.description,
+                  { color: isDarkMode ? "#fff" : "#000" }
+                ]}>
                   Insira os dados do curso para registrá-lo no sistema
                 </Text>
 
-                <Text style={FormStyles.label}>Modalidade</Text>
+                <Text style={[
+                  FormStyles.label,
+                  { color: isDarkMode ? "#fff" : "#000" }
+                ]}>Modalidade</Text>
                 {fieldErrors.modelo && (
                   <Text style={styles.errorText}>{fieldErrors.modelo}</Text>
                 )}
@@ -104,7 +117,10 @@ export default function StepTwo() {
                   }}
                 />
 
-                <Text style={FormStyles.label}>Coordenador</Text>
+                <Text style={[
+                  FormStyles.label,
+                  { color: isDarkMode ? "#fff" : "#000" }
+                ]}>Coordenador</Text>
                 {fieldErrors.coordenadorId && (
                   <Text style={styles.errorText}>
                     {fieldErrors.coordenadorId}

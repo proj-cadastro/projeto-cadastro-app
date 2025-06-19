@@ -1,20 +1,22 @@
 import { View, Image, Text, TextInput, StyleSheet, KeyboardAvoidingView, Platform, ActivityIndicator } from "react-native";
-import { Button, Card } from "react-native-paper";
+import { Button, Card, Switch } from "react-native-paper";
 import { FormStyles } from "../../../style/FormStyles";
 import { useNavigation } from "@react-navigation/native";
 import { useState } from "react";
 import { getForgetPasswordToken } from "../../../services/users/authService";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import api from "../../../services/apiService";
-
 import { userEmailSchema } from "../../../validations/usersValidations";
+import { useThemeMode } from "../../../context/ThemeContext"; // Importa o contexto do tema
 
 const ForgetPasswordStepOne = () => {
     const navigation = useNavigation();
     const [email, setEmail] = useState("");
     const [loading, setLoading] = useState(false);
-
     const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
+
+    // Usa o contexto do tema
+    const { isDarkMode, toggleTheme } = useThemeMode();
 
     const handleAdvance = async () => {
         setFieldErrors({});
@@ -23,16 +25,10 @@ const ForgetPasswordStepOne = () => {
         await new Promise((resolve) => setTimeout(resolve, 500)); // Timeout de 2 segundos
 
         try {
-            // valida os campos
             await userEmailSchema.validate({ email }, { abortEarly: false });
-
-            // tudo certo, chama a API
             const token = await getForgetPasswordToken(email);
-
-            // coloca o token no headers de authorization, (coisa que o back pede)
             await AsyncStorage.setItem("token", token);
             api.defaults.headers.Authorization = `Bearer ${token}`;
-
             navigation.navigate("ForgetPasswordStepTwo" as never);
         } catch (error: any) {
             console.log(error.response?.data?.mensagem || error.message);
@@ -55,11 +51,16 @@ const ForgetPasswordStepOne = () => {
 
     return (
         <KeyboardAvoidingView
-            style={{ flex: 1 }}
+            style={{ flex: 1, backgroundColor: isDarkMode ? "#181818" : "#fff" }} // Aplica fundo escuro se dark mode
             behavior={Platform.OS === "ios" ? "padding" : "height"}
         >
             <View style={styles.fullScreenContainer}>
-                <Card style={[FormStyles.card, styles.card]} mode="elevated">
+                {/* Switch de tema no topo direito */}
+                <View style={styles.switchContainer}>
+                    <Text style={{ color: isDarkMode ? "#fff" : "#000", marginRight: 8 }}>Modo escuro</Text>
+                    <Switch value={isDarkMode} onValueChange={toggleTheme} />
+                </View>
+                <Card style={[FormStyles.card, styles.card, { backgroundColor: isDarkMode ? "#232323" : "#fff" }]} mode="elevated">
                     <Card.Content>
                         <Button
                             onPress={() => navigation.goBack()}
@@ -73,36 +74,28 @@ const ForgetPasswordStepOne = () => {
                             style={{ width: 300, height: 200, alignSelf: "center" }}
                             resizeMode="contain"
                         />
-
-                        <Text style={FormStyles.title}>Recuperar Senha</Text>
-
-                        <Text style={FormStyles.description}>
+                        <Text style={[FormStyles.title, { color: isDarkMode ? "#fff" : "#000" }]}>Recuperar Senha</Text>
+                        <Text style={[FormStyles.description, { color: isDarkMode ? "#fff" : "#000" }]}>
                             Digite seu e-mail para inicializar a recuperação de senha.
                         </Text>
                     </Card.Content>
-
                     <Card.Actions style={{ flexDirection: "column", marginTop: 10 }}>
-
-                        {/* Erro de email do front */}
                         {fieldErrors.email && (
                             <Text style={styles.errorText}>{fieldErrors.email}</Text>
                         )}
-
-                        {/* Erro geral da API */}
                         {fieldErrors.api && (
                             <Text style={styles.errorText}>{fieldErrors.api}</Text>
                         )}
-
                         <TextInput
                             placeholder="e-mail"
-                            style={[FormStyles.input, { width: "100%" }]}
+                            placeholderTextColor={isDarkMode ? "#aaa" : "#888"}
+                            style={[FormStyles.input, { width: "100%", color: isDarkMode ? "#fff" : "#000", borderColor: isDarkMode ? "#444" : "#ccc" }]}
                             value={email}
                             onChangeText={(text) => setEmail(text)}
                             autoCapitalize="none"
                             keyboardType="email-address"
                             autoComplete="email"
                         />
-
                         {loading ? (
                             <ActivityIndicator
                                 size="large"
@@ -133,11 +126,20 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         padding: 16,
-        backgroundColor: "#fff",
+        // backgroundColor será sobrescrito pelo modo escuro
+    },
+    switchContainer: {
+        position: "absolute",
+        top: 40,
+        right: 24,
+        flexDirection: "row",
+        alignItems: "center",
+        zIndex: 2,
     },
     card: {
         width: "100%",
         maxWidth: 400,
+        // backgroundColor será sobrescrito pelo modo escuro
     },
     errorText: {
         color: "red",

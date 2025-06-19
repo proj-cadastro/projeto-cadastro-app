@@ -17,6 +17,7 @@ import { FormStyles } from "../../../../style/FormStyles";
 import { Titulacao } from "../../../../enums/professors/professorEnum";
 import { professorRegisterSchema } from "../../../../validations/professorsRegisterValidations";
 import HamburgerMenu from "../../../../components/HamburgerMenu";
+import { useThemeMode } from "../../../../context/ThemeContext"; // Importa o contexto do tema
 
 export default function ProfessorFormStepOne() {
   const navigation = useNavigation<NavigationProp>();
@@ -28,6 +29,9 @@ export default function ProfessorFormStepOne() {
   const [titulacao, setTitulacao] = useState(iaData?.titulacao || "");
   const [idUnidade, setIdUnidade] = useState(iaData?.idUnidade || "");
   const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
+
+  // Usa o contexto do tema
+  const { isDarkMode } = useThemeMode();
 
   const handleAdvance = () => {
     try {
@@ -59,7 +63,10 @@ export default function ProfessorFormStepOne() {
   };
 
   return (
-    <SafeAreaView style={FormStyles.safeArea}>
+    <SafeAreaView style={[
+      FormStyles.safeArea,
+      { backgroundColor: isDarkMode ? "#181818" : "#fff" }
+    ]}>
       <View style={FormStyles.menuContainer}>
         <HamburgerMenu />
       </View>
@@ -75,20 +82,34 @@ export default function ProfessorFormStepOne() {
           contentContainerStyle={FormStyles.scrollContent}
           keyboardShouldPersistTaps="handled"
         >
-          <Card style={FormStyles.card} mode="elevated">
+          <Card style={[
+            FormStyles.card,
+            { backgroundColor: isDarkMode ? "#232323" : "#fff" }
+          ]} mode="elevated">
             <Card.Content>
-              <Text style={FormStyles.title}>Cadastro de Professor</Text>
-              <Text style={FormStyles.description}>
+              <Text style={[
+                FormStyles.title,
+                { color: isDarkMode ? "#fff" : "#000" }
+              ]}>Cadastro de Professor</Text>
+              <Text style={[
+                FormStyles.description,
+                { color: isDarkMode ? "#fff" : "#000" }
+              ]}>
                 Insira os dados do professor para registrá-lo no sistema
               </Text>
-              <Text style={FormStyles.label}>Nome</Text>
+              <Text style={[
+                FormStyles.label,
+                { color: isDarkMode ? "#fff" : "#000" }
+              ]}>Nome</Text>
               {fieldErrors.nome && (
                 <Text style={styles.errorText}>{fieldErrors.nome}</Text>
               )}
               <TextInput
                 placeholder="ex: José Maria da Silva"
+                placeholderTextColor={isDarkMode ? "#aaa" : "#888"}
                 style={[
                   FormStyles.input,
+                  { color: isDarkMode ? "#fff" : "#000", borderColor: isDarkMode ? "#444" : "#ccc" },
                   fieldErrors.nome ? styles.inputError : null,
                 ]}
                 value={nome}
@@ -102,14 +123,19 @@ export default function ProfessorFormStepOne() {
                     });
                 }}
               />
-              <Text style={FormStyles.label}>Email</Text>
+              <Text style={[
+                FormStyles.label,
+                { color: isDarkMode ? "#fff" : "#000" }
+              ]}>Email</Text>
               {fieldErrors.email && (
                 <Text style={styles.errorText}>{fieldErrors.email}</Text>
               )}
               <TextInput
                 placeholder="ex: jose.maria@fatec.sp.gov.br"
+                placeholderTextColor={isDarkMode ? "#aaa" : "#888"}
                 style={[
                   FormStyles.input,
+                  { color: isDarkMode ? "#fff" : "#000", borderColor: isDarkMode ? "#444" : "#ccc" },
                   fieldErrors.email ? styles.inputError : null,
                 ]}
                 onChangeText={(text) => {
@@ -126,7 +152,10 @@ export default function ProfessorFormStepOne() {
                 keyboardType="email-address"
                 autoComplete="email"
               />
-              <Text style={FormStyles.label}>Titulação</Text>
+              <Text style={[
+                FormStyles.label,
+                { color: isDarkMode ? "#fff" : "#000" }
+              ]}>Titulação</Text>
               {fieldErrors.titulacao && (
                 <Text style={styles.errorText}>{fieldErrors.titulacao}</Text>
               )}
@@ -143,15 +172,19 @@ export default function ProfessorFormStepOne() {
                     });
                 }}
               />
-              <Text style={FormStyles.label}>Código da Unidade</Text>
+              <Text style={[
+                FormStyles.label,
+                { color: isDarkMode ? "#fff" : "#000" }
+              ]}>Código da Unidade</Text>
               {fieldErrors.idUnidade && (
                 <Text style={styles.errorText}>{fieldErrors.idUnidade}</Text>
               )}
               <TextInput
                 placeholder="ex: 301"
+                placeholderTextColor={isDarkMode ? "#aaa" : "#888"}
                 style={[
                   FormStyles.input,
-                  { width: "100%" },
+                  { width: "100%", color: isDarkMode ? "#fff" : "#000", borderColor: isDarkMode ? "#444" : "#ccc" },
                   fieldErrors.idUnidade ? styles.inputError : null,
                 ]}
                 onChangeText={(text) => {
