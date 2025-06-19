@@ -1,9 +1,10 @@
 import { Professor } from "../types/professor";
 import { IUser } from "../types/user";
 import { courseLabels, professorLabels } from "./translateObject";
+import { API_URL } from "@env";
 
 export const HeaderHtml = (user: IUser) => {
-  const imgSrc = "http://192.168.15.185:3000/static/cabecalho.png";
+  const imgSrc = `${API_URL}/static/cabecalho.png`;
 
   return `
     <header>
