@@ -8,6 +8,10 @@ import {
   Text,
   StyleSheet,
   Modal,
+  KeyboardAvoidingView,
+  TouchableWithoutFeedback,
+  Keyboard,
+  Platform,
 } from "react-native";
 import {
   Card,
@@ -19,7 +23,7 @@ import {
 
 import ListPicker from "../../../../components/atoms/ListPicker";
 import HamburgerMenu from "../../../../components/HamburgerMenu";
-import AddMateriaModal from "../../../../components/modals/AddMateriaModal";
+import AddMateriaModal from "../../../../components/AddMateriaModal";
 
 import { useRoute } from "@react-navigation/native";
 import { useNavigation } from "@react-navigation/native";
@@ -216,5 +220,20 @@ const styles = StyleSheet.create({
   materiaItem: {
     fontSize: 14,
     marginVertical: 5,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalCard: {
+    width: "90%",
+    maxHeight: "80%",
+    borderRadius: 8,
+    overflow: "hidden",
+  },
+  closeButton: {
+    alignSelf: "flex-end",
+    margin: 10,
   },
 });
