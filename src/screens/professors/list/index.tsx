@@ -42,6 +42,8 @@ const ListProfessorScreen = () => {
   const [availableCursos, setAvailableCursos] = useState<string[]>([]);
   const [availableTitulacoes, setAvailableTitulacoes] = useState<string[]>([]);
   const [professors, setProfessors] = useState<any[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
 
   const navigation = useNavigation<NavigationProp>();
 
@@ -66,7 +68,6 @@ const ListProfessorScreen = () => {
   }, []);
 
   useEffect(() => {
-    // Buscar cursos e titulações do backend
     const fetchFilters = async () => {
       const cursosData = await getCourses();
       setAvailableCursos(cursosData.map((c: any) => c.nome));
@@ -76,8 +77,6 @@ const ListProfessorScreen = () => {
           {}
         )
       );
-      // Supondo que titulações vêm do backend via endpoint ou fixo
-      // Se houver endpoint, troque por chamada real
       const titulacoesData = ["Especialista", "Mestre", "Doutor"];
       setAvailableTitulacoes(titulacoesData);
       setTitulacoes(
@@ -87,39 +86,42 @@ const ListProfessorScreen = () => {
     fetchFilters();
   }, []);
 
-  const fetchProfessors = async () => {
-    setIsLoading(true);
-    try {
-      const cursosSelecionados = Object.entries(cursos)
-        .filter(([_, v]) => v)
-        .map(([k]) => k);
-      const titulacoesSelecionadas = Object.entries(titulacoes)
-        .filter(([_, v]) => v)
-        .map(([k]) => k);
-      const data = await getProfessors({
-        nome: nome || undefined,
-        cursos: cursosSelecionados.length ? cursosSelecionados : undefined,
-        titulacoes: titulacoesSelecionadas.length
-          ? titulacoesSelecionadas
-          : undefined,
-      });
-      setProfessors(data);
-    } catch (e) {
-      setProfessors([]);
-    }
-    setIsLoading(false);
-  };
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 800);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchTerm]);
 
   useEffect(() => {
-    fetchProfessors();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    const fetchProfessors = async () => {
+      setIsLoading(true);
+      try {
+        const cursosSelecionados = Object.entries(cursos)
+          .filter(([_, v]) => v)
+          .map(([k]) => k);
+        const titulacoesSelecionadas = Object.entries(titulacoes)
+          .filter(([_, v]) => v)
+          .map(([k]) => k);
+        const data = await getProfessors({
+          nome: debouncedSearchTerm || undefined,
+          cursos: cursosSelecionados.length ? cursosSelecionados : undefined,
+          titulacoes: titulacoesSelecionadas.length
+            ? titulacoesSelecionadas
+            : undefined,
+        });
+        setProfessors(data);
+      } catch (e) {
+        setProfessors([]);
+      }
+      setIsLoading(false);
+    };
 
-  // Atualiza lista ao mudar filtros
-  useEffect(() => {
     fetchProfessors();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [nome, cursos, titulacoes]);
+  }, [debouncedSearchTerm, cursos, titulacoes]);
 
   const handleDelete = async (id: number) => {
     try {
@@ -187,8 +189,8 @@ const ListProfessorScreen = () => {
 
           <TextInput
             placeholder="Nome do Professor"
-            value={nome}
-            onChangeText={setNome}
+            value={searchTerm}
+            onChangeText={setSearchTerm}
             style={TableStyle.input}
           />
 
