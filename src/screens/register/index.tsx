@@ -12,7 +12,7 @@ import {
   ActivityIndicator,
   TouchableOpacity,
 } from "react-native";
-import { Card, Button } from "react-native-paper";
+import { Card, Button, IconButton } from "react-native-paper";
 import { signUp } from "../../services/users/userService";
 import { userRegisterSchema } from "../../validations/usersValidations";
 import { FormStyles } from "../../style/FormStyles";
@@ -21,6 +21,7 @@ const RegisterScreen = ({ navigation }: any) => {
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
   const [isLoading, setIsLoading] = useState(false);
 
@@ -76,16 +77,25 @@ const RegisterScreen = ({ navigation }: any) => {
                 <Text style={styles.errorText}>{fieldErrors.nome}</Text>
               )}
               <TextInput
-                style={[FormStyles.input, { width: "100%" }, fieldErrors.nome ? styles.inputError : null]}
+                style={[
+                  FormStyles.input,
+                  { width: "100%" },
+                  fieldErrors.nome ? styles.inputError : null,
+                ]}
                 placeholder="Nome"
                 value={nome}
                 onChangeText={setNome}
               />
+
               {fieldErrors.email && (
                 <Text style={styles.errorText}>{fieldErrors.email}</Text>
               )}
               <TextInput
-                style={[FormStyles.input, { width: "100%" }, fieldErrors.email ? styles.inputError : null]}
+                style={[
+                  FormStyles.input,
+                  { width: "100%" },
+                  fieldErrors.email ? styles.inputError : null,
+                ]}
                 placeholder="E-mail"
                 value={email}
                 onChangeText={setEmail}
@@ -93,19 +103,35 @@ const RegisterScreen = ({ navigation }: any) => {
                 keyboardType="email-address"
                 autoComplete="email"
               />
+
               {fieldErrors.senha && (
                 <Text style={styles.errorText}>{fieldErrors.senha}</Text>
               )}
-              <TextInput
-                style={[FormStyles.input, { width: "100%" }, fieldErrors.senha ? styles.inputError : null]}
-                placeholder="Senha"
-                secureTextEntry
-                value={senha}
-                onChangeText={setSenha}
-              />
+
+              {/* Campo senha com IconButton */}
+              <View style={styles.passwordContainer}>
+                <TextInput
+                  style={[
+                    FormStyles.input,
+                    { flex: 1 },
+                    fieldErrors.senha ? styles.inputError : null,
+                  ]}
+                  placeholder="Senha"
+                  secureTextEntry={!showPassword}
+                  value={senha}
+                  onChangeText={setSenha}
+                />
+                <IconButton
+                  icon={showPassword ? "eye-off" : "eye"}
+                  size={20}
+                  onPress={() => setShowPassword(!showPassword)}
+                />
+              </View>
+
               {fieldErrors.api && (
                 <Text style={styles.errorText}>{fieldErrors.api}</Text>
               )}
+
               {isLoading ? (
                 <ActivityIndicator
                   size="large"
@@ -123,6 +149,7 @@ const RegisterScreen = ({ navigation }: any) => {
                   Cadastrar
                 </Button>
               )}
+
               <View style={styles.linksContainer}>
                 <Card style={styles.linkCard} mode="elevated">
                   <TouchableOpacity onPress={() => navigation.navigate("Login")}>
@@ -168,6 +195,12 @@ const styles = StyleSheet.create({
   inputError: {
     borderColor: "red",
   },
+  passwordContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    width: "100%",
+    marginBottom: 10,
+  },
   linksContainer: {
     width: "100%",
     marginTop: 10,
@@ -187,7 +220,6 @@ const styles = StyleSheet.create({
     color: "#fff",
     textAlign: "center",
     fontSize: 14,
-    // textDecorationLine: "underline",
   },
 });
 
