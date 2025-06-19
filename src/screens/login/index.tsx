@@ -12,7 +12,7 @@ import {
   Keyboard,
   TouchableWithoutFeedback,
 } from "react-native";
-import { Card, Button } from "react-native-paper";
+import { Card, Button, IconButton } from "react-native-paper";
 import { useAuth } from "../../context/AuthContext";
 import { login as loginService } from "../../services/users/authService";
 import { userLoginSchema } from "../../validations/usersValidations";
@@ -21,6 +21,7 @@ import { FormStyles } from "../../style/FormStyles";
 const LoginScreen = ({ navigation }: any) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
   const [isLoading, setIsLoading] = useState(false);
   const { login: authLogin } = useAuth();
@@ -72,6 +73,7 @@ const LoginScreen = ({ navigation }: any) => {
                 Entre com seu e-mail e senha para acessar o sistema.
               </Text>
             </Card.Content>
+
             <Card.Actions style={{ flexDirection: "column", marginTop: 10 }}>
               {fieldErrors.email && (
                 <Text style={styles.errorText}>{fieldErrors.email}</Text>
@@ -82,6 +84,8 @@ const LoginScreen = ({ navigation }: any) => {
               {fieldErrors.api && (
                 <Text style={styles.errorText}>{fieldErrors.api}</Text>
               )}
+
+              {/* Campo Email */}
               <TextInput
                 placeholder="E-mail"
                 style={[FormStyles.input, { width: "100%" }]}
@@ -91,13 +95,24 @@ const LoginScreen = ({ navigation }: any) => {
                 keyboardType="email-address"
                 autoComplete="email"
               />
-              <TextInput
-                placeholder="Senha"
-                style={[FormStyles.input, { width: "100%" }]}
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry
-              />
+
+              {/* Campo Senha com botão mostrar/ocultar */}
+              <View style={styles.passwordContainer}>
+                <TextInput
+                  placeholder="Senha"
+                  style={[FormStyles.input, { flex: 1 }]}
+                  value={password}
+                  onChangeText={setPassword}
+                  secureTextEntry={!showPassword}
+                />
+                <IconButton
+                  icon={showPassword ? "eye-off" : "eye"}
+                  size={20}
+                  onPress={() => setShowPassword(!showPassword)}
+                />
+              </View>
+
+              {/* Loader ou botão */}
               {isLoading ? (
                 <ActivityIndicator
                   size="large"
@@ -115,6 +130,8 @@ const LoginScreen = ({ navigation }: any) => {
                   Entrar
                 </Button>
               )}
+
+              {/* Links de ações */}
               <View style={styles.linksContainer}>
                 <Card style={styles.linkCard} mode="elevated">
                   <TouchableOpacity
@@ -168,6 +185,12 @@ const styles = StyleSheet.create({
     marginLeft: 2,
     fontSize: 12,
   },
+  passwordContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    width: "100%",
+    marginBottom: 10,
+  },
   linksContainer: {
     width: "100%",
     marginTop: 10,
@@ -187,7 +210,6 @@ const styles = StyleSheet.create({
     color: "#fff",
     textAlign: "center",
     fontSize: 14,
-    // textDecorationLine: "underline",
   },
 });
 
