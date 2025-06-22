@@ -7,6 +7,8 @@ type Props<T> = {
   selected?: T;
   getLabel?: (item: T) => string;
   getValue?: (item: T) => any;
+  suggestedLabel?: string;
+  suggestionStyle?: any; // nova prop
 };
 
 export default function ListPicker<T>({
@@ -15,6 +17,8 @@ export default function ListPicker<T>({
   selected,
   getLabel,
   getValue,
+  suggestedLabel,
+  suggestionStyle,
 }: Props<T>) {
   const [expanded, setExpanded] = useState(false);
   const [selectedLabel, setSelectedLabel] = useState<string | null>(null);
@@ -41,13 +45,23 @@ export default function ListPicker<T>({
     onSelect(value);
   };
 
-  const title =
-    items.length === 0 ? "Não há itens" : selectedLabel ?? "Escolha uma opção";
+  let title: React.ReactNode = "Escolha uma opção";
+  let titleStyle: any = undefined;
+
+  if (items.length === 0) {
+    title = "Não há itens";
+  } else if (selectedLabel) {
+    title = selectedLabel;
+  } else if (suggestedLabel) {
+    title = suggestedLabel;
+    titleStyle = suggestionStyle;
+  }
 
   return (
     <List.Section>
       <List.Accordion
         title={title}
+        titleStyle={titleStyle}
         expanded={expanded}
         onPress={handlePress}
         left={(props) => <List.Icon {...props} icon="menu-down" />}
