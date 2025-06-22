@@ -1,7 +1,6 @@
 import React from "react";
-import { View, Text, StyleSheet, Animated } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import { Switch } from "react-native-paper";
-import { LinearGradient } from 'expo-linear-gradient';
 import { AnimatedGradientWrapper } from './atoms/AnimatedGradientWrapper';
 
 type Props = {
@@ -17,27 +16,16 @@ export const SuggestionSwitch: React.FC<Props> = ({
 }) => (
   <View style={styles.container}>
     <Text style={styles.label}>{label}</Text>
-    {value ? (
-      <AnimatedGradientWrapper style={styles.gradientWrapper}>
-        <Switch
-          value={true}
-          onValueChange={onValueChange}
-          color="#fff"
-          trackColor={{ false: "#ccc", true: "transparent" }}
-          thumbColor="#fff"
-          style={styles.switch}
-        />
-      </AnimatedGradientWrapper>
-    ) : (
+    <AnimatedGradientWrapper style={styles.gradientWrapper} enabled={value}>
       <Switch
-        value={false}
+        value={value}
         onValueChange={onValueChange}
-        color="#D32719"
-        trackColor={{ false: "#ccc", true: "#D32719" }}
+        color={value ? "#fff" : "#D32719"}
+        trackColor={{ false: "#ccc", true: value ? "transparent" : "#D32719" }}
         thumbColor="#fff"
         style={styles.switch}
       />
-    )}
+    </AnimatedGradientWrapper>
   </View>
 );
 

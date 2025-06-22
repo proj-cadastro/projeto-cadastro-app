@@ -35,14 +35,12 @@ export default function ProfessorFormStepTwo() {
   const { partialDataProfessor, suggestionEnabled: initialSuggestionEnabled } = route.params;
 
   const [suggestionEnabled, setSuggestionEnabled] = useState(!!initialSuggestionEnabled);
-
   const [lattes, setLattes] = useState(partialDataProfessor?.lattes || "");
   const [referencia, setReferencia] = useState(partialDataProfessor?.referencia || "");
   const [statusAtividade, setStatusAtividade] = useState(partialDataProfessor?.statusAtividade || "");
   const [observacoes, setObservacoes] = useState("");
 
   const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
-
   const [modalVisible, setModalVisible] = useState(false);
   const [modalMsg, setModalMsg] = useState("");
   const [missingFields, setMissingFields] = useState<string[]>([]);
@@ -62,9 +60,7 @@ export default function ProfessorFormStepTwo() {
         observacoes,
         statusAtividade,
       };
-
       const response = await postProfessor(professor);
-
       if (response?.sucesso === false) {
         setModalMsg(
           response?.erro ||
@@ -73,7 +69,6 @@ export default function ProfessorFormStepTwo() {
         setModalVisible(true);
         return;
       }
-
       refreshProfessorsData();
       navigation.navigate("RegisterProfessorsFinished" as never);
     } catch (error: any) {
@@ -128,7 +123,6 @@ export default function ProfessorFormStepTwo() {
                   <Text style={FormStyles.description}>
                     Insira os dados do professor para registrá-lo no sistema
                   </Text>
-
                   <Text style={FormStyles.label}>Lattes</Text>
                   {fieldErrors.lattes && (
                     <Text style={styles.errorText}>{fieldErrors.lattes}</Text>
@@ -145,7 +139,6 @@ export default function ProfessorFormStepTwo() {
                     keyboardType="email-address"
                     autoComplete="email"
                   />
-
                   <Text style={FormStyles.label}>Referência</Text>
                   {fieldErrors.referencia && (
                     <Text style={styles.errorText}>
@@ -157,7 +150,6 @@ export default function ProfessorFormStepTwo() {
                     selected={referencia}
                     onSelect={(ref: Referencia) => setReferencia(ref)}
                   />
-
                   <Text style={FormStyles.label}>Observações</Text>
                   {fieldErrors.observacoes && (
                     <Text style={styles.errorText}>
@@ -170,7 +162,6 @@ export default function ProfessorFormStepTwo() {
                     onChangeText={setObservacoes}
                     value={observacoes}
                   />
-
                   <Text style={FormStyles.label}>Professor está ativo?</Text>
                   {fieldErrors.professorAtivo && (
                     <Text style={styles.errorText}>
@@ -194,7 +185,6 @@ export default function ProfessorFormStepTwo() {
                 </Card.Actions>
                 <ProgressBar progress={0.8} color={MD3Colors.neutral40} />
               </Card>
-
               <View style={{ marginTop: 16 }}>
                 <SuggestionSwitch
                   value={suggestionEnabled}

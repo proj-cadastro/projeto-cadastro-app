@@ -13,6 +13,13 @@ type Props = {
 
 export default function BarsChart({ label, data, chartType = "bar" }: Props) {
   const total = data.reduce((sum, v) => sum + v, 0);
+  const max = Math.max(...data);
+  const min = Math.min(...data);
+
+  const yLabels =
+    max === min
+      ? [min, min + 1, min + 2, min + 3, min + 4]
+      : Array.from({ length: 5 }, (_, i) => min + ((max - min) * i) / 4);
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
   useEffect(() => {
@@ -41,7 +48,15 @@ export default function BarsChart({ label, data, chartType = "bar" }: Props) {
           }}
           width={Math.min(screenWidth * 0.8, 380)}
           height={230}
-          segments={Math.max(3, Math.ceil(Math.max(...data)))}
+          segments={4}
+          fromZero
+          showValuesOnTopOfBars
+          withInnerLines
+          yAxisSuffix={""}
+          yAxisLabel={""}
+          style={{
+            borderRadius: 12,
+          }}
           chartConfig={{
             backgroundColor: "transparent",
             backgroundGradientFrom: "#FFFFFF",
@@ -56,17 +71,13 @@ export default function BarsChart({ label, data, chartType = "bar" }: Props) {
             propsForLabels: {
               fontSize: 13,
             },
+            formatYLabel: (yValue) => {
+              const y = Number(yValue);
+              return yLabels.some((val) => Math.round(val) === Math.round(y))
+                ? String(Math.round(y))
+                : "";
+            },
           }}
-          yAxisSuffix={""}
-          yAxisLabel={""}
-          style={{
-            borderRadius: 12,
-          }}
-          fromZero
-          showValuesOnTopOfBars
-          withInnerLines
-          // @ts-ignore
-          barColors={colors}
         />
       ) : (
         <PieChart
@@ -90,8 +101,7 @@ export default function BarsChart({ label, data, chartType = "bar" }: Props) {
       )}
       <View style={styles.legendContainer}>
         {label.map((item, idx) => {
-          const percent =
-            total > 0 ? Math.round((data[idx] / total) * 100) : 0;
+          const percent = total > 0 ? Math.round((data[idx] / total) * 100) : 0;
           const color = getColorByIndex(idx);
           return (
             <View

@@ -1,10 +1,8 @@
-// src/routes/ProtectedRoutes.tsx
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { CourseProvider } from "../context/CourseContext";
 import { ProfessorProvider } from "../context/ProfessorContext";
 
-// Importe as telas privadas
 const Stack = createNativeStackNavigator();
 
 const screens = {

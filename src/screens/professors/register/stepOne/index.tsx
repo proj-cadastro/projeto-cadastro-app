@@ -21,6 +21,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import locationAnimation from "../../../../../assets/location-icon.json";
 import { UnitSuggestionButton } from "../../../../components/UnitSuggestionButton";
 import { SuggestionSwitch } from "../../../../components/SuggestionSwitch";
+import { sugerirProfessorIA } from "../../../../services/ia/iaService";
+import { FieldSuggestionButton } from "../../../../components/FieldSuggestionButton";
 
 export default function ProfessorFormStepOne() {
   const navigation = useNavigation<NavigationProp>();
@@ -30,11 +32,46 @@ export default function ProfessorFormStepOne() {
   const [nome, setNome] = useState(iaData?.nome || "");
   const [email, setEmail] = useState(iaData?.email || "");
   const [titulacao, setTitulacao] = useState(iaData?.titulacao || "");
-  const [idUnidade, setIdUnidade] = useState(iaData?.idUnidade || "");
+  const [idUnidade, setIdUnidade] = useState("");
   const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
   const [unidadeSugerida, setUnidadeSugerida] = useState<{ id: string; nome: string } | null>(null);
   const [showSuggestion, setShowSuggestion] = useState(false);
   const [suggestionEnabled, setSuggestionEnabled] = useState(false);
+  const [suggestions, setSuggestions] = useState<{ nome?: string; email?: string; titulacao?: string }>({});
+  const [loadingSuggestions, setLoadingSuggestions] = useState(false);
+
+  useEffect(() => {
+    let isMounted = true;
+    let timeout: NodeJS.Timeout;
+    const fetchInitialSuggestions = async () => {
+      if (!suggestionEnabled) {
+        setSuggestions({});
+        return;
+      }
+      setLoadingSuggestions(true);
+      try {
+        const partial: Record<string, any> = {};
+        if (nome) partial.nome = nome;
+        if (email) partial.email = email;
+        if (titulacao) partial.titulacao = titulacao;
+        const data = await sugerirProfessorIA(partial);
+        if (isMounted) {
+          timeout = setTimeout(() => {
+            setSuggestions(data);
+          }, 600);
+        }
+      } catch {
+        if (isMounted) setSuggestions({});
+      } finally {
+        if (isMounted) setLoadingSuggestions(false);
+      }
+    };
+    fetchInitialSuggestions();
+    return () => {
+      isMounted = false;
+      if (timeout) clearTimeout(timeout);
+    };
+  }, [suggestionEnabled]);
 
   useEffect(() => {
     let timeout: NodeJS.Timeout;
@@ -46,7 +83,7 @@ export default function ProfessorFormStepOne() {
             timeout = setTimeout(() => {
               setUnidadeSugerida({ id: unidade.id, nome: unidade.nome });
               setShowSuggestion(true);
-            }, 2000);
+            }, 600);
           } catch {}
         }
       });
@@ -55,6 +92,26 @@ export default function ProfessorFormStepOne() {
     }
     return () => clearTimeout(timeout);
   }, [suggestionEnabled]);
+
+  const fetchSuggestions = async (fieldChanged: string, value: string) => {
+    if (!suggestionEnabled) return;
+    setLoadingSuggestions(true);
+    try {
+      const partial: Record<string, any> = {};
+      if (fieldChanged === "nome" && value) partial.nome = value;
+      else if (nome) partial.nome = nome;
+      if (fieldChanged === "email" && value) partial.email = value;
+      else if (email) partial.email = email;
+      if (fieldChanged === "titulacao" && value) partial.titulacao = value;
+      else if (titulacao) partial.titulacao = titulacao;
+      const data = await sugerirProfessorIA(partial);
+      setSuggestions(data);
+    } catch (e) {
+      setSuggestions({});
+    } finally {
+      setLoadingSuggestions(false);
+    }
+  };
 
   const handleAdvance = () => {
     try {
@@ -113,64 +170,107 @@ export default function ProfessorFormStepOne() {
               {fieldErrors.nome && (
                 <Text style={styles.errorText}>{fieldErrors.nome}</Text>
               )}
-              <TextInput
-                placeholder="ex: José Maria da Silva"
-                style={[
-                  FormStyles.input,
-                  fieldErrors.nome ? styles.inputError : null,
-                ]}
-                value={nome}
-                onChangeText={(text) => {
-                  setNome(text);
-                  if (fieldErrors.nome)
-                    setFieldErrors((prev) => {
-                      const updated = { ...prev };
-                      delete updated.nome;
-                      return updated;
-                    });
-                }}
-              />
+              <View style={styles.inputRow}>
+                <TextInput
+                  placeholder={
+                    !nome && suggestions.nome && suggestionEnabled
+                      ? suggestions.nome
+                      : "ex: José Maria da Silva"
+                  }
+                  style={[
+                    FormStyles.input,
+                    styles.inputFlex,
+                    fieldErrors.nome ? styles.inputError : null,
+                    !nome && suggestions.nome && suggestionEnabled ? styles.suggestionPlaceholder : null,
+                  ]}
+                  value={nome}
+                  onChangeText={(text) => {
+                    setNome(text);
+                    if (fieldErrors.nome)
+                      setFieldErrors((prev) => {
+                        const updated = { ...prev };
+                        delete updated.nome;
+                        return updated;
+                      });
+                  }}
+                  onBlur={() => fetchSuggestions("nome", nome)}
+                  placeholderTextColor={
+                    !nome && suggestions.nome && suggestionEnabled ? "#D32719" : "#888"
+                  }
+                />
+                {!nome && suggestions.nome && suggestionEnabled && (
+                  <FieldSuggestionButton onPress={() => setNome(suggestions.nome!)} />
+                )}
+              </View>
               <Text style={FormStyles.label}>Email</Text>
               {fieldErrors.email && (
                 <Text style={styles.errorText}>{fieldErrors.email}</Text>
               )}
-              <TextInput
-                placeholder="ex: jose.maria@fatec.sp.gov.br"
-                style={[
-                  FormStyles.input,
-                  fieldErrors.email ? styles.inputError : null,
-                ]}
-                onChangeText={(text) => {
-                  setEmail(text);
-                  if (fieldErrors.email)
-                    setFieldErrors((prev) => {
-                      const updated = { ...prev };
-                      delete updated.email;
-                      return updated;
-                    });
-                }}
-                value={email}
-                autoCapitalize="none"
-                keyboardType="email-address"
-                autoComplete="email"
-              />
+              <View style={styles.inputRow}>
+                <TextInput
+                  placeholder={
+                    !email && suggestions.email && suggestionEnabled
+                      ? suggestions.email
+                      : "ex: jose.maria@fatec.sp.gov.br"
+                  }
+                  style={[
+                    FormStyles.input,
+                    styles.inputFlex,
+                    fieldErrors.email ? styles.inputError : null,
+                    !nome && suggestions.nome && suggestionEnabled ? styles.suggestionPlaceholder : null,
+                  ]}
+                  onChangeText={(text) => {
+                    setEmail(text);
+                    if (fieldErrors.email)
+                      setFieldErrors((prev) => {
+                        const updated = { ...prev };
+                        delete updated.email;
+                        return updated;
+                      });
+                  }}
+                  value={email}
+                  autoCapitalize="none"
+                  keyboardType="email-address"
+                  autoComplete="email"
+                  onBlur={() => fetchSuggestions("email", email)}
+                  placeholderTextColor={
+                    !email && suggestions.email && suggestionEnabled ? "#D32719" : "#888"
+                  }
+                />
+                {!email && suggestions.email && suggestionEnabled && (
+                  <FieldSuggestionButton onPress={() => setEmail(suggestions.email!)} />
+                )}
+              </View>
               <Text style={FormStyles.label}>Titulação</Text>
               {fieldErrors.titulacao && (
                 <Text style={styles.errorText}>{fieldErrors.titulacao}</Text>
               )}
-              <ListPicker
-                items={Object.values(Titulacao)}
-                selected={titulacao}
-                onSelect={(titulacao: Titulacao) => {
-                  setTitulacao(titulacao);
-                  if (fieldErrors.titulacao)
-                    setFieldErrors((prev) => {
-                      const updated = { ...prev };
-                      delete updated.titulacao;
-                      return updated;
-                    });
-                }}
-              />
+              <View style={styles.inputRow}>
+                <View style={styles.pickerFlex}>
+                  <ListPicker
+                    items={Object.values(Titulacao)}
+                    selected={titulacao}
+                    onSelect={(titulacao: Titulacao) => {
+                      setTitulacao(titulacao);
+                      if (fieldErrors.titulacao)
+                        setFieldErrors((prev) => {
+                          const updated = { ...prev };
+                          delete updated.titulacao;
+                          return updated;
+                        });
+                    }}
+                    suggestedLabel={
+                      !titulacao && suggestions.titulacao && suggestionEnabled
+                        ? suggestions.titulacao
+                        : undefined
+                    }
+                    suggestionStyle={{ fontStyle: "italic", color: "#D32719" }}
+                  />
+                </View>
+                {!titulacao && suggestions.titulacao && suggestionEnabled && (
+                  <FieldSuggestionButton onPress={() => setTitulacao(suggestions.titulacao!)} />
+                )}
+              </View>
               <Text style={FormStyles.label}>Código da Unidade</Text>
               {fieldErrors.idUnidade && (
                 <Text style={styles.errorText}>{fieldErrors.idUnidade}</Text>
@@ -225,12 +325,10 @@ export default function ProfessorFormStepOne() {
             </Card.Actions>
             <ProgressBar progress={0.5} color={MD3Colors.neutral40} />
           </Card>
-
           <SuggestionSwitch
             value={suggestionEnabled}
             onValueChange={setSuggestionEnabled}
           />
-
         </ScrollView>
       </View>
     </SafeAreaView>
@@ -259,5 +357,9 @@ const styles = StyleSheet.create({
   },
   suggestionPlaceholder: {
     fontStyle: "italic",
+    color: "#D32719",
+  },
+  pickerFlex: {
+    flex: 1,
   },
 });
