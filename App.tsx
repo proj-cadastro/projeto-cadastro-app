@@ -1,7 +1,7 @@
 import 'react-native-reanimated'
 import 'react-native-gesture-handler'
 
-import React, { useState } from "react";
+import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import {
@@ -12,58 +12,35 @@ import {
 } from "@expo-google-fonts/inter";
 import {
   Provider as PaperProvider,
-  MD3LightTheme as DefaultTheme,
   ActivityIndicator,
 } from "react-native-paper";
 
 import { ProtectedRoutes } from "./src/routes/protectedRoutes";
 import { AuthProvider, useAuth } from "./src/context/AuthContext";
 import { AuthListener } from "./src/components/AuthListener";
+import { ThemeProvider, useThemeMode } from "./src/context/ThemeContext";
 
 const PublicScreens = {
   Login: require("./src/screens/login").default,
   Register: require("./src/screens/register").default,
   Loading: require("./src/screens/loading").default,
-
 };
 
 const Stack = createNativeStackNavigator();
 
-const theme = {
-  ...DefaultTheme,
-  fonts: {
-    ...DefaultTheme.fonts,
-    bodyLarge: {
-      ...DefaultTheme.fonts.bodyLarge,
-      fontFamily: "Inter_400Regular",
-    },
-    bodyMedium: {
-      ...DefaultTheme.fonts.bodyMedium,
-      fontFamily: "Inter_400Regular",
-    },
-    bodySmall: {
-      ...DefaultTheme.fonts.bodySmall,
-      fontFamily: "Inter_400Regular",
-    },
-    titleLarge: {
-      ...DefaultTheme.fonts.titleLarge,
-      fontFamily: "Inter_700Bold",
-    },
-    titleMedium: {
-      ...DefaultTheme.fonts.titleMedium,
-      fontFamily: "Inter_500Medium",
-    },
-    titleSmall: {
-      ...DefaultTheme.fonts.titleSmall,
-      fontFamily: "Inter_500Medium",
-    },
-  },
-};
+function MainApp() {
+  const { theme } = useThemeMode();
+
+  return (
+    <PaperProvider theme={theme}>
+      <NavigationContainer>
+        <Routes />
+      </NavigationContainer>
+    </PaperProvider>
+  );
+}
 
 export default function App() {
-
-
-
   const [fontsLoaded] = useFonts({
     Inter_400Regular,
     Inter_500Medium,
@@ -73,15 +50,13 @@ export default function App() {
   if (!fontsLoaded) {
     return <ActivityIndicator style={{ flex: 1 }} />;
   }
-  {/* AuthListener Verifica se o evento global de ordem de logout foi lançado */ }
+
   return (
     <AuthProvider>
       <AuthListener />
-      <PaperProvider theme={theme}>
-        <NavigationContainer>
-          <Routes />
-        </NavigationContainer>
-      </PaperProvider>
+      <ThemeProvider>
+        <MainApp />
+      </ThemeProvider>
     </AuthProvider>
   );
 }
