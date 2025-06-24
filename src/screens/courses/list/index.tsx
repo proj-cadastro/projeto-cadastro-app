@@ -5,7 +5,6 @@ import {
   Text,
   StyleSheet,
   View,
-  Button,
   ScrollView,
   TouchableOpacity,
 } from "react-native";
@@ -17,7 +16,6 @@ import { NavigationProp } from "../../../routes/rootStackParamList ";
 import { useNavigation } from "@react-navigation/native";
 import { TableStyle } from "../../../style/TableStyle";
 import Icon from "react-native-vector-icons/MaterialIcons";
-
 import { useProfessor } from "../../../context/ProfessorContext";
 import { InteractBtn } from "../../../components/atoms/InteractBtn";
 import { shareDataToPdfFile } from "../../../services/file/fileService";
@@ -25,6 +23,7 @@ import ColumnSelectionModal from "../../../components/ColumnSelectionModal";
 import { courseLabels } from "../../../utils/translateObject";
 import ProximityNotification from "../../../components/ProximityNotification";
 import { buscarOuCacheUnidadeProxima } from "../../../services/unit-location/unitService";
+import { useThemeMode } from "../../../context/ThemeContext"; // Importa o contexto do tema
 
 const ListCoursesScreen = () => {
   const navigation = useNavigation<NavigationProp>();
@@ -44,6 +43,8 @@ const ListCoursesScreen = () => {
 
   const { courses, refreshCoursesData } = useCourse();
   const { getProfessorById } = useProfessor();
+
+  const { isDarkMode } = useThemeMode();
 
   const columnOptions = Object.keys(courses[0] || {}).filter(
     (key) => key !== "id" && key !== "coordenadorId"
@@ -114,7 +115,10 @@ const ListCoursesScreen = () => {
   };
 
   return (
-    <SafeAreaView style={TableStyle.container}>
+    <SafeAreaView style={[
+      TableStyle.container,
+      { backgroundColor: isDarkMode ? "#181818" : "#fff" }
+    ]}>
       <View style={TableStyle.menuContainer}>
         <HamburgerMenu />
       </View>
@@ -122,13 +126,20 @@ const ListCoursesScreen = () => {
       {unidadeNome && <ProximityNotification unidadeNome={unidadeNome} />}
 
       <ScrollView contentContainerStyle={TableStyle.scrollContent}>
-        <Text style={TableStyle.title}>Cursos</Text>
+        <Text style={[
+          TableStyle.title,
+          { color: isDarkMode ? "#fff" : "#000" }
+        ]}>Cursos</Text>
 
         <TextInput
           placeholder="Nome do Curso"
+          placeholderTextColor={isDarkMode ? "#aaa" : "#888"}
           value={nome}
           onChangeText={setNome}
-          style={TableStyle.input}
+          style={[
+            TableStyle.input,
+            { color: isDarkMode ? "#fff" : "#000", borderColor: isDarkMode ? "#444" : "#ccc" }
+          ]}
         />
 
         <View style={TableStyle.filterRow}>
@@ -136,7 +147,10 @@ const ListCoursesScreen = () => {
             <TouchableOpacity
               onPress={() => setShowModalidades((prev) => !prev)}
             >
-              <Text style={TableStyle.filterText}>Modalidades ▼</Text>
+              <Text style={[
+                TableStyle.filterText,
+                { color: isDarkMode ? "#fff" : "#000" }
+              ]}>Modalidades ▼</Text>
             </TouchableOpacity>
             {showModalidades && (
               <View style={TableStyle.submenuOverlay}>
@@ -158,18 +172,33 @@ const ListCoursesScreen = () => {
 
         <View style={TableStyle.cardList}>
           {courses.length === 0 ? (
-            <Text style={TableStyle.emptyText}>Nenhum Curso Encontrado</Text>
+            <Text style={[
+              TableStyle.emptyText,
+              { color: isDarkMode ? "#fff" : "#000" }
+            ]}>Nenhum Curso Encontrado</Text>
           ) : (
             courses.map((curso, idx) => (
               <View key={idx} style={TableStyle.cardContainer}>
                 {curso.id && (
                   <TouchableOpacity
                     onPress={() => toggleCardExpansion(curso.id)}
-                    style={TableStyle.card}
+                    style={[
+                      TableStyle.card,
+                      { backgroundColor: isDarkMode ? "#232323" : "#fff" }
+                    ]}
                   >
-                    <Text style={TableStyle.cardTitle}>{curso.nome}</Text>
-                    <Text style={TableStyle.cardSubtitle}>{curso.sigla}</Text>
-                    <Text style={TableStyle.cardSubtitle}>{curso.codigo}</Text>
+                    <Text style={[
+                      TableStyle.cardTitle,
+                      { color: isDarkMode ? "#fff" : "#000" }
+                    ]}>{curso.nome}</Text>
+                    <Text style={[
+                      TableStyle.cardSubtitle,
+                      { color: isDarkMode ? "#ccc" : "#333" }
+                    ]}>{curso.sigla}</Text>
+                    <Text style={[
+                      TableStyle.cardSubtitle,
+                      { color: isDarkMode ? "#ccc" : "#333" }
+                    ]}>{curso.codigo}</Text>
                   </TouchableOpacity>
                 )}
                 {expandedCard === curso.id && (

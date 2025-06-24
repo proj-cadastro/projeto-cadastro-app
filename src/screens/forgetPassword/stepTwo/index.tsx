@@ -4,22 +4,21 @@ import {
     ActivityIndicator,
 } from "react-native";
 import { FormStyles } from "../../../style/FormStyles";
-import { Card, Button } from "react-native-paper";
+import { Card, Button, Switch } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
 import { useState } from "react";
-
 import { OtpInput } from "react-native-otp-entry";
 import { compareCode } from "../../../services/users/authService";
-
-
+import { useThemeMode } from "../../../context/ThemeContext"; // Importa o contexto do tema
 
 const ForgetPasswordStepTwo = () => {
     const navigation = useNavigation()
-
     const [code, setCode] = useState("")
     const [loading, setLoading] = useState(false);
-
     const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
+
+    // Usa o contexto do tema
+    const { isDarkMode, toggleTheme } = useThemeMode();
 
     const handleSubmit = async () => {
         setFieldErrors({});
@@ -29,9 +28,7 @@ const ForgetPasswordStepTwo = () => {
 
         try {
             await compareCode(code)
-
             navigation.navigate("ForgetPasswordStepThree" as never)
-
         } catch (error: any) {
             console.log(error.response?.data?.mensagem || error.message);
 
@@ -53,24 +50,26 @@ const ForgetPasswordStepTwo = () => {
 
     return (
         <KeyboardAvoidingView
-            style={{ flex: 1 }}
+            style={{ flex: 1, backgroundColor: isDarkMode ? "#181818" : "#fff" }} // Aplica fundo escuro se dark mode
             behavior={Platform.OS === "ios" ? "padding" : "height"}
         >
             <View style={styles.fullScreenContainer}>
-                <Card style={[FormStyles.card, styles.card]} mode="elevated">
+                {/* Switch de tema no topo direito */}
+                <View style={styles.switchContainer}>
+                    <Text style={{ color: isDarkMode ? "#fff" : "#000", marginRight: 8 }}>Modo escuro</Text>
+                    <Switch value={isDarkMode} onValueChange={toggleTheme} />
+                </View>
+                <Card style={[FormStyles.card, styles.card, { backgroundColor: isDarkMode ? "#232323" : "#fff" }]} mode="elevated">
                     <Card.Content>
-
                         <Image
                             source={require("../../../../assets/cps.png")}
                             style={{ width: 300, height: 200, alignSelf: "center" }}
                             resizeMode="contain"
                         />
-
-                        <Text style={FormStyles.title}>Recuperar Senha</Text>
-                        <Text style={FormStyles.description}>
+                        <Text style={[FormStyles.title, { color: isDarkMode ? "#fff" : "#000" }]}>Recuperar Senha</Text>
+                        <Text style={[FormStyles.description, { color: isDarkMode ? "#fff" : "#000" }]}>
                             Insira o código enviado no seu e-mail
                         </Text>
-
                         {fieldErrors.api && (
                             <Text style={styles.errorText}>{fieldErrors.api}</Text>
                         )}
@@ -81,10 +80,8 @@ const ForgetPasswordStepTwo = () => {
                             blurOnFilled={true}
                             autoFocus={false}
                             onFilled={(text) => setCode(text)}
-
+                            // OtpInput não tem suporte direto a tema, mas o fundo da tela já muda
                         />
-
-
                         {loading ? (
                             <ActivityIndicator
                                 size="large"
@@ -105,18 +102,14 @@ const ForgetPasswordStepTwo = () => {
                         <Button
                             onPress={() => navigation.navigate("Login" as never)}
                             style={[FormStyles.button, { marginTop: 10, backgroundColor: "transparent" }]}
-                            labelStyle={{ color: "black" }}
+                            labelStyle={{ color: isDarkMode ? "#fff" : "black" }}
                         >
                             Cancelar
                         </Button>
-
                     </Card.Content>
-
                 </Card>
             </View>
-
         </KeyboardAvoidingView>
-
     )
 }
 
@@ -126,11 +119,20 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         padding: 16,
-        backgroundColor: "#fff", // opcional, caso queira fundo branco
+        // backgroundColor será sobrescrito pelo modo escuro
+    },
+    switchContainer: {
+        position: "absolute",
+        top: 40,
+        right: 24,
+        flexDirection: "row",
+        alignItems: "center",
+        zIndex: 2,
     },
     card: {
         width: "100%",
         maxWidth: 400,
+        // backgroundColor será sobrescrito pelo modo escuro
     },
     errorText: {
         color: "red",
@@ -140,6 +142,5 @@ const styles = StyleSheet.create({
         fontSize: 12,
     },
 });
-
 
 export default ForgetPasswordStepTwo

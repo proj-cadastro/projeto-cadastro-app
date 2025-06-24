@@ -1,23 +1,33 @@
 import React from "react";
+import { View, StyleSheet } from "react-native";
 import SuccessScreen from "../../../../components/SucessScreen";
 import { useNavigation } from "@react-navigation/native";
 import HamburgerMenu from "../../../../components/HamburgerMenu";
+import { useThemeMode } from "../../../../context/ThemeContext"; // Importa o contexto do tema
 
 const FinishedProfessorScreen = () => {
   const navigation = useNavigation();
+  const { isDarkMode } = useThemeMode();
 
   return (
-
-      <>
-        <HamburgerMenu/>
-        <SuccessScreen
-          title="Professor Cadastrado com Sucesso!"
-          description="Seu professor já está disponível para relatórios!"
-          onPressFn={() => navigation.navigate("ListProfessors" as never)}
-        />
-      </>
-
+    <View style={[
+      styles.container,
+      { backgroundColor: isDarkMode ? "#181818" : "#fff" }
+    ]}>
+      <HamburgerMenu />
+      <SuccessScreen
+        title="Professor Cadastrado com Sucesso!"
+        description="Seu professor já está disponível para relatórios!"
+        onPressFn={() => navigation.navigate("ListProfessors" as never)}
+      />
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});
 
 export default FinishedProfessorScreen;

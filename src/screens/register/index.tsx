@@ -12,10 +12,13 @@ import {
   ActivityIndicator,
   TouchableOpacity,
 } from "react-native";
-import { Card, Button, IconButton } from "react-native-paper";
+import { Card, Button, IconButton, Switch } from "react-native-paper";
+
+
 import { signUp } from "../../services/users/userService";
 import { userRegisterSchema } from "../../validations/usersValidations";
 import { FormStyles } from "../../style/FormStyles";
+import { useThemeMode } from "../../context/ThemeContext"; // Importa o contexto do tema
 
 const RegisterScreen = ({ navigation }: any) => {
   const [nome, setNome] = useState("");
@@ -24,6 +27,9 @@ const RegisterScreen = ({ navigation }: any) => {
   const [showPassword, setShowPassword] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
   const [isLoading, setIsLoading] = useState(false);
+
+  // Usa o contexto do tema
+  const { isDarkMode, toggleTheme, theme } = useThemeMode();
 
   const handleRegister = async () => {
     setFieldErrors({});
@@ -55,20 +61,25 @@ const RegisterScreen = ({ navigation }: any) => {
 
   return (
     <KeyboardAvoidingView
-      style={{ flex: 1 }}
+      style={{ flex: 1, backgroundColor: theme.colors.background }} // Aplica o fundo do tema
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={styles.fullScreenContainer}>
-          <Card style={[FormStyles.card, styles.card]} mode="elevated">
+          {/* Switch de tema no topo direito */}
+          <View style={styles.switchContainer}>
+            <Text style={{ color: theme.colors.onBackground, marginRight: 8 }}>Modo escuro</Text>
+            <Switch value={isDarkMode} onValueChange={toggleTheme} />
+          </View>
+          <Card style={[FormStyles.card, styles.card, { backgroundColor: theme.colors.background }]} mode="elevated">
             <Card.Content>
               <Image
                 source={require("../../../assets/logoFatecCapi.png")}
                 style={styles.logo}
                 resizeMode="contain"
               />
-              <Text style={FormStyles.title}>Cadastro</Text>
-              <Text style={FormStyles.description}>
+              <Text style={[FormStyles.title, { color: theme.colors.onBackground }]}>Cadastro</Text>
+              <Text style={[FormStyles.description, { color: theme.colors.onBackground }]}>
                 Preencha os campos para criar sua conta.
               </Text>
             </Card.Content>
@@ -79,10 +90,12 @@ const RegisterScreen = ({ navigation }: any) => {
               <TextInput
                 style={[
                   FormStyles.input,
-                  { width: "100%" },
+                  { width: "100%", color: theme.colors.onBackground, borderColor: theme.colors.outline },
                   fieldErrors.nome ? styles.inputError : null,
+
                 ]}
                 placeholder="Nome"
+                placeholderTextColor={theme.colors.outline}
                 value={nome}
                 onChangeText={setNome}
               />
@@ -93,10 +106,12 @@ const RegisterScreen = ({ navigation }: any) => {
               <TextInput
                 style={[
                   FormStyles.input,
-                  { width: "100%" },
+                  { width: "100%", color: theme.colors.onBackground, borderColor: theme.colors.outline },
                   fieldErrors.email ? styles.inputError : null,
+
                 ]}
                 placeholder="E-mail"
+                placeholderTextColor={theme.colors.outline}
                 value={email}
                 onChangeText={setEmail}
                 autoCapitalize="none"
@@ -114,9 +129,11 @@ const RegisterScreen = ({ navigation }: any) => {
                   style={[
                     FormStyles.input,
                     { flex: 1 },
+                    { width: "100%", color: theme.colors.onBackground, borderColor: theme.colors.outline },
                     fieldErrors.senha ? styles.inputError : null,
                   ]}
                   placeholder="Senha"
+                  placeholderTextColor={theme.colors.outline}
                   secureTextEntry={!showPassword}
                   value={senha}
                   onChangeText={setSenha}
@@ -127,6 +144,7 @@ const RegisterScreen = ({ navigation }: any) => {
                   onPress={() => setShowPassword(!showPassword)}
                 />
               </View>
+
 
               {fieldErrors.api && (
                 <Text style={styles.errorText}>{fieldErrors.api}</Text>
@@ -151,6 +169,7 @@ const RegisterScreen = ({ navigation }: any) => {
               )}
 
               <View style={styles.linksContainer}>
+                {/* Mantém o botão cinza original */}
                 <Card style={styles.linkCard} mode="elevated">
                   <TouchableOpacity onPress={() => navigation.navigate("Login")}>
                     <Text style={styles.linkText}>Já tem uma conta? Entrar</Text>
@@ -171,13 +190,21 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     padding: 16,
-    backgroundColor: "#fff",
+    // backgroundColor será sobrescrito pelo tema
+  },
+  switchContainer: {
+    position: "absolute",
+    top: 40,
+    right: 24,
+    flexDirection: "row",
+    alignItems: "center",
+    zIndex: 2,
   },
   card: {
     width: "100%",
     maxWidth: 400,
     padding: 10,
-    backgroundColor: "#fff",
+    // backgroundColor será sobrescrito pelo tema
   },
   logo: {
     width: 300,
@@ -207,7 +234,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   linkCard: {
-    backgroundColor: "#a1a1a1",
+    backgroundColor: "#a1a1a1", // Mantém o cinza original
     borderRadius: 8,
     elevation: 2,
     paddingVertical: 6,
@@ -217,7 +244,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   linkText: {
-    color: "#fff",
+    color: "#fff", // Mantém o texto branco original
     textAlign: "center",
     fontSize: 14,
   },
