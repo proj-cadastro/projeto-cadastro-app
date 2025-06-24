@@ -15,9 +15,7 @@ import { showConfirmDialog } from "../../../components/atoms/ConfirmAlert";
 import { deleteProfessor } from "../../../services/professors/professorService";
 import { useNavigation } from "@react-navigation/native";
 import { NavigationProp } from "../../../routes/rootStackParamList ";
-import {
-  GestureHandlerRootView,
-} from "react-native-gesture-handler";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import Icon from "react-native-vector-icons/MaterialIcons";
 
 import { TableStyle } from "../../../style/TableStyle";
@@ -27,20 +25,16 @@ import ColumnSelectionModal from "../../../components/ColumnSelectionModal";
 import { professorLabels } from "../../../utils/translateObject";
 import ProximityNotification from "../../../components/ProximityNotification";
 import { buscarOuCacheUnidadeProxima } from "../../../services/unit-location/unitService";
+
+import { getCourses } from "../../../services/course/cursoService";
+import { getProfessors } from "../../../services/professors/professorService";
+
 import { useThemeMode } from "../../../context/ThemeContext"; // Importa o contexto do tema
 
 const ListProfessorScreen = () => {
   const [nome, setNome] = useState("");
-  const [cursos, setCursos] = useState({
-    CDN: true,
-    CO: false,
-    DSM: true,
-  });
-  const [titulacoes, setTitulacoes] = useState({
-    Especialista: true,
-    Doutor: true,
-    Mestre: false,
-  });
+  const [cursos, setCursos] = useState<{ [key: string]: boolean }>({});
+  const [titulacoes, setTitulacoes] = useState<{ [key: string]: boolean }>({});
   const [showCursos, setShowCursos] = useState(false);
   const [showTitulacoes, setShowTitulacoes] = useState(false);
   const [expandedCard, setExpandedCard] = useState<number | null>(null);
@@ -48,10 +42,15 @@ const ListProfessorScreen = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedColumns, setSelectedColumns] = useState<string[]>([]);
   const [unidadeNome, setUnidadeNome] = useState<string | null>(null);
+  const [availableCursos, setAvailableCursos] = useState<string[]>([]);
+  const [availableTitulacoes, setAvailableTitulacoes] = useState<string[]>([]);
+  const [professors, setProfessors] = useState<any[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
 
   const navigation = useNavigation<NavigationProp>();
 
-  const { professors, refreshProfessorsData } = useProfessor();
+  const { refreshProfessorsData } = useProfessor();
 
   // Usa o contexto do tema
   const { isDarkMode } = useThemeMode();
@@ -73,6 +72,62 @@ const ListProfessorScreen = () => {
     const interval = setInterval(fetchUnidade, 180000);
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    const fetchFilters = async () => {
+      const cursosData = await getCourses();
+      setAvailableCursos(cursosData.map((c: any) => c.nome));
+      setCursos(
+        cursosData.reduce(
+          (acc: any, c: any) => ({ ...acc, [c.nome]: false }),
+          {}
+        )
+      );
+      const titulacoesData = ["Especialista", "Mestre", "Doutor"];
+      setAvailableTitulacoes(titulacoesData);
+      setTitulacoes(
+        titulacoesData.reduce((acc, t) => ({ ...acc, [t]: false }), {})
+      );
+    };
+    fetchFilters();
+  }, []);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 800);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchTerm]);
+
+  useEffect(() => {
+    const fetchProfessors = async () => {
+      setIsLoading(true);
+      try {
+        const cursosSelecionados = Object.entries(cursos)
+          .filter(([_, v]) => v)
+          .map(([k]) => k);
+        const titulacoesSelecionadas = Object.entries(titulacoes)
+          .filter(([_, v]) => v)
+          .map(([k]) => k);
+        const data = await getProfessors({
+          nome: debouncedSearchTerm || undefined,
+          cursos: cursosSelecionados.length ? cursosSelecionados : undefined,
+          titulacoes: titulacoesSelecionadas.length
+            ? titulacoesSelecionadas
+            : undefined,
+        });
+        setProfessors(data);
+      } catch (e) {
+        setProfessors([]);
+      }
+      setIsLoading(false);
+    };
+
+    fetchProfessors();
+  }, [debouncedSearchTerm, cursos, titulacoes]);
 
   const handleDelete = async (id: number) => {
     try {
@@ -149,12 +204,13 @@ const ListProfessorScreen = () => {
           <TextInput
             placeholder="Nome do Professor"
             placeholderTextColor={isDarkMode ? "#aaa" : "#888"}
-            value={nome}
-            onChangeText={setNome}
+            value={searchTerm}
+            onChangeText={setSearchTerm}
             style={[
               TableStyle.input,
               { color: isDarkMode ? "#fff" : "#000", borderColor: isDarkMode ? "#444" : "#ccc" }
             ]}
+
           />
 
           <View style={TableStyle.filterRow}>
@@ -168,10 +224,10 @@ const ListProfessorScreen = () => {
               {showCursos && (
                 <View style={TableStyle.submenuOverlay}>
                   <View style={TableStyle.submenu}>
-                    {Object.entries(cursos).map(([curso, checked]) =>
+                    {availableCursos.map((curso) =>
                       renderCheckbox(
                         curso,
-                        checked,
+                        cursos[curso] || false,
                         (val) =>
                           setCursos((prev) => ({ ...prev, [curso]: val })),
                         curso
@@ -193,10 +249,10 @@ const ListProfessorScreen = () => {
               {showTitulacoes && (
                 <View style={TableStyle.submenuOverlay}>
                   <View style={TableStyle.submenu}>
-                    {Object.entries(titulacoes).map(([tit, checked]) =>
+                    {availableTitulacoes.map((tit) =>
                       renderCheckbox(
                         tit,
-                        checked,
+                        titulacoes[tit] || false,
                         (val) =>
                           setTitulacoes((prev) => ({ ...prev, [tit]: val })),
                         tit
@@ -209,11 +265,15 @@ const ListProfessorScreen = () => {
           </View>
 
           <View style={TableStyle.cardList}>
-            {professors.length === 0 ? (
+
+            {isLoading ? (
+              <ActivityIndicator size="large" />
+            ) : professors.length === 0 ? (
               <Text style={[
                 TableStyle.emptyText,
                 { color: isDarkMode ? "#fff" : "#000" }
               ]}>
+
                 Nenhum Professor Encontrado
               </Text>
             ) : (
@@ -314,17 +374,19 @@ const ListProfessorScreen = () => {
           loading={isLoading}
         />
       </SafeAreaView>
-    </GestureHandlerRootView >
+    </GestureHandlerRootView>
   );
 };
 
 const styles = StyleSheet.create({
   fabContainer: {
     position: "absolute",
-    bottom: 40,
-    right: 35,
-    zIndex: 20,
+    bottom: 16,
+    right: 16,
+    elevation: 2,
   },
 });
 
+
 export default ListProfessorScreen;
+

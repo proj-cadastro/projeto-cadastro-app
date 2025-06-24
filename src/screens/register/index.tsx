@@ -12,7 +12,9 @@ import {
   ActivityIndicator,
   TouchableOpacity,
 } from "react-native";
-import { Card, Button, Switch } from "react-native-paper";
+import { Card, Button, IconButton, Switch } from "react-native-paper";
+
+
 import { signUp } from "../../services/users/userService";
 import { userRegisterSchema } from "../../validations/usersValidations";
 import { FormStyles } from "../../style/FormStyles";
@@ -22,6 +24,7 @@ const RegisterScreen = ({ navigation }: any) => {
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
   const [isLoading, setIsLoading] = useState(false);
 
@@ -88,13 +91,15 @@ const RegisterScreen = ({ navigation }: any) => {
                 style={[
                   FormStyles.input,
                   { width: "100%", color: theme.colors.onBackground, borderColor: theme.colors.outline },
-                  fieldErrors.nome ? styles.inputError : null
+                  fieldErrors.nome ? styles.inputError : null,
+
                 ]}
                 placeholder="Nome"
                 placeholderTextColor={theme.colors.outline}
                 value={nome}
                 onChangeText={setNome}
               />
+
               {fieldErrors.email && (
                 <Text style={styles.errorText}>{fieldErrors.email}</Text>
               )}
@@ -102,7 +107,8 @@ const RegisterScreen = ({ navigation }: any) => {
                 style={[
                   FormStyles.input,
                   { width: "100%", color: theme.colors.onBackground, borderColor: theme.colors.outline },
-                  fieldErrors.email ? styles.inputError : null
+                  fieldErrors.email ? styles.inputError : null,
+
                 ]}
                 placeholder="E-mail"
                 placeholderTextColor={theme.colors.outline}
@@ -112,24 +118,38 @@ const RegisterScreen = ({ navigation }: any) => {
                 keyboardType="email-address"
                 autoComplete="email"
               />
+
               {fieldErrors.senha && (
                 <Text style={styles.errorText}>{fieldErrors.senha}</Text>
               )}
-              <TextInput
-                style={[
-                  FormStyles.input,
-                  { width: "100%", color: theme.colors.onBackground, borderColor: theme.colors.outline },
-                  fieldErrors.senha ? styles.inputError : null
-                ]}
-                placeholder="Senha"
-                placeholderTextColor={theme.colors.outline}
-                secureTextEntry
-                value={senha}
-                onChangeText={setSenha}
-              />
+
+              {/* Campo senha com IconButton */}
+              <View style={styles.passwordContainer}>
+                <TextInput
+                  style={[
+                    FormStyles.input,
+                    { flex: 1 },
+                    { width: "100%", color: theme.colors.onBackground, borderColor: theme.colors.outline },
+                    fieldErrors.senha ? styles.inputError : null,
+                  ]}
+                  placeholder="Senha"
+                  placeholderTextColor={theme.colors.outline}
+                  secureTextEntry={!showPassword}
+                  value={senha}
+                  onChangeText={setSenha}
+                />
+                <IconButton
+                  icon={showPassword ? "eye-off" : "eye"}
+                  size={20}
+                  onPress={() => setShowPassword(!showPassword)}
+                />
+              </View>
+
+
               {fieldErrors.api && (
                 <Text style={styles.errorText}>{fieldErrors.api}</Text>
               )}
+
               {isLoading ? (
                 <ActivityIndicator
                   size="large"
@@ -147,6 +167,7 @@ const RegisterScreen = ({ navigation }: any) => {
                   Cadastrar
                 </Button>
               )}
+
               <View style={styles.linksContainer}>
                 {/* Mantém o botão cinza original */}
                 <Card style={styles.linkCard} mode="elevated">
@@ -200,6 +221,12 @@ const styles = StyleSheet.create({
   },
   inputError: {
     borderColor: "red",
+  },
+  passwordContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    width: "100%",
+    marginBottom: 10,
   },
   linksContainer: {
     width: "100%",

@@ -5,7 +5,9 @@ import { isTokenValid } from "../utils/jwt";
 import { authEventEmitter } from "../events/AuthEventEmitter";
 
 const api = axios.create({
-  baseURL: "http://192.168.1.14:3000",
+  
+  baseURL: API_URL,
+
 
   headers: {
     "Content-Type": "application/json",

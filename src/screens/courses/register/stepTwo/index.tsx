@@ -1,10 +1,34 @@
 "use client";
 
 import React, { useState } from "react";
-import { SafeAreaView, View, ScrollView, Text, StyleSheet } from "react-native";
-import { Card, Button, ProgressBar, MD3Colors } from "react-native-paper";
+
+import {
+  SafeAreaView,
+  View,
+  ScrollView,
+  Text,
+  StyleSheet,
+  Modal,
+  KeyboardAvoidingView,
+  TouchableWithoutFeedback,
+  Keyboard,
+  Platform,
+} from "react-native";
+import {
+  Card,
+  Button,
+  ProgressBar,
+  MD3Colors,
+  TextInput,
+} from "react-native-paper";
+
 import ListPicker from "../../../../components/atoms/ListPicker";
 import HamburgerMenu from "../../../../components/HamburgerMenu";
+import AddMateriaModal from "../../../../components/AddMateriaModal";
+
+=======
+
+
 import { useRoute } from "@react-navigation/native";
 import { useNavigation } from "@react-navigation/native";
 import { FormStyles } from "../../../../style/FormStyles";
@@ -14,7 +38,11 @@ import { useCourse } from "../../../../context/CourseContext";
 import { useProfessor } from "../../../../context/ProfessorContext";
 import { coursesRegisterStep2Schema } from "../../../../validations/coursesRegisterValidations";
 import { RouteParamsProps } from "../../../../routes/rootStackParamList ";
+
+import { Materia } from "../../../../types/materia";
+
 import { useThemeMode } from "../../../../context/ThemeContext"; // Importa o contexto do tema
+
 
 export default function StepTwo() {
   const navigation = useNavigation();
@@ -27,6 +55,13 @@ export default function StepTwo() {
   const [coordenadorId, setCoordenadorId] = useState();
   const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
 
+
+  const [isMateriaModalVisible, setMateriaModalVisible] = useState(false);
+  const [materias, setMaterias] = useState<Materia[]>([]);
+
+  const handleAddMateria = (materia: Materia) => {
+    setMaterias([...materias, materia]);
+  };
   // Usa o contexto do tema
   const { isDarkMode } = useThemeMode();
 
@@ -40,6 +75,7 @@ export default function StepTwo() {
       const curso = {
         modelo,
         coordenadorId,
+        materias,
         ...partialDataCurso,
       };
 
@@ -141,6 +177,27 @@ export default function StepTwo() {
                   getLabel={(prof) => prof.nome}
                   getValue={(prof) => prof.id}
                 />
+                <Text style={FormStyles.label}>Matérias Adicionadas</Text>
+                {materias.map((materia, index) => (
+                  <Text key={index} style={styles.materiaItem}>
+                    {materia.nome} - {materia.cargaHoraria}h
+                  </Text>
+                ))}
+
+                <Button
+                  mode="outlined"
+                  onPress={() => setMateriaModalVisible(true)}
+                  style={{ marginVertical: 10 }}
+                >
+                  Adicionar Matéria
+                </Button>
+
+                <AddMateriaModal
+                  visible={isMateriaModalVisible}
+                  onClose={() => setMateriaModalVisible(false)}
+                  onAddMateria={handleAddMateria}
+                  professors={professors}
+                />
               </Card.Content>
 
               <Card.Actions>
@@ -184,5 +241,24 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     justifyContent: "center",
     flex: 1,
+  },
+  materiaItem: {
+    fontSize: 14,
+    marginVertical: 5,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalCard: {
+    width: "90%",
+    maxHeight: "80%",
+    borderRadius: 8,
+    overflow: "hidden",
+  },
+  closeButton: {
+    alignSelf: "flex-end",
+    margin: 10,
   },
 });

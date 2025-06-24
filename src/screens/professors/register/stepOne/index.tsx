@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   SafeAreaView,
   View,
@@ -17,7 +17,16 @@ import { FormStyles } from "../../../../style/FormStyles";
 import { Titulacao } from "../../../../enums/professors/professorEnum";
 import { professorRegisterSchema } from "../../../../validations/professorsRegisterValidations";
 import HamburgerMenu from "../../../../components/HamburgerMenu";
+
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import locationAnimation from "../../../../../assets/location-icon.json";
+import { UnitSuggestionButton } from "../../../../components/UnitSuggestionButton";
+import { SuggestionSwitch } from "../../../../components/SuggestionSwitch";
+import { sugerirProfessorIA } from "../../../../services/ia/iaService";
+import { FieldSuggestionButton } from "../../../../components/FieldSuggestionButton";
+
 import { useThemeMode } from "../../../../context/ThemeContext"; // Importa o contexto do tema
+
 
 export default function ProfessorFormStepOne() {
   const navigation = useNavigation<NavigationProp>();
@@ -27,8 +36,86 @@ export default function ProfessorFormStepOne() {
   const [nome, setNome] = useState(iaData?.nome || "");
   const [email, setEmail] = useState(iaData?.email || "");
   const [titulacao, setTitulacao] = useState(iaData?.titulacao || "");
-  const [idUnidade, setIdUnidade] = useState(iaData?.idUnidade || "");
+  const [idUnidade, setIdUnidade] = useState("");
   const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
+  const [unidadeSugerida, setUnidadeSugerida] = useState<{ id: string; nome: string } | null>(null);
+  const [showSuggestion, setShowSuggestion] = useState(false);
+  const [suggestionEnabled, setSuggestionEnabled] = useState(false);
+  const [suggestions, setSuggestions] = useState<{ nome?: string; email?: string; titulacao?: string }>({});
+  const [loadingSuggestions, setLoadingSuggestions] = useState(false);
+
+  useEffect(() => {
+    let isMounted = true;
+    let timeout: NodeJS.Timeout;
+    const fetchInitialSuggestions = async () => {
+      if (!suggestionEnabled) {
+        setSuggestions({});
+        return;
+      }
+      setLoadingSuggestions(true);
+      try {
+        const partial: Record<string, any> = {};
+        if (nome) partial.nome = nome;
+        if (email) partial.email = email;
+        if (titulacao) partial.titulacao = titulacao;
+        const data = await sugerirProfessorIA(partial);
+        if (isMounted) {
+          timeout = setTimeout(() => {
+            setSuggestions(data);
+          }, 600);
+        }
+      } catch {
+        if (isMounted) setSuggestions({});
+      } finally {
+        if (isMounted) setLoadingSuggestions(false);
+      }
+    };
+    fetchInitialSuggestions();
+    return () => {
+      isMounted = false;
+      if (timeout) clearTimeout(timeout);
+    };
+  }, [suggestionEnabled]);
+
+  useEffect(() => {
+    let timeout: NodeJS.Timeout;
+    if (suggestionEnabled) {
+      AsyncStorage.getItem("@unidade_sugerida").then((data) => {
+        if (data) {
+          try {
+            const unidade = JSON.parse(data);
+            timeout = setTimeout(() => {
+              setUnidadeSugerida({ id: unidade.id, nome: unidade.nome });
+              setShowSuggestion(true);
+            }, 600);
+          } catch {}
+        }
+      });
+    } else {
+      setShowSuggestion(false);
+    }
+    return () => clearTimeout(timeout);
+  }, [suggestionEnabled]);
+
+  const fetchSuggestions = async (fieldChanged: string, value: string) => {
+    if (!suggestionEnabled) return;
+    setLoadingSuggestions(true);
+    try {
+      const partial: Record<string, any> = {};
+      if (fieldChanged === "nome" && value) partial.nome = value;
+      else if (nome) partial.nome = nome;
+      if (fieldChanged === "email" && value) partial.email = value;
+      else if (email) partial.email = email;
+      if (fieldChanged === "titulacao" && value) partial.titulacao = value;
+      else if (titulacao) partial.titulacao = titulacao;
+      const data = await sugerirProfessorIA(partial);
+      setSuggestions(data);
+    } catch (e) {
+      setSuggestions({});
+    } finally {
+      setLoadingSuggestions(false);
+    }
+  };
 
   // Usa o contexto do tema
   const { isDarkMode } = useThemeMode();
@@ -50,6 +137,7 @@ export default function ProfessorFormStepOne() {
           statusAtividade: iaData?.statusAtividade,
           lattes: iaData?.lattes,
         },
+        suggestionEnabled,
       });
     } catch (error: any) {
       if (error.name === "ValidationError") {
@@ -104,102 +192,156 @@ export default function ProfessorFormStepOne() {
               {fieldErrors.nome && (
                 <Text style={styles.errorText}>{fieldErrors.nome}</Text>
               )}
-              <TextInput
-                placeholder="ex: José Maria da Silva"
-                placeholderTextColor={isDarkMode ? "#aaa" : "#888"}
-                style={[
-                  FormStyles.input,
-                  { color: isDarkMode ? "#fff" : "#000", borderColor: isDarkMode ? "#444" : "#ccc" },
-                  fieldErrors.nome ? styles.inputError : null,
-                ]}
-                value={nome}
-                onChangeText={(text) => {
-                  setNome(text);
-                  if (fieldErrors.nome)
-                    setFieldErrors((prev) => {
-                      const updated = { ...prev };
-                      delete updated.nome;
-                      return updated;
-                    });
-                }}
-              />
-              <Text style={[
-                FormStyles.label,
-                { color: isDarkMode ? "#fff" : "#000" }
-              ]}>Email</Text>
+
+              <View style={styles.inputRow}>
+                <TextInput
+                  placeholder={
+                    !nome && suggestions.nome && suggestionEnabled
+                      ? suggestions.nome
+                      : "ex: José Maria da Silva"
+                  }
+                  style={[
+                    FormStyles.input,
+                    { color: isDarkMode ? "#fff" : "#000", borderColor: isDarkMode ? "#444" : "#ccc" }
+                    styles.inputFlex,
+                    fieldErrors.nome ? styles.inputError : null,
+                    !nome && suggestions.nome && suggestionEnabled ? styles.suggestionPlaceholder : null,
+                  ]}
+                  placeholderTextColor={isDarkMode ? "#aaa" : "#888"}
+                  value={nome}
+                  onChangeText={(text) => {
+                    setNome(text);
+                    if (fieldErrors.nome)
+                      setFieldErrors((prev) => {
+                        const updated = { ...prev };
+                        delete updated.nome;
+                        return updated;
+                      });
+                  }}
+                  onBlur={() => fetchSuggestions("nome", nome)}
+                  placeholderTextColor={
+                    !nome && suggestions.nome && suggestionEnabled ? "#D32719" : "#888"
+                  }
+                />
+                {!nome && suggestions.nome && suggestionEnabled && (
+                  <FieldSuggestionButton onPress={() => setNome(suggestions.nome!)} />
+                )}
+              </View>
+              <Text style={[FormStyles.label, { color: isDarkMode ? "#fff" : "#000" }]}>Email</Text>
               {fieldErrors.email && (
                 <Text style={styles.errorText}>{fieldErrors.email}</Text>
               )}
-              <TextInput
-                placeholder="ex: jose.maria@fatec.sp.gov.br"
-                placeholderTextColor={isDarkMode ? "#aaa" : "#888"}
-                style={[
-                  FormStyles.input,
-                  { color: isDarkMode ? "#fff" : "#000", borderColor: isDarkMode ? "#444" : "#ccc" },
-                  fieldErrors.email ? styles.inputError : null,
-                ]}
-                onChangeText={(text) => {
-                  setEmail(text);
-                  if (fieldErrors.email)
-                    setFieldErrors((prev) => {
-                      const updated = { ...prev };
-                      delete updated.email;
-                      return updated;
-                    });
-                }}
-                value={email}
-                autoCapitalize="none"
-                keyboardType="email-address"
-                autoComplete="email"
-              />
-              <Text style={[
-                FormStyles.label,
-                { color: isDarkMode ? "#fff" : "#000" }
-              ]}>Titulação</Text>
+              <View style={styles.inputRow}>
+                <TextInput
+                  placeholder={
+                    !email && suggestions.email && suggestionEnabled
+                      ? suggestions.email
+                      : "ex: jose.maria@fatec.sp.gov.br"
+                  }
+                  style={[
+                    FormStyles.input,
+                    styles.inputFlex,
+                    { color: isDarkMode ? "#fff" : "#000", borderColor: isDarkMode ? "#444" : "#ccc" },
+                    fieldErrors.email ? styles.inputError : null,
+                    !nome && suggestions.nome && suggestionEnabled ? styles.suggestionPlaceholder : null,
+                  ]}
+                  onChangeText={(text) => {
+                    setEmail(text);
+                    if (fieldErrors.email)
+                      setFieldErrors((prev) => {
+                        const updated = { ...prev };
+                        delete updated.email;
+                        return updated;
+                      });
+                  }}
+                  value={email}
+                  autoCapitalize="none"
+                  keyboardType="email-address"
+                  autoComplete="email"
+                  onBlur={() => fetchSuggestions("email", email)}
+                  placeholderTextColor={
+                    !email && suggestions.email && suggestionEnabled ? "#D32719" : "#888"
+                  }
+                />
+                {!email && suggestions.email && suggestionEnabled && (
+                  <FieldSuggestionButton onPress={() => setEmail(suggestions.email!)} />
+                )}
+              </View>
+              <Text style={[FormStyles.label, { color: isDarkMode ? "#fff" : "#000" }]}>Titulação</Text>
               {fieldErrors.titulacao && (
                 <Text style={styles.errorText}>{fieldErrors.titulacao}</Text>
               )}
-              <ListPicker
-                items={Object.values(Titulacao)}
-                selected={titulacao}
-                onSelect={(titulacao: Titulacao) => {
-                  setTitulacao(titulacao);
-                  if (fieldErrors.titulacao)
-                    setFieldErrors((prev) => {
-                      const updated = { ...prev };
-                      delete updated.titulacao;
-                      return updated;
-                    });
-                }}
-              />
-              <Text style={[
-                FormStyles.label,
-                { color: isDarkMode ? "#fff" : "#000" }
-              ]}>Código da Unidade</Text>
+              <View style={styles.inputRow}>
+                <View style={styles.pickerFlex}>
+                  <ListPicker
+                    items={Object.values(Titulacao)}
+                    selected={titulacao}
+                    onSelect={(titulacao: Titulacao) => {
+                      setTitulacao(titulacao);
+                      if (fieldErrors.titulacao)
+                        setFieldErrors((prev) => {
+                          const updated = { ...prev };
+                          delete updated.titulacao;
+                          return updated;
+                        });
+                    }}
+                    suggestedLabel={
+                      !titulacao && suggestions.titulacao && suggestionEnabled
+                        ? suggestions.titulacao
+                        : undefined
+                    }
+                    suggestionStyle={{ fontStyle: "italic", color: "#D32719" }}
+                  />
+                </View>
+                {!titulacao && suggestions.titulacao && suggestionEnabled && (
+                  <FieldSuggestionButton onPress={() => setTitulacao(suggestions.titulacao!)} />
+                )}
+              </View>
+              <Text style={[FormStyles.label, { color: isDarkMode ? "#fff" : "#000" }]}>Código da Unidade</Text>
               {fieldErrors.idUnidade && (
                 <Text style={styles.errorText}>{fieldErrors.idUnidade}</Text>
               )}
-              <TextInput
-                placeholder="ex: 301"
-                placeholderTextColor={isDarkMode ? "#aaa" : "#888"}
-                style={[
-                  FormStyles.input,
-                  { width: "100%", color: isDarkMode ? "#fff" : "#000", borderColor: isDarkMode ? "#444" : "#ccc" },
-                  fieldErrors.idUnidade ? styles.inputError : null,
-                ]}
-                onChangeText={(text) => {
-                  setIdUnidade(text);
-                  if (fieldErrors.idUnidade)
-                    setFieldErrors((prev) => {
-                      const updated = { ...prev };
-                      delete updated.idUnidade;
-                      return updated;
-                    });
-                }}
-                value={idUnidade}
-              />
-            </Card.Content>
+              <View style={styles.inputRow}>
+                <TextInput
+                  placeholder={
+                    showSuggestion && unidadeSugerida?.id
+                      ? `${unidadeSugerida.id}`
+                      : "ex: 301"
+                  }
+                  style={[
+                    FormStyles.input,
+                    styles.inputFlex,
+                    { width: "100%", color: isDarkMode ? "#fff" : "#000", borderColor: isDarkMode ? "#444" : "#ccc" },
+                    !idUnidade && showSuggestion && unidadeSugerida?.id
+                      ? styles.suggestionPlaceholder
+                      : null,
+                    fieldErrors.idUnidade ? styles.inputError : null,
+                  ]}
+                  placeholderTextColor={
+                    showSuggestion && unidadeSugerida?.id
+                      ? "#D32719"
+                      : "#888"
+                  }
+                  onChangeText={(text) => {
+                    setIdUnidade(text);
+                    if (fieldErrors.idUnidade)
+                      setFieldErrors((prev) => {
+                        const updated = { ...prev };
+                        delete updated.idUnidade;
+                        return updated;
+                      });
+                  }}
+                  value={idUnidade}
+                />
+                {showSuggestion && unidadeSugerida?.id && !idUnidade && (
+                  <UnitSuggestionButton
+                    onPress={() => setIdUnidade(unidadeSugerida.id)}
+                    lottieSource={locationAnimation}
+                  />
+                )}
+              </View>
 
+            </Card.Content>
             <Card.Actions>
               <Button
                 labelStyle={{ color: "white" }}
@@ -209,10 +351,12 @@ export default function ProfessorFormStepOne() {
                 Avançar
               </Button>
             </Card.Actions>
-
             <ProgressBar progress={0.5} color={MD3Colors.neutral40} />
-
           </Card>
+          <SuggestionSwitch
+            value={suggestionEnabled}
+            onValueChange={setSuggestionEnabled}
+          />
         </ScrollView>
       </View>
     </SafeAreaView>
@@ -230,5 +374,20 @@ const styles = StyleSheet.create({
   inputError: {
     borderColor: "red",
     borderWidth: 1,
+  },
+  inputRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 12,
+  },
+  inputFlex: {
+    flex: 1,
+  },
+  suggestionPlaceholder: {
+    fontStyle: "italic",
+    color: "#D32719",
+  },
+  pickerFlex: {
+    flex: 1,
   },
 });

@@ -12,7 +12,9 @@ import {
   Keyboard,
   TouchableWithoutFeedback,
 } from "react-native";
-import { Card, Button, Switch } from "react-native-paper";
+
+import { Card, Button, IconButton, Switch } from "react-native-paper";
+
 import { useAuth } from "../../context/AuthContext";
 import { login as loginService } from "../../services/users/authService";
 import { userLoginSchema } from "../../validations/usersValidations";
@@ -22,6 +24,7 @@ import { useThemeMode } from "../../context/ThemeContext"; // Importa o contexto
 const LoginScreen = ({ navigation }: any) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
   const [isLoading, setIsLoading] = useState(false);
   const { login: authLogin } = useAuth();
@@ -81,6 +84,7 @@ const LoginScreen = ({ navigation }: any) => {
                 Entre com seu e-mail e senha para acessar o sistema.
               </Text>
             </Card.Content>
+
             <Card.Actions style={{ flexDirection: "column", marginTop: 10 }}>
               {fieldErrors.email && (
                 <Text style={styles.errorText}>{fieldErrors.email}</Text>
@@ -91,6 +95,8 @@ const LoginScreen = ({ navigation }: any) => {
               {fieldErrors.api && (
                 <Text style={styles.errorText}>{fieldErrors.api}</Text>
               )}
+
+              {/* Campo Email */}
               <TextInput
                 placeholder="E-mail"
                 placeholderTextColor={theme.colors.outline}
@@ -101,14 +107,21 @@ const LoginScreen = ({ navigation }: any) => {
                 keyboardType="email-address"
                 autoComplete="email"
               />
+
               <TextInput
                 placeholder="Senha"
                 placeholderTextColor={theme.colors.outline}
                 style={[FormStyles.input, { width: "100%", color: theme.colors.onBackground, borderColor: theme.colors.outline }]}
                 value={password}
                 onChangeText={setPassword}
-                secureTextEntry
+                secureTextEntry={!showPassword}
               />
+              <IconButton
+                  icon={showPassword ? "eye-off" : "eye"}
+                  size={20}
+                  onPress={() => setShowPassword(!showPassword)}
+                />
+
               {isLoading ? (
                 <ActivityIndicator
                   size="large"
@@ -126,6 +139,8 @@ const LoginScreen = ({ navigation }: any) => {
                   Entrar
                 </Button>
               )}
+
+              {/* Links de ações */}
               <View style={styles.linksContainer}>
                 {/* Mantém os botões cinzas como antes */}
                 <Card style={styles.linkCard} mode="elevated">
@@ -187,6 +202,12 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     marginLeft: 2,
     fontSize: 12,
+  },
+  passwordContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    width: "100%",
+    marginBottom: 10,
   },
   linksContainer: {
     width: "100%",

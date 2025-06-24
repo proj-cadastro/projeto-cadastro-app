@@ -15,7 +15,10 @@ export type RootStackParamList = {
 
   RegisterProfessorsStepOne: { iaData?: ProfessorIAData };
 
-  RegisterProfessorsStepTwo: { partialDataProfessor: ProfessorIAData };
+  RegisterProfessorsStepTwo: { 
+    partialDataProfessor: ProfessorIAData;
+    suggestionEnabled: boolean;
+  };
 
   EditProfessors: { id: number };
 
@@ -32,6 +35,7 @@ export type RootStackParamList = {
   };
   
   EditCourses: { id: number };
+  
 };
 
 export type NavigationProp = StackNavigationProp<RootStackParamList>;
