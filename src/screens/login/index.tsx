@@ -12,11 +12,14 @@ import {
   Keyboard,
   TouchableWithoutFeedback,
 } from "react-native";
-import { Card, Button, IconButton } from "react-native-paper";
+
+import { Card, Button, IconButton, Switch } from "react-native-paper";
+
 import { useAuth } from "../../context/AuthContext";
 import { login as loginService } from "../../services/users/authService";
 import { userLoginSchema } from "../../validations/usersValidations";
 import { FormStyles } from "../../style/FormStyles";
+import { useThemeMode } from "../../context/ThemeContext"; // Importa o contexto do tema
 
 const LoginScreen = ({ navigation }: any) => {
   const [email, setEmail] = useState("");
@@ -25,6 +28,9 @@ const LoginScreen = ({ navigation }: any) => {
   const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
   const [isLoading, setIsLoading] = useState(false);
   const { login: authLogin } = useAuth();
+
+  // Usa o contexto do tema
+  const { isDarkMode, toggleTheme, theme } = useThemeMode();
 
   const handleLogin = async () => {
     setFieldErrors({});
@@ -56,20 +62,25 @@ const LoginScreen = ({ navigation }: any) => {
 
   return (
     <KeyboardAvoidingView
-      style={{ flex: 1 }}
+      style={{ flex: 1, backgroundColor: theme.colors.background }}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
         <View style={styles.fullScreenContainer}>
-          <Card style={[FormStyles.card, styles.card]} mode="elevated">
+          {/* Switch no topo direito */}
+          <View style={styles.switchContainer}>
+            <Text style={{ color: theme.colors.onBackground, marginRight: 8 }}>Modo escuro</Text>
+            <Switch value={isDarkMode} onValueChange={toggleTheme} />
+          </View>
+          <Card style={[FormStyles.card, styles.card, { backgroundColor: theme.colors.background }]} mode="elevated">
             <Card.Content>
               <Image
                 source={require("../../../assets/logoFatecCapi.png")}
                 style={styles.logo}
                 resizeMode="contain"
               />
-              <Text style={FormStyles.title}>Login</Text>
-              <Text style={FormStyles.description}>
+              <Text style={[FormStyles.title, { color: theme.colors.onBackground }]}>Login</Text>
+              <Text style={[FormStyles.description, { color: theme.colors.onBackground }]}>
                 Entre com seu e-mail e senha para acessar o sistema.
               </Text>
             </Card.Content>
@@ -88,7 +99,8 @@ const LoginScreen = ({ navigation }: any) => {
               {/* Campo Email */}
               <TextInput
                 placeholder="E-mail"
-                style={[FormStyles.input, { width: "100%" }]}
+                placeholderTextColor={theme.colors.outline}
+                style={[FormStyles.input, { width: "100%", color: theme.colors.onBackground, borderColor: theme.colors.outline }]}
                 value={email}
                 onChangeText={setEmail}
                 autoCapitalize="none"
@@ -96,23 +108,20 @@ const LoginScreen = ({ navigation }: any) => {
                 autoComplete="email"
               />
 
-              {/* Campo Senha com botão mostrar/ocultar */}
-              <View style={styles.passwordContainer}>
-                <TextInput
-                  placeholder="Senha"
-                  style={[FormStyles.input, { flex: 1 }]}
-                  value={password}
-                  onChangeText={setPassword}
-                  secureTextEntry={!showPassword}
-                />
-                <IconButton
+              <TextInput
+                placeholder="Senha"
+                placeholderTextColor={theme.colors.outline}
+                style={[FormStyles.input, { width: "100%", color: theme.colors.onBackground, borderColor: theme.colors.outline }]}
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry={!showPassword}
+              />
+              <IconButton
                   icon={showPassword ? "eye-off" : "eye"}
                   size={20}
                   onPress={() => setShowPassword(!showPassword)}
                 />
-              </View>
 
-              {/* Loader ou botão */}
               {isLoading ? (
                 <ActivityIndicator
                   size="large"
@@ -133,6 +142,7 @@ const LoginScreen = ({ navigation }: any) => {
 
               {/* Links de ações */}
               <View style={styles.linksContainer}>
+                {/* Mantém os botões cinzas como antes */}
                 <Card style={styles.linkCard} mode="elevated">
                   <TouchableOpacity
                     onPress={() => navigation.navigate("ForgetPasswordStepOne")}
@@ -164,13 +174,21 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     padding: 16,
-    backgroundColor: "#fff",
+    // backgroundColor será sobrescrito pelo tema
+  },
+  switchContainer: {
+    position: "absolute",
+    top: 40,
+    right: 24,
+    flexDirection: "row",
+    alignItems: "center",
+    zIndex: 2,
   },
   card: {
     width: "100%",
     maxWidth: 400,
     padding: 10,
-    backgroundColor: "#fff",
+    // backgroundColor será sobrescrito pelo tema
   },
   logo: {
     width: 300,
@@ -197,7 +215,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   linkCard: {
-    backgroundColor: "#a1a1a1",
+    backgroundColor: "#a1a1a1", // Mantém o cinza original
     borderRadius: 8,
     elevation: 2,
     paddingVertical: 6,
@@ -207,7 +225,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   linkText: {
-    color: "#fff",
+    color: "#fff", // Mantém o texto branco original
     textAlign: "center",
     fontSize: 14,
   },
