@@ -88,7 +88,7 @@ export default function ProfessorFormStepOne() {
               setUnidadeSugerida({ id: unidade.id, nome: unidade.nome });
               setShowSuggestion(true);
             }, 600);
-          } catch {}
+          } catch { }
         }
       });
     } else {
@@ -202,12 +202,11 @@ export default function ProfessorFormStepOne() {
                   }
                   style={[
                     FormStyles.input,
-                    { color: isDarkMode ? "#fff" : "#000", borderColor: isDarkMode ? "#444" : "#ccc" }
+                    { color: isDarkMode ? "#fff" : "#000", borderColor: isDarkMode ? "#444" : "#ccc" },
                     styles.inputFlex,
                     fieldErrors.nome ? styles.inputError : null,
                     !nome && suggestions.nome && suggestionEnabled ? styles.suggestionPlaceholder : null,
                   ]}
-                  placeholderTextColor={isDarkMode ? "#aaa" : "#888"}
                   value={nome}
                   onChangeText={(text) => {
                     setNome(text);
@@ -220,8 +219,13 @@ export default function ProfessorFormStepOne() {
                   }}
                   onBlur={() => fetchSuggestions("nome", nome)}
                   placeholderTextColor={
-                    !nome && suggestions.nome && suggestionEnabled ? "#D32719" : "#888"
+                    !nome && suggestions.nome && suggestionEnabled
+                      ? "#D32719"
+                      : isDarkMode
+                        ? "#aaa"
+                        : "#888"
                   }
+
                 />
                 {!nome && suggestions.nome && suggestionEnabled && (
                   <FieldSuggestionButton onPress={() => setNome(suggestions.nome!)} />
