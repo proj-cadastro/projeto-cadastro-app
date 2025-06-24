@@ -62,8 +62,6 @@ const theme = {
 
 export default function App() {
 
-
-
   const [fontsLoaded] = useFonts({
     Inter_400Regular,
     Inter_500Medium,
@@ -73,7 +71,7 @@ export default function App() {
   if (!fontsLoaded) {
     return <ActivityIndicator style={{ flex: 1 }} />;
   }
-  {/* AuthListener Verifica se o evento global de ordem de logout foi lançado */ }
+
   return (
     <AuthProvider>
       <AuthListener />

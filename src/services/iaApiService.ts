@@ -1,11 +1,14 @@
 import { API_IA_URL, API_IA_KEY } from "@env";
 import axios from "axios";
 
+const baseURL = API_IA_URL;
+const ApiKey = API_IA_KEY;
+
 export const apiIA = axios.create({
-  baseURL: API_IA_URL.trim(),
+  baseURL: baseURL,
   headers: {
     "Content-Type": "application/json",
-    "API_KEY": `${API_IA_KEY.trim()}`
+    "API_KEY": ApiKey
   },
 });
 

@@ -2,6 +2,7 @@ import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { CourseProvider } from "../context/CourseContext";
 import { ProfessorProvider } from "../context/ProfessorContext";
+import { SuggestionSwitchProvider } from "../context/SuggestionSwitchContext";
 
 const Stack = createNativeStackNavigator();
 
@@ -28,17 +29,19 @@ export function ProtectedRoutes() {
   return (
     <CourseProvider>
       <ProfessorProvider>
-        <Stack.Navigator
-          initialRouteName="Home"
-          screenOptions={{ headerShown: false }}>
-          {Object.keys(screens).map((screenName) => (
-            <Stack.Screen
-              key={screenName}
-              name={screenName}
-              component={screens[screenName as keyof typeof screens]}
-            />
-          ))}
-        </Stack.Navigator>
+        <SuggestionSwitchProvider>
+          <Stack.Navigator
+            initialRouteName="Home"
+            screenOptions={{ headerShown: false }}>
+            {Object.keys(screens).map((screenName) => (
+              <Stack.Screen
+                key={screenName}
+                name={screenName}
+                component={screens[screenName as keyof typeof screens]}
+              />
+            ))}
+          </Stack.Navigator>
+        </SuggestionSwitchProvider>
       </ProfessorProvider>
     </CourseProvider>
   );

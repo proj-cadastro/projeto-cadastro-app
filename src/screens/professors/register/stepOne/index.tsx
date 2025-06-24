@@ -23,11 +23,14 @@ import { UnitSuggestionButton } from "../../../../components/UnitSuggestionButto
 import { SuggestionSwitch } from "../../../../components/SuggestionSwitch";
 import { sugerirProfessorIA } from "../../../../services/ia/iaService";
 import { FieldSuggestionButton } from "../../../../components/FieldSuggestionButton";
+import { useSuggestionSwitch } from "../../../../context/SuggestionSwitchContext";
 
 export default function ProfessorFormStepOne() {
   const navigation = useNavigation<NavigationProp>();
   const route = useRoute<RouteParamsProps<"RegisterProfessorsStepOne">>();
   const iaData = route.params?.iaData;
+
+  const { suggestionEnabled, setSuggestionEnabled } = useSuggestionSwitch();
 
   const [nome, setNome] = useState(iaData?.nome || "");
   const [email, setEmail] = useState(iaData?.email || "");
@@ -36,7 +39,6 @@ export default function ProfessorFormStepOne() {
   const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
   const [unidadeSugerida, setUnidadeSugerida] = useState<{ id: string; nome: string } | null>(null);
   const [showSuggestion, setShowSuggestion] = useState(false);
-  const [suggestionEnabled, setSuggestionEnabled] = useState(false);
   const [suggestions, setSuggestions] = useState<{ nome?: string; email?: string; titulacao?: string }>({});
   const [loadingSuggestions, setLoadingSuggestions] = useState(false);
 
@@ -104,7 +106,7 @@ export default function ProfessorFormStepOne() {
       else if (email) partial.email = email;
       if (fieldChanged === "titulacao" && value) partial.titulacao = value;
       else if (titulacao) partial.titulacao = titulacao;
-      const data = await sugerirProfessorIA(partial);
+      const data = await sugerirProfessorIA(partial); 
       setSuggestions(data);
     } catch (e) {
       setSuggestions({});
@@ -130,7 +132,6 @@ export default function ProfessorFormStepOne() {
           statusAtividade: iaData?.statusAtividade,
           lattes: iaData?.lattes,
         },
-        suggestionEnabled,
       });
     } catch (error: any) {
       if (error.name === "ValidationError") {
