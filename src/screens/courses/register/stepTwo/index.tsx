@@ -26,7 +26,7 @@ import ListPicker from "../../../../components/atoms/ListPicker";
 import HamburgerMenu from "../../../../components/HamburgerMenu";
 import AddMateriaModal from "../../../../components/AddMateriaModal";
 
-=======
+
 
 
 import { useRoute } from "@react-navigation/native";

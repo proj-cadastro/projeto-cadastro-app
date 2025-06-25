@@ -66,11 +66,7 @@ const RegisterScreen = ({ navigation }: any) => {
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={styles.fullScreenContainer}>
-          {/* Switch de tema no topo direito */}
-          <View style={styles.switchContainer}>
-            <Text style={{ color: theme.colors.onBackground, marginRight: 8 }}>Modo escuro</Text>
-            <Switch value={isDarkMode} onValueChange={toggleTheme} />
-          </View>
+
           <Card style={[FormStyles.card, styles.card, { backgroundColor: theme.colors.background }]} mode="elevated">
             <Card.Content>
               <Image

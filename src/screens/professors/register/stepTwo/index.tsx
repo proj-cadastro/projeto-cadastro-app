@@ -27,6 +27,7 @@ import {
 import { useProfessor } from "../../../../context/ProfessorContext";
 import { professorRegisterStep2Schema } from "../../../../validations/professorsRegisterValidations";
 import { SuggestionSwitch } from "../../../../components/SuggestionSwitch";
+import { useThemeMode } from "../../../../context/ThemeContext";
 
 export default function ProfessorFormStepTwo() {
   const navigation = useNavigation();
@@ -44,6 +45,8 @@ export default function ProfessorFormStepTwo() {
   const [modalVisible, setModalVisible] = useState(false);
   const [modalMsg, setModalMsg] = useState("");
   const [missingFields, setMissingFields] = useState<string[]>([]);
+
+  const { isDarkMode } = useThemeMode();
 
   const handleSubmit = async () => {
     try {
@@ -100,7 +103,7 @@ export default function ProfessorFormStepTwo() {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <SafeAreaView style={FormStyles.safeArea}>
+        <SafeAreaView style={[FormStyles.safeArea, { backgroundColor: isDarkMode ? "#181818" : "#fff" }]}>
           <View style={FormStyles.menuContainer}>
             <HamburgerMenu />
           </View>
@@ -117,13 +120,13 @@ export default function ProfessorFormStepTwo() {
               contentContainerStyle={FormStyles.scrollContent}
               keyboardShouldPersistTaps="handled"
             >
-              <Card style={[FormStyles.card]} mode="elevated">
+              <Card style={[FormStyles.card, { backgroundColor: isDarkMode ? "#232323" : "#fff" }]} mode="elevated">
                 <Card.Content>
-                  <Text style={FormStyles.title}>2º Etapa</Text>
-                  <Text style={FormStyles.description}>
+                  <Text style={[FormStyles.title, { color: isDarkMode ? "#fff" : "#000" }]}>2º Etapa</Text>
+                  <Text style={[FormStyles.description, { color: isDarkMode ? "#fff" : "#000" }]}>
                     Insira os dados do professor para registrá-lo no sistema
                   </Text>
-                  <Text style={FormStyles.label}>Lattes</Text>
+                  <Text style={[FormStyles.label, { color: isDarkMode ? "#fff" : "#000" }]}>Lattes</Text>
                   {fieldErrors.lattes && (
                     <Text style={styles.errorText}>{fieldErrors.lattes}</Text>
                   )}
@@ -132,14 +135,16 @@ export default function ProfessorFormStepTwo() {
                     style={[
                       FormStyles.input,
                       fieldErrors.lattes ? styles.inputError : null,
+                      { color: isDarkMode ? "#fff" : "#000" }
                     ]}
                     value={lattes}
                     onChangeText={setLattes}
                     autoCapitalize="none"
                     keyboardType="email-address"
                     autoComplete="email"
+                    placeholderTextColor={isDarkMode ? "#aaa" : "#888"}
                   />
-                  <Text style={FormStyles.label}>Referência</Text>
+                  <Text style={[FormStyles.label, { color: isDarkMode ? "#fff" : "#000" }]}>Referência</Text>
                   {fieldErrors.referencia && (
                     <Text style={styles.errorText}>
                       {fieldErrors.referencia}
@@ -149,8 +154,9 @@ export default function ProfessorFormStepTwo() {
                     items={Object.values(Referencia)}
                     selected={referencia}
                     onSelect={(ref: Referencia) => setReferencia(ref)}
+                    suggestionStyle={{ fontStyle: "italic", color: "#D32719" }}
                   />
-                  <Text style={FormStyles.label}>Observações</Text>
+                  <Text style={[FormStyles.label, { color: isDarkMode ? "#fff" : "#000" }]}>Observações</Text>
                   {fieldErrors.observacoes && (
                     <Text style={styles.errorText}>
                       {fieldErrors.observacoes}
@@ -158,11 +164,12 @@ export default function ProfessorFormStepTwo() {
                   )}
                   <TextInput
                     placeholder="Professor de licença..."
-                    style={FormStyles.input}
+                    style={[FormStyles.input, { color: isDarkMode ? "#fff" : "#000" }]}
                     onChangeText={setObservacoes}
                     value={observacoes}
+                    placeholderTextColor={isDarkMode ? "#aaa" : "#888"}
                   />
-                  <Text style={FormStyles.label}>Professor está ativo?</Text>
+                  <Text style={[FormStyles.label, { color: isDarkMode ? "#fff" : "#000" }]}>Professor está ativo?</Text>
                   {fieldErrors.professorAtivo && (
                     <Text style={styles.errorText}>
                       {fieldErrors.professorAtivo}
@@ -172,6 +179,7 @@ export default function ProfessorFormStepTwo() {
                     items={Object.values(StatusAtividade)}
                     selected={statusAtividade}
                     onSelect={(status) => setStatusAtividade(status)}
+                    suggestionStyle={{ fontStyle: "italic", color: "#D32719" }}
                   />
                 </Card.Content>
                 <Card.Actions>
