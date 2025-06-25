@@ -43,17 +43,17 @@ Cada sprint no desenvolvimento ágil resulta em uma entrega funcional e incremen
 | RF03 | Registros            | Permitir a edição de registros existentes.                                   | 🟡 Média    | ✅ Concluído    |
 | RF04 | Registros            | Permitir a exclusão de registros do sistema.                                 | 🔴 Alta     | ✅ Concluído    |
 | RF05 | Disciplinas e Cursos | Permitir o cadastro de novas disciplinas.                                    | 🔴 Alta     | ✅ Concluído    |
-| RF06 | Disciplinas e Cursos | Permitir a atribuição de disciplinas a professores.                          | 🔴 Alta     | 🕒 Planejado    |
-| RF07 | Disciplinas e Cursos | Permitir o cadastro de cursos com nome, código e sigla.                      | 🟡 Média    | 🕒 Planejado    |
-| RF08 | Disciplinas e Cursos | Permitir a atribuição de disciplinas a cursos.                               | 🟡 Média    | 🕒 Planejado    |
-| RF09 | Relatórios           | Permitir a exportação de um registro específico em PDF.                      | 🟡 Média    | ⛔ Não iniciado |
-| RF10 | Relatórios           | Permitir a geração de um relatório geral de todos os objetos.                | 🟡 Média    | ⛔ Não iniciado |
-| RF11 | Relatórios           | Permitir que o usuário gere relatórios conforme filtros personalizados.      | 🔴 Alta     | ⛔ Não iniciado |
+| RF06 | Disciplinas e Cursos | Permitir a atribuição de disciplinas a professores.                          | 🔴 Alta     | ✅ Concluído    |
+| RF07 | Disciplinas e Cursos | Permitir o cadastro de cursos com nome, código e sigla.                      | 🟡 Média    | ✅ Concluído    |
+| RF08 | Disciplinas e Cursos | Permitir a atribuição de disciplinas a cursos.                               | 🟡 Média    | ✅ Concluído    |
+| RF09 | Relatórios           | Permitir a exportação de um registro específico em PDF.                      | 🟡 Média    | ✅ Concluído    |
+| RF10 | Relatórios           | Permitir a geração de um relatório geral de todos os objetos.                | 🟡 Média    | ✅ Concluído    |
+| RF11 | Relatórios           | Permitir que o usuário gere relatórios conforme filtros personalizados.      | 🔴 Alta     | ✅ Concluído    |
 
 
 ## 📋 Requisitos Não Funcionais
 
-| ID     | Requisito Não Funcional   | Categoria         | Descrição                                                                 |
+| ID     | Requisito Não Funcional    | Categoria         | Descrição                                                                 |
 |--------|----------------------------|-------------------|---------------------------------------------------------------------------|
 | RnF01  | Tempo de resposta          | Desempenho        | A aplicação foi pensada para que o usuário não aguarde muito tempo de resposta. |
 | RnF02  | Interface intuitiva        | Usabilidade       | A interface foi pensada para ser simples, com navegação fácil e consistente.     |

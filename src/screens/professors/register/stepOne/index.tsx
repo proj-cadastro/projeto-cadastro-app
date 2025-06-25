@@ -24,14 +24,17 @@ import { UnitSuggestionButton } from "../../../../components/UnitSuggestionButto
 import { SuggestionSwitch } from "../../../../components/SuggestionSwitch";
 import { sugerirProfessorIA } from "../../../../services/ia/iaService";
 import { FieldSuggestionButton } from "../../../../components/FieldSuggestionButton";
+import { useSuggestionSwitch } from "../../../../context/SuggestionSwitchContext";
 
-import { useThemeMode } from "../../../../context/ThemeContext"; // Importa o contexto do tema
-
+import { useThemeMode } from "../../../../context/ThemeContext";
+import { getPlaceholderColor } from "../../../../utils/getPlaceholderColor";
 
 export default function ProfessorFormStepOne() {
   const navigation = useNavigation<NavigationProp>();
   const route = useRoute<RouteParamsProps<"RegisterProfessorsStepOne">>();
   const iaData = route.params?.iaData;
+
+  const { suggestionEnabled, setSuggestionEnabled } = useSuggestionSwitch();
 
   const [nome, setNome] = useState(iaData?.nome || "");
   const [email, setEmail] = useState(iaData?.email || "");
@@ -40,7 +43,6 @@ export default function ProfessorFormStepOne() {
   const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
   const [unidadeSugerida, setUnidadeSugerida] = useState<{ id: string; nome: string } | null>(null);
   const [showSuggestion, setShowSuggestion] = useState(false);
-  const [suggestionEnabled, setSuggestionEnabled] = useState(false);
   const [suggestions, setSuggestions] = useState<{ nome?: string; email?: string; titulacao?: string }>({});
   const [loadingSuggestions, setLoadingSuggestions] = useState(false);
 
@@ -88,7 +90,7 @@ export default function ProfessorFormStepOne() {
               setUnidadeSugerida({ id: unidade.id, nome: unidade.nome });
               setShowSuggestion(true);
             }, 600);
-          } catch { }
+          } catch {  }
         }
       });
     } else {
@@ -108,7 +110,7 @@ export default function ProfessorFormStepOne() {
       else if (email) partial.email = email;
       if (fieldChanged === "titulacao" && value) partial.titulacao = value;
       else if (titulacao) partial.titulacao = titulacao;
-      const data = await sugerirProfessorIA(partial);
+      const data = await sugerirProfessorIA(partial); 
       setSuggestions(data);
     } catch (e) {
       setSuggestions({});
@@ -117,7 +119,6 @@ export default function ProfessorFormStepOne() {
     }
   };
 
-  // Usa o contexto do tema
   const { isDarkMode } = useThemeMode();
 
   const handleAdvance = () => {
@@ -137,7 +138,6 @@ export default function ProfessorFormStepOne() {
           statusAtividade: iaData?.statusAtividade,
           lattes: iaData?.lattes,
         },
-        suggestionEnabled,
       });
     } catch (error: any) {
       if (error.name === "ValidationError") {
@@ -207,13 +207,11 @@ export default function ProfessorFormStepOne() {
                     fieldErrors.nome ? styles.inputError : null,
                     !nome && suggestions.nome && suggestionEnabled ? styles.suggestionPlaceholder : null,
                   ]}
-                  placeholderTextColor={
-                    !nome && suggestions.nome && suggestionEnabled
-                      ? "#D32719"
-                      : isDarkMode
-                        ? "#aaa"
-                        : "#888"
-                  }
+                  placeholderTextColor={getPlaceholderColor({
+                    isDarkMode,
+                    suggestionEnabled,
+                    hasSuggestion: !nome && !!suggestions.nome,
+                  })}
                   value={nome}
                   onChangeText={(text) => {
                     setNome(text);
@@ -225,7 +223,9 @@ export default function ProfessorFormStepOne() {
                       });
                   }}
                   onBlur={() => fetchSuggestions("nome", nome)}
-
+                  placeholderTextColor={
+                    !nome && suggestions.nome && suggestionEnabled ? "#D32719" : "#888"
+                  }
                 />
                 {!nome && suggestions.nome && suggestionEnabled && (
                   <FieldSuggestionButton onPress={() => setNome(suggestions.nome!)} />
@@ -295,6 +295,7 @@ export default function ProfessorFormStepOne() {
                         : undefined
                     }
                     suggestionStyle={{ fontStyle: "italic", color: "#D32719" }}
+                    backgroundColor={isDarkMode ? "#202020" : "#fff"}
                   />
                 </View>
                 {!titulacao && suggestions.titulacao && suggestionEnabled && (
@@ -360,6 +361,8 @@ export default function ProfessorFormStepOne() {
           <SuggestionSwitch
             value={suggestionEnabled}
             onValueChange={setSuggestionEnabled}
+            label={`Sugestões de \n     Cadastro`}
+            labelColor={isDarkMode ? "#ccc" : "#333"}
           />
         </ScrollView>
       </View>

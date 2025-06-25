@@ -41,6 +41,7 @@ function MainApp() {
 }
 
 export default function App() {
+
   const [fontsLoaded] = useFonts({
     Inter_400Regular,
     Inter_500Medium,
