@@ -52,6 +52,7 @@ const ForgetPasswordStepOne = () => {
             style={{ flex: 1, backgroundColor: isDarkMode ? "#181818" : "#fff" }}
             behavior={Platform.OS === "ios" ? "padding" : "height"}
         >
+<<<<<<< HEAD
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                 <View style={styles.fullScreenContainer}>
                     <View style={styles.switchContainer}>
@@ -59,6 +60,53 @@ const ForgetPasswordStepOne = () => {
                     </View>
                     <Card style={[FormStyles.card, styles.card, { backgroundColor: isDarkMode ? "#232323" : "#fff" }]} mode="elevated">
                         <Card.Content>
+=======
+            <View style={styles.fullScreenContainer}>
+
+                <Card style={[FormStyles.card, styles.card, { backgroundColor: isDarkMode ? "#232323" : "#fff" }]} mode="elevated">
+                    <Card.Content>
+                        <Button
+                            onPress={() => navigation.goBack()}
+                            style={FormStyles.goBackButton}
+                            labelStyle={{ color: "white" }}
+                        >
+                            Voltar
+                        </Button>
+                        <Image
+                            source={require("../../../../assets/cps.png")}
+                            style={{ width: 300, height: 200, alignSelf: "center" }}
+                            resizeMode="contain"
+                        />
+                        <Text style={[FormStyles.title, { color: isDarkMode ? "#fff" : "#000" }]}>Recuperar Senha</Text>
+                        <Text style={[FormStyles.description, { color: isDarkMode ? "#fff" : "#000" }]}>
+                            Digite seu e-mail para inicializar a recuperação de senha.
+                        </Text>
+                    </Card.Content>
+                    <Card.Actions style={{ flexDirection: "column", marginTop: 10 }}>
+                        {fieldErrors.email && (
+                            <Text style={styles.errorText}>{fieldErrors.email}</Text>
+                        )}
+                        {fieldErrors.api && (
+                            <Text style={styles.errorText}>{fieldErrors.api}</Text>
+                        )}
+                        <TextInput
+                            placeholder="e-mail"
+                            placeholderTextColor={isDarkMode ? "#aaa" : "#888"}
+                            style={[FormStyles.input, { width: "100%", color: isDarkMode ? "#fff" : "#000", borderColor: isDarkMode ? "#444" : "#ccc" }]}
+                            value={email}
+                            onChangeText={(text) => setEmail(text)}
+                            autoCapitalize="none"
+                            keyboardType="email-address"
+                            autoComplete="email"
+                        />
+                        {loading ? (
+                            <ActivityIndicator
+                                size="large"
+                                color="#007BFF"
+                                style={{ marginBottom: 20 }}
+                            />
+                        ) : (
+>>>>>>> c6e8e294f41f9ee16dc59b3adb1098f2e629b3aa
                             <Button
                                 onPress={() => navigation.goBack()}
                                 style={FormStyles.goBackButton}

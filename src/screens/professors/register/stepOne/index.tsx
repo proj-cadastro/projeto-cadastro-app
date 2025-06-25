@@ -90,7 +90,7 @@ export default function ProfessorFormStepOne() {
               setUnidadeSugerida({ id: unidade.id, nome: unidade.nome });
               setShowSuggestion(true);
             }, 600);
-          } catch {}
+          } catch { }
         }
       });
     } else {
@@ -207,11 +207,21 @@ export default function ProfessorFormStepOne() {
                     fieldErrors.nome ? styles.inputError : null,
                     !nome && suggestions.nome && suggestionEnabled ? styles.suggestionPlaceholder : null,
                   ]}
+<<<<<<< HEAD
                   placeholderTextColor={getPlaceholderColor({
                     isDarkMode,
                     suggestionEnabled,
                     hasSuggestion: !nome && !!suggestions.nome,
                   })}
+=======
+                  placeholderTextColor={
+                    !nome && suggestions.nome && suggestionEnabled
+                      ? "#D32719"
+                      : isDarkMode
+                        ? "#aaa"
+                        : "#888"
+                  }
+>>>>>>> c6e8e294f41f9ee16dc59b3adb1098f2e629b3aa
                   value={nome}
                   onChangeText={(text) => {
                     setNome(text);
@@ -223,6 +233,10 @@ export default function ProfessorFormStepOne() {
                       });
                   }}
                   onBlur={() => fetchSuggestions("nome", nome)}
+<<<<<<< HEAD
+=======
+
+>>>>>>> c6e8e294f41f9ee16dc59b3adb1098f2e629b3aa
                 />
                 {!nome && suggestions.nome && suggestionEnabled && (
                   <FieldSuggestionButton onPress={() => setNome(suggestions.nome!)} />

@@ -27,10 +27,6 @@ import {
 import { useProfessor } from "../../../../context/ProfessorContext";
 import { professorRegisterStep2Schema } from "../../../../validations/professorsRegisterValidations";
 import { SuggestionSwitch } from "../../../../components/SuggestionSwitch";
-import { useSuggestionSwitch } from "../../../../context/SuggestionSwitchContext";
-import { sugerirProfessorIA } from "../../../../services/ia/iaService";
-import { FieldSuggestionButton } from "../../../../components/FieldSuggestionButton";
-import { useThemeMode } from "../../../../context/ThemeContext";
 
 export default function ProfessorFormStepTwo() {
   const navigation = useNavigation();
@@ -51,59 +47,6 @@ export default function ProfessorFormStepTwo() {
   const [modalVisible, setModalVisible] = useState(false);
   const [modalMsg, setModalMsg] = useState("");
   const [missingFields, setMissingFields] = useState<string[]>([]);
-  const [suggestions, setSuggestions] = useState<{ lattes?: string; referencia?: string; statusAtividade?: string; observacoes?: string }>({});
-  const [loadingSuggestions, setLoadingSuggestions] = useState(false);
-
-  useEffect(() => {
-    let isMounted = true;
-    let timeout: NodeJS.Timeout;
-    const fetchInitialSuggestions = async () => {
-      if (!suggestionEnabled) {
-        setSuggestions({});
-        return;
-      }
-      setLoadingSuggestions(true);
-      try {
-        const data = await sugerirProfessorIA(partialDataProfessor);
-        if (isMounted) {
-          timeout = setTimeout(() => {
-            setSuggestions(data);
-          }, 600);
-        }
-      } catch {
-        if (isMounted) setSuggestions({});
-      } finally {
-        if (isMounted) setLoadingSuggestions(false);
-      }
-    };
-    fetchInitialSuggestions();
-    return () => {
-      isMounted = false;
-      if (timeout) clearTimeout(timeout);
-    };
-  }, [suggestionEnabled]);
-
-  const fetchSuggestions = async (fieldChanged: string, value: string) => {
-    if (!suggestionEnabled) return;
-    setLoadingSuggestions(true);
-    try {
-      const partial: Record<string, any> = { ...partialDataProfessor };
-      if (fieldChanged === "lattes" && value) partial.lattes = value;
-      else if (lattes) partial.lattes = lattes;
-      if (fieldChanged === "referencia" && value) partial.referencia = value;
-      else if (referencia) partial.referencia = referencia;
-      if (fieldChanged === "statusAtividade" && value) partial.statusAtividade = value;
-      else if (statusAtividade) partial.statusAtividade = statusAtividade;
-      if (fieldChanged === "observacoes" && value) partial.observacoes = value;
-      else if (observacoes) partial.observacoes = observacoes;
-      const data = await sugerirProfessorIA(partial);
-      setSuggestions(data);
-    } catch {
-      setSuggestions({});
-    } finally {
-      setLoadingSuggestions(false);
-    }
-  };
 
   const handleSubmit = async () => {
     try {
@@ -160,10 +103,7 @@ export default function ProfessorFormStepTwo() {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <SafeAreaView style={[
-          FormStyles.safeArea,
-          { backgroundColor: isDarkMode ? "#181818" : "#fff" }
-        ]}>
+        <SafeAreaView style={FormStyles.safeArea}>
           <View style={FormStyles.menuContainer}>
             <HamburgerMenu />
           </View>
@@ -180,169 +120,58 @@ export default function ProfessorFormStepTwo() {
               contentContainerStyle={FormStyles.scrollContent}
               keyboardShouldPersistTaps="handled"
             >
-              <Card style={[
-                FormStyles.card,
-                { backgroundColor: isDarkMode ? "#232323" : "#fff" }
-              ]} mode="elevated">
+              <Card style={[FormStyles.card]} mode="elevated">
                 <Card.Content>
-                  <Text style={[
-                    FormStyles.title,
-                    { color: isDarkMode ? "#fff" : "#000" }
-                  ]}>2º Etapa</Text>
-                  <Text style={[
-                    FormStyles.description,
-                    { color: isDarkMode ? "#fff" : "#000" }
-                  ]}>
+                  <Text style={FormStyles.title}>2º Etapa</Text>
+                  <Text style={FormStyles.description}>
                     Insira os dados do professor para registrá-lo no sistema
                   </Text>
-                  <Text style={[
-                    FormStyles.label,
-                    { color: isDarkMode ? "#fff" : "#000" }
-                  ]}>Lattes</Text>
+                  <Text style={FormStyles.label}>Lattes</Text>
                   {fieldErrors.lattes && (
                     <Text style={styles.errorText}>{fieldErrors.lattes}</Text>
                   )}
-                  <View style={styles.inputRow}>
-                    <TextInput
-                      placeholder={
-                        !lattes && suggestions.lattes && suggestionEnabled
-                          ? suggestions.lattes
-                          : "ex: http://lattes.cnpq.br/7144753485915650"
-                      }
-                      style={[
-                        FormStyles.input,
-                        styles.inputFlex,
-                        fieldErrors.lattes ? styles.inputError : null,
-                        !lattes && suggestions.lattes && suggestionEnabled ? styles.suggestionPlaceholder : null,
-                        { color: isDarkMode ? "#fff" : "#000", borderColor: isDarkMode ? "#444" : "#ccc" }
-                      ]}
-                      value={lattes}
-                      onChangeText={(text) => {
-                        setLattes(text);
-                        if (fieldErrors.lattes)
-                          setFieldErrors((prev) => {
-                            const updated = { ...prev };
-                            delete updated.lattes;
-                            return updated;
-                          });
-                      }}
-                      onBlur={() => fetchSuggestions("lattes", lattes)}
-                      placeholderTextColor={
-                        !lattes && suggestions.lattes && suggestionEnabled ? "#D32719" : "#888"
-                      }
-                    />
-                    {!lattes && suggestions.lattes && suggestionEnabled && (
-                      <FieldSuggestionButton onPress={() => setLattes(suggestions.lattes!)} />
-                    )}
-                  </View>
-                  <Text style={[
-                    FormStyles.label,
-                    { color: isDarkMode ? "#fff" : "#000" }
-                  ]}>Referência</Text>
+                  <TextInput
+                    placeholder="ex: http://lattes.cnpq.br/7144753485915650"
+                    style={[
+                      FormStyles.input,
+                      fieldErrors.lattes ? styles.inputError : null,
+                    ]}
+                    value={lattes}
+                    onChangeText={setLattes}
+                    autoCapitalize="none"
+                    keyboardType="email-address"
+                    autoComplete="email"
+                  />
+                  <Text style={FormStyles.label}>Referência</Text>
                   {fieldErrors.referencia && (
                     <Text style={styles.errorText}>{fieldErrors.referencia}</Text>
                   )}
-                  <View style={styles.inputRow}>
-                    <View style={styles.pickerFlex}>
-                      <ListPicker
-                        items={Object.values(Referencia)}
-                        selected={referencia}
-                        onSelect={(ref: Referencia) => {
-                          setReferencia(ref);
-                          if (fieldErrors.referencia)
-                            setFieldErrors((prev) => {
-                              const updated = { ...prev };
-                              delete updated.referencia;
-                              return updated;
-                            });
-                          fetchSuggestions("referencia", ref);
-                        }}
-                        suggestedLabel={
-                          !referencia && suggestions.referencia && suggestionEnabled
-                            ? suggestions.referencia
-                            : undefined
-                        }
-                        suggestionStyle={{ fontStyle: "italic", color: "#D32719" }}
-                      />
-                    </View>
-                    {!referencia && suggestions.referencia && suggestionEnabled && (
-                      <FieldSuggestionButton onPress={() => setReferencia(suggestions.referencia!)} />
-                    )}
-                  </View>
-                  <Text style={[
-                    FormStyles.label,
-                    { color: isDarkMode ? "#fff" : "#000" }
-                  ]}>Observações</Text>
+                  <ListPicker
+                    items={Object.values(Referencia)}
+                    selected={referencia}
+                    onSelect={(ref: Referencia) => setReferencia(ref)}
+                  />
+                  <Text style={FormStyles.label}>Observações</Text>
                   {fieldErrors.observacoes && (
                     <Text style={styles.errorText}>{fieldErrors.observacoes}</Text>
                   )}
-                  <View style={styles.inputRow}>
-                    <TextInput
-                      placeholder={
-                        !observacoes && suggestions.observacoes && suggestionEnabled
-                          ? suggestions.observacoes
-                          : "Professor de licença..."
-                      }
-                      style={[
-                        FormStyles.input,
-                        styles.inputFlex,
-                        fieldErrors.observacoes ? styles.inputError : null,
-                        !observacoes && suggestions.observacoes && suggestionEnabled ? styles.suggestionPlaceholder : null,
-                        { color: isDarkMode ? "#fff" : "#000", borderColor: isDarkMode ? "#444" : "#ccc" }
-                      ]}
-                      onChangeText={(text) => {
-                        setObservacoes(text);
-                        if (fieldErrors.observacoes)
-                          setFieldErrors((prev) => {
-                            const updated = { ...prev };
-                            delete updated.observacoes;
-                            return updated;
-                          });
-                      }}
-                      value={observacoes}
-                      onBlur={() => fetchSuggestions("observacoes", observacoes)}
-                      placeholderTextColor={
-                        !observacoes && suggestions.observacoes && suggestionEnabled ? "#D32719" : "#888"
-                      }
-                    />
-                    {!observacoes && suggestions.observacoes && suggestionEnabled && (
-                      <FieldSuggestionButton onPress={() => setObservacoes(suggestions.observacoes!)} />
-                    )}
-                  </View>
-                  <Text style={[
-                    FormStyles.label,
-                    { color: isDarkMode ? "#fff" : "#000" }
-                  ]}>Professor está ativo?</Text>
-                  {fieldErrors.statusAtividade && (
-                    <Text style={styles.errorText}>{fieldErrors.statusAtividade}</Text>
+                  <TextInput
+                    placeholder="Professor de licença..."
+                    style={FormStyles.input}
+                    onChangeText={setObservacoes}
+                    value={observacoes}
+                  />
+                  <Text style={FormStyles.label}>Professor está ativo?</Text>
+                  {fieldErrors.professorAtivo && (
+                    <Text style={styles.errorText}>
+                      {fieldErrors.professorAtivo}
+                    </Text>
                   )}
-                  <View style={styles.inputRow}>
-                    <View style={styles.pickerFlex}>
-                      <ListPicker
-                        items={Object.values(StatusAtividade)}
-                        selected={statusAtividade}
-                        onSelect={(status) => {
-                          setStatusAtividade(status);
-                          if (fieldErrors.statusAtividade)
-                            setFieldErrors((prev) => {
-                              const updated = { ...prev };
-                              delete updated.statusAtividade;
-                              return updated;
-                            });
-                          fetchSuggestions("statusAtividade", status);
-                        }}
-                        suggestedLabel={
-                          !statusAtividade && suggestions.statusAtividade && suggestionEnabled
-                            ? suggestions.statusAtividade
-                            : undefined
-                        }
-                        suggestionStyle={{ fontStyle: "italic", color: "#D32719" }}
-                      />
-                    </View>
-                    {!statusAtividade && suggestions.statusAtividade && suggestionEnabled && (
-                      <FieldSuggestionButton onPress={() => setStatusAtividade(suggestions.statusAtividade!)} />
-                    )}
-                  </View>
+                  <ListPicker
+                    items={Object.values(StatusAtividade)}
+                    selected={statusAtividade}
+                    onSelect={(status) => setStatusAtividade(status)}
+                  />
                 </Card.Content>
                 <Card.Actions>
                   <Button

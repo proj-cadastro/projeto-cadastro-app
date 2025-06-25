@@ -52,9 +52,13 @@ const ForgetPasswordStepTwo = () => {
             behavior={Platform.OS === "ios" ? "padding" : "height"}
         >
             <View style={styles.fullScreenContainer}>
+<<<<<<< HEAD
                 <View style={styles.switchContainer}>
                     <ThemeSwitch isDarkMode={isDarkMode} toggleTheme={toggleTheme} />
                 </View>
+=======
+                
+>>>>>>> c6e8e294f41f9ee16dc59b3adb1098f2e629b3aa
                 <Card style={[FormStyles.card, styles.card, { backgroundColor: isDarkMode ? "#232323" : "#fff" }]} mode="elevated">
                     <Card.Content>
                         <Image
