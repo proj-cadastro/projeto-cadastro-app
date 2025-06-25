@@ -7,20 +7,19 @@ import LottieView from 'lottie-react-native';
 import { DocPicker } from "../../../../components/atoms/DocPicker"
 import { downloadProfessorXlsFile, uploadFile } from "../../../../services/file/fileService"
 import { useState } from "react"
-import { useThemeMode } from "../../../../context/ThemeContext"; // Importa o contexto do tema
+import { useThemeMode } from "../../../../context/ThemeContext";
 
 const ImportProfessors = () => {
     const navigation = useNavigation()
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState("")
 
-    // Usa o contexto do tema
     const { isDarkMode } = useThemeMode();
 
     const handleDownloadFile = async () => {
         try {
             setLoading(true)
-            await new Promise(resolve => setTimeout(resolve, 2000)) // espera 2 segundos
+            await new Promise(resolve => setTimeout(resolve, 2000)) 
             await downloadProfessorXlsFile()
         } catch (error: any) {
             setError(error)

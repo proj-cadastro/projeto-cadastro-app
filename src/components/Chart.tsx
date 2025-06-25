@@ -1,17 +1,73 @@
 import { BarChart, PieChart } from "react-native-chart-kit";
 import { Dimensions, View, StyleSheet, Text, Animated } from "react-native";
-import { getColorByIndex } from "../utils/getColorByIndex";
 import React, { useRef, useEffect } from "react";
 
 const screenWidth = Dimensions.get("window").width;
+
+type ChartColors = {
+  cardBg?: string;
+  legendBg?: string;
+  legendFont?: string;
+  legendValue?: string;
+  legendPercent?: string;
+  legendSeparator?: string;
+  barBgLine?: string;
+  chartLabel?: string;
+};
 
 type Props = {
   label: string[];
   data: number[];
   chartType?: "bar" | "pie";
+  backgroundColor?: string;
+  isDarkMode?: boolean;
+  colors?: ChartColors;
+  getColorByIndex?: (idx: number) => string;
 };
 
-export default function BarsChart({ label, data, chartType = "bar" }: Props) {
+const defaultColorsLight: ChartColors = {
+  cardBg: "#fff",
+  legendBg: "#fff",
+  legendFont: "#333",
+  legendValue: "#333",
+  legendPercent: "#888",
+  legendSeparator: "#bbb",
+  barBgLine: "#e3e3e3",
+  chartLabel: "#333",
+};
+
+const defaultColorsDark: ChartColors = {
+  cardBg: "#2d2d2d",
+  legendBg: "#232323",
+  legendFont: "#fff",
+  legendValue: "#fff",
+  legendPercent: "#ccc",
+  legendSeparator: "#888",
+  barBgLine: "#444",
+  chartLabel: "#fff",
+};
+
+function defaultGetColorByIndex(idx: number) {
+  const palette = [
+    "#1976D2", "#388E3C", "#7B1FA2", "#FBC02D", "#E64A19", "#C2185B", "#FFA000"
+  ];
+  return palette[idx % palette.length];
+}
+
+export default function BarsChart({
+  label,
+  data,
+  chartType = "bar",
+  backgroundColor,
+  isDarkMode = false,
+  colors,
+  getColorByIndex = defaultGetColorByIndex,
+}: Props) {
+  const themeColors = {
+    ...(isDarkMode ? defaultColorsDark : defaultColorsLight),
+    ...colors,
+  };
+
   const total = data.reduce((sum, v) => sum + v, 0);
   const max = Math.max(...data);
   const min = Math.min(...data);
@@ -31,10 +87,11 @@ export default function BarsChart({ label, data, chartType = "bar" }: Props) {
     }).start();
   }, [chartType, label, data]);
 
-  const colors = label.map((_, idx) => getColorByIndex(idx));
+  const chartBg = backgroundColor ?? themeColors.cardBg;
+  const cardBorderColor = isDarkMode ? "#444" : "black";
 
   return (
-    <Animated.View style={[styles.card, { opacity: fadeAnim }]}>
+    <Animated.View style={[styles.card, { opacity: fadeAnim, backgroundColor: chartBg, borderColor: cardBorderColor }]}>
       {chartType === "bar" ? (
         <BarChart
           data={{
@@ -42,7 +99,7 @@ export default function BarsChart({ label, data, chartType = "bar" }: Props) {
             datasets: [
               {
                 data: data,
-                colors: colors.map((color) => () => color),
+                colors: data.map((_, idx) => () => getColorByIndex(idx)),
               },
             ],
           }}
@@ -59,14 +116,14 @@ export default function BarsChart({ label, data, chartType = "bar" }: Props) {
           }}
           chartConfig={{
             backgroundColor: "transparent",
-            backgroundGradientFrom: "#FFFFFF",
-            backgroundGradientTo: "#FFFFFF",
+            backgroundGradientFrom: chartBg,
+            backgroundGradientTo: chartBg,
             decimalPlaces: 0,
-            color: (opacity = 1, index) => getColorByIndex(index ?? 0),
-            labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+            color: (opacity = 1) => getColorByIndex(0),
+            labelColor: (opacity = 1) => isDarkMode ? "#fff" : "#222", // Preto no claro, branco no escuro
             propsForBackgroundLines: {
               strokeDasharray: "",
-              stroke: "#e3e3e3",
+              stroke: "#222",
             },
             propsForLabels: {
               fontSize: 13,
@@ -78,6 +135,7 @@ export default function BarsChart({ label, data, chartType = "bar" }: Props) {
                 : "";
             },
           }}
+          verticalLabelRotation={0}
         />
       ) : (
         <PieChart
@@ -85,7 +143,7 @@ export default function BarsChart({ label, data, chartType = "bar" }: Props) {
             name: item,
             population: data[idx],
             color: getColorByIndex(idx),
-            legendFontColor: "#333",
+            legendFontColor: themeColors.legendFont,
             legendFontSize: 14,
           }))}
           width={Math.min(screenWidth * 0.8, 320)}
@@ -111,16 +169,16 @@ export default function BarsChart({ label, data, chartType = "bar" }: Props) {
                 {
                   borderColor: color,
                   shadowColor: color,
-                  backgroundColor: "#fff",
+                  backgroundColor: themeColors.legendBg,
                 },
               ]}
             >
               <View style={styles.legendRow}>
                 <Text style={[styles.legendLabel, { color }]}>{item}</Text>
-                <Text style={styles.legendSeparator}>|</Text>
-                <Text style={styles.legendValue}>{data[idx]}</Text>
-                <Text style={styles.legendSeparator}>|</Text>
-                <Text style={styles.legendPercent}>{percent}%</Text>
+                <Text style={[styles.legendSeparator, { color: themeColors.legendSeparator }]}>|</Text>
+                <Text style={[styles.legendValue, { color: themeColors.legendValue }]}>{data[idx]}</Text>
+                <Text style={[styles.legendSeparator, { color: themeColors.legendSeparator }]}>|</Text>
+                <Text style={[styles.legendPercent, { color: themeColors.legendPercent }]}>{percent}%</Text>
               </View>
             </View>
           );
@@ -136,7 +194,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     borderRadius: 16,
     padding: 20,
-    shadowColor: "#1976D2",
+    shadowColor: "#D32719",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.18,
     shadowRadius: 8,

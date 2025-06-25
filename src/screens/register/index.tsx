@@ -12,13 +12,13 @@ import {
   ActivityIndicator,
   TouchableOpacity,
 } from "react-native";
-import { Card, Button, IconButton, Switch } from "react-native-paper";
-
+import { Card, Button, IconButton } from "react-native-paper";
 
 import { signUp } from "../../services/users/userService";
 import { userRegisterSchema } from "../../validations/usersValidations";
 import { FormStyles } from "../../style/FormStyles";
-import { useThemeMode } from "../../context/ThemeContext"; // Importa o contexto do tema
+import { useThemeMode } from "../../context/ThemeContext";
+import ThemeSwitch from "../../components/ThemeSwitch";
 
 const RegisterScreen = ({ navigation }: any) => {
   const [nome, setNome] = useState("");
@@ -28,7 +28,6 @@ const RegisterScreen = ({ navigation }: any) => {
   const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
   const [isLoading, setIsLoading] = useState(false);
 
-  // Usa o contexto do tema
   const { isDarkMode, toggleTheme, theme } = useThemeMode();
 
   const handleRegister = async () => {
@@ -61,20 +60,22 @@ const RegisterScreen = ({ navigation }: any) => {
 
   return (
     <KeyboardAvoidingView
-      style={{ flex: 1, backgroundColor: theme.colors.background }} // Aplica o fundo do tema
+      style={{ flex: 1, backgroundColor: theme.colors.background }}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={styles.fullScreenContainer}>
-          {/* Switch de tema no topo direito */}
           <View style={styles.switchContainer}>
-            <Text style={{ color: theme.colors.onBackground, marginRight: 8 }}>Modo escuro</Text>
-            <Switch value={isDarkMode} onValueChange={toggleTheme} />
+            <ThemeSwitch isDarkMode={isDarkMode} toggleTheme={toggleTheme} />
           </View>
           <Card style={[FormStyles.card, styles.card, { backgroundColor: theme.colors.background }]} mode="elevated">
             <Card.Content>
               <Image
-                source={require("../../../assets/logoFatecCapi.png")}
+                source={
+                  isDarkMode
+                    ? require("../../../assets/logoFatecCapi_lightCapivara2.png")
+                    : require("../../../assets/logoFatecCapi.png")
+                }
                 style={styles.logo}
                 resizeMode="contain"
               />
@@ -92,14 +93,12 @@ const RegisterScreen = ({ navigation }: any) => {
                   FormStyles.input,
                   { width: "100%", color: theme.colors.onBackground, borderColor: theme.colors.outline },
                   fieldErrors.nome ? styles.inputError : null,
-
                 ]}
                 placeholder="Nome"
                 placeholderTextColor={theme.colors.outline}
                 value={nome}
                 onChangeText={setNome}
               />
-
               {fieldErrors.email && (
                 <Text style={styles.errorText}>{fieldErrors.email}</Text>
               )}
@@ -108,7 +107,6 @@ const RegisterScreen = ({ navigation }: any) => {
                   FormStyles.input,
                   { width: "100%", color: theme.colors.onBackground, borderColor: theme.colors.outline },
                   fieldErrors.email ? styles.inputError : null,
-
                 ]}
                 placeholder="E-mail"
                 placeholderTextColor={theme.colors.outline}
@@ -118,12 +116,9 @@ const RegisterScreen = ({ navigation }: any) => {
                 keyboardType="email-address"
                 autoComplete="email"
               />
-
               {fieldErrors.senha && (
                 <Text style={styles.errorText}>{fieldErrors.senha}</Text>
               )}
-
-              {/* Campo senha com IconButton */}
               <View style={styles.passwordContainer}>
                 <TextInput
                   style={[
@@ -142,14 +137,17 @@ const RegisterScreen = ({ navigation }: any) => {
                   icon={showPassword ? "eye-off" : "eye"}
                   size={20}
                   onPress={() => setShowPassword(!showPassword)}
+                  style={{
+                    marginRight: 4,
+                    marginBottom: 12,
+                    backgroundColor: "transparent",
+                  }}
+                  iconColor={theme.colors.outline}
                 />
               </View>
-
-
               {fieldErrors.api && (
                 <Text style={styles.errorText}>{fieldErrors.api}</Text>
               )}
-
               {isLoading ? (
                 <ActivityIndicator
                   size="large"
@@ -167,10 +165,14 @@ const RegisterScreen = ({ navigation }: any) => {
                   Cadastrar
                 </Button>
               )}
-
               <View style={styles.linksContainer}>
-                {/* Mantém o botão cinza original */}
-                <Card style={styles.linkCard} mode="elevated">
+                <Card
+                  style={[
+                    styles.linkCard,
+                    { backgroundColor: isDarkMode ? "#444" : "#a1a1a1" }
+                  ]}
+                  mode="elevated"
+                >
                   <TouchableOpacity onPress={() => navigation.navigate("Login")}>
                     <Text style={styles.linkText}>Já tem uma conta? Entrar</Text>
                   </TouchableOpacity>
@@ -190,7 +192,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     padding: 16,
-    // backgroundColor será sobrescrito pelo tema
   },
   switchContainer: {
     position: "absolute",
@@ -204,7 +205,6 @@ const styles = StyleSheet.create({
     width: "100%",
     maxWidth: 400,
     padding: 10,
-    // backgroundColor será sobrescrito pelo tema
   },
   logo: {
     width: 300,
@@ -234,7 +234,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   linkCard: {
-    backgroundColor: "#a1a1a1", // Mantém o cinza original
+    backgroundColor: "#a1a1a1",
     borderRadius: 8,
     elevation: 2,
     paddingVertical: 6,
@@ -244,7 +244,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   linkText: {
-    color: "#fff", // Mantém o texto branco original
+    color: "#fff",
     textAlign: "center",
     fontSize: 14,
   },

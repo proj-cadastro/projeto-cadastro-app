@@ -4,11 +4,10 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { isTokenValid } from "../utils/jwt";
 import { authEventEmitter } from "../events/AuthEventEmitter";
 
+const baseURL = API_URL;
+
 const api = axios.create({
-  
-  baseURL: API_URL,
-
-
+  baseURL: baseURL,
   headers: {
     "Content-Type": "application/json",
   },

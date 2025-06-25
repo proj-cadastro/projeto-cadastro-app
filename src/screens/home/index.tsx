@@ -16,7 +16,6 @@ const HomeScreen = () => {
   const [chartType, setChartType] = useState<"bar" | "pie">("bar");
   const [unidadeNome, setUnidadeNome] = useState<string | null>(null);
 
-  // Usa o contexto do tema
   const { isDarkMode } = useThemeMode();
 
   useEffect(() => {
@@ -48,7 +47,12 @@ const HomeScreen = () => {
           <Text style={[styles.title, { color: isDarkMode ? "#fff" : "#333" }]}>
             Distribuição de Professores por Titulação
           </Text>
-          <Chart data={data} label={labels} chartType={chartType} />
+          <Chart
+            data={data}
+            label={labels}
+            chartType={chartType}
+            backgroundColor={isDarkMode ? "#2d2d2d" : "#fff"}
+          />
           <View style={styles.fabContainer}>
             <InteractBtn
               name={chartType === "bar" ? "pie-chart" : "bar-chart"}

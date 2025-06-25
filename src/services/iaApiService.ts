@@ -1,13 +1,14 @@
 import { API_IA_URL, API_IA_KEY } from "@env";
 import axios from "axios";
 
-export const apiIA = axios.create({
+const baseURL = API_IA_URL;
+const ApiKey = API_IA_KEY;
 
-  baseURL: 'http://192.168.1.14:8000',
-  // baseURL: API_IA_URL,
+export const apiIA = axios.create({
+  baseURL: baseURL,
   headers: {
     "Content-Type": "application/json",
-    "API_KEY": `${API_IA_KEY.trim()}`
+    "API_KEY": ApiKey
   },
 });
 

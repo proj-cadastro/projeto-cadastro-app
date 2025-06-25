@@ -13,13 +13,14 @@ import {
   TouchableWithoutFeedback,
 } from "react-native";
 
-import { Card, Button, IconButton, Switch } from "react-native-paper";
+import { Card, Button, IconButton } from "react-native-paper";
 
 import { useAuth } from "../../context/AuthContext";
 import { login as loginService } from "../../services/users/authService";
 import { userLoginSchema } from "../../validations/usersValidations";
 import { FormStyles } from "../../style/FormStyles";
-import { useThemeMode } from "../../context/ThemeContext"; // Importa o contexto do tema
+import { useThemeMode } from "../../context/ThemeContext";
+import ThemeSwitch from "../../components/ThemeSwitch";
 
 const LoginScreen = ({ navigation }: any) => {
   const [email, setEmail] = useState("");
@@ -29,7 +30,6 @@ const LoginScreen = ({ navigation }: any) => {
   const [isLoading, setIsLoading] = useState(false);
   const { login: authLogin } = useAuth();
 
-  // Usa o contexto do tema
   const { isDarkMode, toggleTheme, theme } = useThemeMode();
 
   const handleLogin = async () => {
@@ -67,15 +67,17 @@ const LoginScreen = ({ navigation }: any) => {
     >
       <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
         <View style={styles.fullScreenContainer}>
-          {/* Switch no topo direito */}
           <View style={styles.switchContainer}>
-            <Text style={{ color: theme.colors.onBackground, marginRight: 8 }}>Modo escuro</Text>
-            <Switch value={isDarkMode} onValueChange={toggleTheme} />
+            <ThemeSwitch isDarkMode={isDarkMode} toggleTheme={toggleTheme} />
           </View>
           <Card style={[FormStyles.card, styles.card, { backgroundColor: theme.colors.background }]} mode="elevated">
             <Card.Content>
               <Image
-                source={require("../../../assets/logoFatecCapi.png")}
+                source={
+                  isDarkMode
+                    ? require("../../../assets/logoFatecCapi_lightCapivara2.png")
+                    : require("../../../assets/logoFatecCapi.png")
+                }
                 style={styles.logo}
                 resizeMode="contain"
               />
@@ -96,7 +98,6 @@ const LoginScreen = ({ navigation }: any) => {
                 <Text style={styles.errorText}>{fieldErrors.api}</Text>
               )}
 
-              {/* Campo Email */}
               <TextInput
                 placeholder="E-mail"
                 placeholderTextColor={theme.colors.outline}
@@ -108,19 +109,35 @@ const LoginScreen = ({ navigation }: any) => {
                 autoComplete="email"
               />
 
-              <TextInput
-                placeholder="Senha"
-                placeholderTextColor={theme.colors.outline}
-                style={[FormStyles.input, { width: "100%", color: theme.colors.onBackground, borderColor: theme.colors.outline }]}
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry={!showPassword}
-              />
-              <IconButton
+              <View style={styles.passwordContainer}>
+                <TextInput
+                  placeholder="Senha"
+                  placeholderTextColor={theme.colors.outline}
+                  style={[
+                    FormStyles.input,
+                    {
+                      flex: 1,
+                      color: theme.colors.onBackground,
+                      borderColor: theme.colors.outline,
+                      backgroundColor: theme.colors.background,
+                    },
+                  ]}
+                  value={password}
+                  onChangeText={setPassword}
+                  secureTextEntry={!showPassword}
+                />
+                <IconButton
                   icon={showPassword ? "eye-off" : "eye"}
                   size={20}
                   onPress={() => setShowPassword(!showPassword)}
+                  style={{
+                    marginRight: 4,
+                    marginBottom: 12,
+                    backgroundColor: "transparent",
+                  }}
+                  iconColor={theme.colors.outline}
                 />
+              </View>
 
               {isLoading ? (
                 <ActivityIndicator
@@ -140,17 +157,27 @@ const LoginScreen = ({ navigation }: any) => {
                 </Button>
               )}
 
-              {/* Links de ações */}
               <View style={styles.linksContainer}>
-                {/* Mantém os botões cinzas como antes */}
-                <Card style={styles.linkCard} mode="elevated">
+                <Card
+                  style={[
+                    styles.linkCard,
+                    { backgroundColor: isDarkMode ? "#444" : "#a1a1a1" }
+                  ]}
+                  mode="elevated"
+                >
                   <TouchableOpacity
                     onPress={() => navigation.navigate("ForgetPasswordStepOne")}
                   >
                     <Text style={styles.linkText}>Esqueceu sua senha?</Text>
                   </TouchableOpacity>
                 </Card>
-                <Card style={styles.linkCard} mode="elevated">
+                <Card
+                  style={[
+                    styles.linkCard,
+                    { backgroundColor: isDarkMode ? "#444" : "#a1a1a1" }
+                  ]}
+                  mode="elevated"
+                >
                   <TouchableOpacity
                     onPress={() => navigation.navigate("Register")}
                   >
@@ -174,7 +201,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     padding: 16,
-    // backgroundColor será sobrescrito pelo tema
   },
   switchContainer: {
     position: "absolute",
@@ -188,7 +214,6 @@ const styles = StyleSheet.create({
     width: "100%",
     maxWidth: 400,
     padding: 10,
-    // backgroundColor será sobrescrito pelo tema
   },
   logo: {
     width: 300,
@@ -215,7 +240,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   linkCard: {
-    backgroundColor: "#a1a1a1", // Mantém o cinza original
+    backgroundColor: "#a1a1a1",
     borderRadius: 8,
     elevation: 2,
     paddingVertical: 6,

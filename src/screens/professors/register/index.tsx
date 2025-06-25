@@ -16,7 +16,7 @@ import LottieView from "lottie-react-native";
 import { AnimatedGradientButton } from "../../../components/atoms/AnimatedLinearGradient";
 import ProximityNotification from "../../../components/ProximityNotification";
 import { buscarOuCacheUnidadeProxima } from "../../../services/unit-location/unitService";
-import { useThemeMode } from "../../../context/ThemeContext"; // Importa o contexto do tema
+import { useThemeMode } from "../../../context/ThemeContext";
 
 const RegisterProfessorScreen = () => {
   const navigation = useNavigation<NavigationProp>();
@@ -27,7 +27,7 @@ const RegisterProfessorScreen = () => {
   const [loadingMsg, setLoadingMsg] = React.useState("Gerando professor...");
   const [unidadeNome, setUnidadeNome] = React.useState<string | null>(null);
 
-  // Usa o contexto do tema
+
   const { isDarkMode } = useThemeMode();
 
   React.useEffect(() => {
@@ -211,10 +211,16 @@ const RegisterProfessorScreen = () => {
                       setModalVisible(false);
                       setErrorMsg(null);
                     }}
-                    style={styles.cancelButton}
+                    style={[
+                      styles.cancelButton,
+                      { 
+                        backgroundColor: isDarkMode ? "#444" : "transparent", // <-- cor igual à dos botões da tela de login
+                        borderColor: isDarkMode ? "#444" : "black"
+                      }
+                    ]}
                     labelStyle={[
                       styles.cancelButtonLabel,
-                      { color: isDarkMode ? "#fff" : "black", borderColor: isDarkMode ? "#fff" : "black" }
+                      { color: isDarkMode ? "#fff" : "black" }
                     ]}
                   >
                     Cancelar

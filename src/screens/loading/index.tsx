@@ -1,9 +1,9 @@
 import React, { useEffect } from "react";
 import { View, Text, ActivityIndicator, StyleSheet, Image } from "react-native";
-import { useThemeMode } from "../../context/ThemeContext"; // Importa o contexto do tema
+import { useThemeMode } from "../../context/ThemeContext";
 
 const LoadingScreen = ({ navigation }: any) => {
-  const { isDarkMode } = useThemeMode(); // Usa o modo escuro
+  const { isDarkMode } = useThemeMode(); 
 
   useEffect(() => {
     const timer = setTimeout(() => {

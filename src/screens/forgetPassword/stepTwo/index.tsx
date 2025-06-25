@@ -1,15 +1,16 @@
 import {
-    View, Image, Text, TextInput, StyleSheet, KeyboardAvoidingView,
+    View, Image, Text, StyleSheet, KeyboardAvoidingView,
     Platform,
     ActivityIndicator,
 } from "react-native";
 import { FormStyles } from "../../../style/FormStyles";
-import { Card, Button, Switch } from "react-native-paper";
+import { Card, Button } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
 import { useState } from "react";
 import { OtpInput } from "react-native-otp-entry";
 import { compareCode } from "../../../services/users/authService";
-import { useThemeMode } from "../../../context/ThemeContext"; // Importa o contexto do tema
+import { useThemeMode } from "../../../context/ThemeContext";
+import ThemeSwitch from "../../../components/ThemeSwitch";
 
 const ForgetPasswordStepTwo = () => {
     const navigation = useNavigation()
@@ -17,21 +18,18 @@ const ForgetPasswordStepTwo = () => {
     const [loading, setLoading] = useState(false);
     const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
 
-    // Usa o contexto do tema
     const { isDarkMode, toggleTheme } = useThemeMode();
 
     const handleSubmit = async () => {
         setFieldErrors({});
         setLoading(true);
 
-        await new Promise((resolve) => setTimeout(resolve, 2000)); // Timeout de 2 segundos
+        await new Promise((resolve) => setTimeout(resolve, 2000));
 
         try {
             await compareCode(code)
             navigation.navigate("ForgetPasswordStepThree" as never)
         } catch (error: any) {
-            console.log(error.response?.data?.mensagem || error.message);
-
             if (error.name === "ValidationError") {
                 const errors: { [key: string]: string } = {};
                 error.inner.forEach((err: any) => {
@@ -50,19 +48,21 @@ const ForgetPasswordStepTwo = () => {
 
     return (
         <KeyboardAvoidingView
-            style={{ flex: 1, backgroundColor: isDarkMode ? "#181818" : "#fff" }} // Aplica fundo escuro se dark mode
+            style={{ flex: 1, backgroundColor: isDarkMode ? "#181818" : "#fff" }}
             behavior={Platform.OS === "ios" ? "padding" : "height"}
         >
             <View style={styles.fullScreenContainer}>
-                {/* Switch de tema no topo direito */}
                 <View style={styles.switchContainer}>
-                    <Text style={{ color: isDarkMode ? "#fff" : "#000", marginRight: 8 }}>Modo escuro</Text>
-                    <Switch value={isDarkMode} onValueChange={toggleTheme} />
+                    <ThemeSwitch isDarkMode={isDarkMode} toggleTheme={toggleTheme} />
                 </View>
                 <Card style={[FormStyles.card, styles.card, { backgroundColor: isDarkMode ? "#232323" : "#fff" }]} mode="elevated">
                     <Card.Content>
                         <Image
-                            source={require("../../../../assets/cps.png")}
+                            source={
+                                isDarkMode
+                                    ? require("../../../../assets/cps2.png")
+                                    : require("../../../../assets/cps.png")
+                            }
                             style={{ width: 300, height: 200, alignSelf: "center" }}
                             resizeMode="contain"
                         />
@@ -81,17 +81,17 @@ const ForgetPasswordStepTwo = () => {
                             autoFocus={false}
                             onFilled={(text) => setCode(text)}
                             // OtpInput não tem suporte direto a tema, mas o fundo da tela já muda
-                        />
+                        />;
                         {loading ? (
                             <ActivityIndicator
                                 size="large"
-                                color="#007BFF"
+                                color="#D32719"
                                 style={{ marginBottom: 20 }}
                             />
                         ) : (
                             <Button
                                 mode="contained"
-                                buttonColor="blue"
+                                buttonColor="#D32719"
                                 labelStyle={{ color: "white" }}
                                 style={[FormStyles.button, { marginTop: 30 }]}
                                 onPress={handleSubmit}
@@ -119,7 +119,6 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         padding: 16,
-        // backgroundColor será sobrescrito pelo modo escuro
     },
     switchContainer: {
         position: "absolute",
@@ -132,7 +131,6 @@ const styles = StyleSheet.create({
     card: {
         width: "100%",
         maxWidth: 400,
-        // backgroundColor será sobrescrito pelo modo escuro
     },
     errorText: {
         color: "red",
@@ -143,4 +141,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default ForgetPasswordStepTwo
+export default ForgetPasswordStepTwo;
