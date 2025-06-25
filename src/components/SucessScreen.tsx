@@ -1,5 +1,3 @@
-//está tela poderá ser utilizada tanto para sucesso de professores quanto cursos.
-
 import React from "react";
 import { SafeAreaView, Text, StyleSheet, View } from "react-native";
 import { FormStyles } from "../style/FormStyles";
@@ -9,18 +7,29 @@ type Props = {
   title: string;
   description: string;
   onPressFn: () => void;
+  isDarkMode?: boolean;
 };
 
-const SuccessScreen = ({ title, description, onPressFn }: Props) => {
+const SuccessScreen = ({ title, description, onPressFn, isDarkMode }: Props) => {
   return (
     <SafeAreaView style={FormStyles.safeArea}>
       <View style={FormStyles.container}>
-        <Card style={[FormStyles.card, { height: "70%" }]}>
+        <Card
+          style={[
+            FormStyles.card,
+            { height: "70%", backgroundColor: isDarkMode ? "#232323" : "#fff" }
+          ]}
+        >
           <Card.Content>
-            <Text style={FormStyles.title}>{title}</Text>
-            <Text style={FormStyles.description}>{description}</Text>
+            <Text style={[
+              FormStyles.title,
+              { color: isDarkMode ? "#fff" : "#000" }
+            ]}>{title}</Text>
+            <Text style={[
+              FormStyles.description,
+              { color: isDarkMode ? "#fff" : "#000" }
+            ]}>{description}</Text>
           </Card.Content>
-
           <Card.Actions style={{ paddingTop: "65%" }}>
             <Button
               onPress={onPressFn}

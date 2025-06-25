@@ -3,7 +3,7 @@ import { View, StyleSheet } from "react-native";
 import SuccessScreen from "../../../../components/SucessScreen";
 import { useNavigation } from "@react-navigation/native";
 import HamburgerMenu from "../../../../components/HamburgerMenu";
-import { useThemeMode } from "../../../../context/ThemeContext"; // Importa o contexto do tema
+import { useThemeMode } from "../../../../context/ThemeContext";
 
 const FinishedProfessorScreen = () => {
   const navigation = useNavigation();
@@ -19,6 +19,7 @@ const FinishedProfessorScreen = () => {
         title="Professor Cadastrado com Sucesso!"
         description="Seu professor já está disponível para relatórios!"
         onPressFn={() => navigation.navigate("ListProfessors" as never)}
+        isDarkMode={isDarkMode}
       />
     </View>
   );

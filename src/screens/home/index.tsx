@@ -51,7 +51,6 @@ const HomeScreen = () => {
             data={data}
             label={labels}
             chartType={chartType}
-            backgroundColor={isDarkMode ? "#2d2d2d" : "#fff"}
           />
           <View style={styles.fabContainer}>
             <InteractBtn
