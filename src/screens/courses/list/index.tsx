@@ -10,7 +10,10 @@ import {
 } from "react-native";
 import HamburgerMenu from "../../../components/HamburgerMenu";
 import { useCourse } from "../../../context/CourseContext";
-import { deleteCourse } from "../../../services/course/cursoService";
+import {
+  deleteCourse,
+  getCourses,
+} from "../../../services/course/cursoService";
 import { showConfirmDialog } from "../../../components/atoms/ConfirmAlert";
 import { NavigationProp } from "../../../routes/rootStackParamList ";
 import { useNavigation } from "@react-navigation/native";
@@ -38,17 +41,21 @@ const ListCoursesScreen = () => {
   const [expandedCard, setExpandedCard] = useState<number | null>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedColumns, setSelectedColumns] = useState<string[]>([]);
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false);
   const [unidadeNome, setUnidadeNome] = useState<string | null>(null);
+  const [courses, setCourses] = useState<any[]>([]);
 
-  const { courses, refreshCoursesData } = useCourse();
-  const { getProfessorById } = useProfessor();
+  const { refreshCoursesData } = useCourse();
 
   const { isDarkMode } = useThemeMode();
 
   const columnOptions = Object.keys(courses[0] || {}).filter(
     (key) => key !== "id" && key !== "coordenadorId"
   );
+
+  useEffect(() => {
+    refreshCoursesData();
+  }, []);
 
   useEffect(() => {
     const fetchUnidade = async () => {
@@ -64,26 +71,42 @@ const ListCoursesScreen = () => {
     return () => clearInterval(interval);
   }, []);
 
+  const fetchCourses = async () => {
+    setIsLoading(true);
+    try {
+      const data = await getCourses();
+      setCourses(data);
+    } catch (e) {
+      setCourses([]);
+    }
+    setIsLoading(false);
+  };
+
+  useEffect(() => {
+    fetchCourses();
+  }, []);
+
   const handleExportClick = () => {
     setIsModalVisible(true);
   };
 
   const handleShareData = async () => {
     try {
-      setIsLoading(true)
+      setIsLoading(true);
       await shareDataToPdfFile(courses, selectedColumns, "course");
     } catch (error) {
       console.log(error);
     } finally {
       setIsModalVisible(false);
-      setIsLoading(false)
+      setIsLoading(false);
     }
   };
 
   const handleDelete = async (id: number) => {
     try {
       await deleteCourse(id);
-      refreshCoursesData();
+      console.log("Atualizando cursos após exclusão");
+      await fetchCourses();
     } catch (error: any) {
       console.error(error.response.data.mensagem);
     }
@@ -115,10 +138,12 @@ const ListCoursesScreen = () => {
   };
 
   return (
-    <SafeAreaView style={[
-      TableStyle.container,
-      { backgroundColor: isDarkMode ? "#181818" : "#fff" }
-    ]}>
+    <SafeAreaView
+      style={[
+        TableStyle.container,
+        { backgroundColor: isDarkMode ? "#181818" : "#fff" },
+      ]}
+    >
       <View style={TableStyle.menuContainer}>
         <HamburgerMenu />
       </View>
@@ -126,10 +151,11 @@ const ListCoursesScreen = () => {
       {unidadeNome && <ProximityNotification unidadeNome={unidadeNome} />}
 
       <ScrollView contentContainerStyle={TableStyle.scrollContent}>
-        <Text style={[
-          TableStyle.title,
-          { color: isDarkMode ? "#fff" : "#000" }
-        ]}>Cursos</Text>
+        <Text
+          style={[TableStyle.title, { color: isDarkMode ? "#fff" : "#000" }]}
+        >
+          Cursos
+        </Text>
 
         <TextInput
           placeholder="Nome do Curso"
@@ -138,7 +164,10 @@ const ListCoursesScreen = () => {
           onChangeText={setNome}
           style={[
             TableStyle.input,
-            { color: isDarkMode ? "#fff" : "#000", borderColor: isDarkMode ? "#444" : "#ccc" }
+            {
+              color: isDarkMode ? "#fff" : "#000",
+              borderColor: isDarkMode ? "#444" : "#ccc",
+            },
           ]}
         />
 
@@ -147,10 +176,14 @@ const ListCoursesScreen = () => {
             <TouchableOpacity
               onPress={() => setShowModalidades((prev) => !prev)}
             >
-              <Text style={[
-                TableStyle.filterText,
-                { color: isDarkMode ? "#fff" : "#000" }
-              ]}>Modalidades ▼</Text>
+              <Text
+                style={[
+                  TableStyle.filterText,
+                  { color: isDarkMode ? "#fff" : "#000" },
+                ]}
+              >
+                Modalidades ▼
+              </Text>
             </TouchableOpacity>
             {showModalidades && (
               <View style={TableStyle.submenuOverlay}>
@@ -172,10 +205,14 @@ const ListCoursesScreen = () => {
 
         <View style={TableStyle.cardList}>
           {courses.length === 0 ? (
-            <Text style={[
-              TableStyle.emptyText,
-              { color: isDarkMode ? "#fff" : "#000" }
-            ]}>Nenhum Curso Encontrado</Text>
+            <Text
+              style={[
+                TableStyle.emptyText,
+                { color: isDarkMode ? "#fff" : "#000" },
+              ]}
+            >
+              Nenhum Curso Encontrado
+            </Text>
           ) : (
             courses.map((curso, idx) => (
               <View key={idx} style={TableStyle.cardContainer}>
@@ -184,21 +221,33 @@ const ListCoursesScreen = () => {
                     onPress={() => toggleCardExpansion(curso.id)}
                     style={[
                       TableStyle.card,
-                      { backgroundColor: isDarkMode ? "#232323" : "#fff" }
+                      { backgroundColor: isDarkMode ? "#232323" : "#fff" },
                     ]}
                   >
-                    <Text style={[
-                      TableStyle.cardTitle,
-                      { color: isDarkMode ? "#fff" : "#000" }
-                    ]}>{curso.nome}</Text>
-                    <Text style={[
-                      TableStyle.cardSubtitle,
-                      { color: isDarkMode ? "#ccc" : "#333" }
-                    ]}>{curso.sigla}</Text>
-                    <Text style={[
-                      TableStyle.cardSubtitle,
-                      { color: isDarkMode ? "#ccc" : "#333" }
-                    ]}>{curso.codigo}</Text>
+                    <Text
+                      style={[
+                        TableStyle.cardTitle,
+                        { color: isDarkMode ? "#fff" : "#000" },
+                      ]}
+                    >
+                      {curso.nome}
+                    </Text>
+                    <Text
+                      style={[
+                        TableStyle.cardSubtitle,
+                        { color: isDarkMode ? "#ccc" : "#333" },
+                      ]}
+                    >
+                      {curso.sigla}
+                    </Text>
+                    <Text
+                      style={[
+                        TableStyle.cardSubtitle,
+                        { color: isDarkMode ? "#ccc" : "#333" },
+                      ]}
+                    >
+                      {curso.codigo}
+                    </Text>
                   </TouchableOpacity>
                 )}
                 {expandedCard === curso.id && (

@@ -132,6 +132,7 @@ const ListProfessorScreen = () => {
   const handleDelete = async (id: number) => {
     try {
       await deleteProfessor(id);
+      setTitulacoes({"Especialista": false, "Mestre": false, "Doutor": false})
       refreshProfessorsData();
     } catch (error: any) {
       console.error(error.response.data.mensagem);
