@@ -20,7 +20,6 @@ api.interceptors.request.use(async (config) => {
     const isValid = await isTokenValid(token);
     if (!isValid) {
       authEventEmitter.emit("logout");
-      console.log("Vencido");
       throw new axios.Cancel("Token Expirado, por favor faça login");
     }
     config.headers.Authorization = `Bearer ${token}`;

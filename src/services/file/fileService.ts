@@ -47,7 +47,6 @@ export const downloadProfessorXlsFile = async () => {
     { headers: { Authorization: `Bearer ${token}` } }
   );
   save(result.uri, fileName, String(result.mimeType));
-  console.log(result);
 };
 
 export const uploadFile = async (
@@ -71,7 +70,6 @@ export const uploadFile = async (
         },
       }
     );
-    console.log(response.data);
 
     return response.data;
   } catch (error: any) {

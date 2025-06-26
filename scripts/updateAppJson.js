@@ -15,5 +15,3 @@ appJson.expo.version = packageJson.version;
 
 // Salva o app.json atualizado
 fs.writeFileSync(appJsonPath, JSON.stringify(appJson, null, 2), "utf8");
-
-console.log(`Versão do app.json atualizada para ${packageJson.version}`);

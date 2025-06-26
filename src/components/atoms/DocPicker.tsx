@@ -30,9 +30,6 @@ export const DocPicker = () => {
 
             if (!result.canceled) {
                 const data = result.assets[0]
-                console.log('name', data.name)
-                console.log('size', data.size)
-                console.log('uri', data.uri)
 
                 setFile(data)
                 setConfirmationModalVisibility(true)
@@ -56,9 +53,6 @@ export const DocPicker = () => {
                 setSuccessModalVisibility(true)
             }
         } catch (dataError: any) {
-
-            console.log(dataError)
-
             const errorMsg =
                 dataError.response?.data?.mensagem ||
                 "Erro inesperado. Tente novamente.";

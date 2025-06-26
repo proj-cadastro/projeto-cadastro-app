@@ -16,8 +16,6 @@ export const postCourse = async (data: Course) => {
 
   const token = AsyncStorage.getItem("token");
 
-  console.log(token);
-
   return response.data;
 };
 

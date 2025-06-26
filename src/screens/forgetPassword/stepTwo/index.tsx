@@ -80,7 +80,6 @@ const ForgetPasswordStepTwo = () => {
                             blurOnFilled={true}
                             autoFocus={false}
                             onFilled={(text) => setCode(text)}
-                            // OtpInput não tem suporte direto a tema, mas o fundo da tela já muda
                         />;
                         {loading ? (
                             <ActivityIndicator

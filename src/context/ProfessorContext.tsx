@@ -10,6 +10,7 @@ import {
 } from "react";
 import { Professor } from "../types/professor";
 import { getProfessors } from "../services/professors/professorService";
+import { useToast } from "../utils/useToast";
 
 type ProfessorContextType = {
   professors: Professor[];
@@ -25,6 +26,7 @@ export const ProfessorContext = createContext<ProfessorContextType | undefined>(
 export const ProfessorProvider = ({ children }: { children: ReactNode }) => {
   const [professors, setProfessors] = useState<Professor[]>([]);
   const [loading, setLoading] = useState(true);
+  const { showError } = useToast();
 
   const fetchData = useCallback(
     async (filters?: {
@@ -38,11 +40,10 @@ export const ProfessorProvider = ({ children }: { children: ReactNode }) => {
 
         setProfessors(professoresData);
       } catch (error: any) {
-        //contornando o erro 404 do backend para listas vazias
         const msg = error.response?.data?.mensagem;
 
-        console.error(msg);
-        //##
+        showError(msg);
+
       } finally {
         setLoading(false);
       }
