@@ -39,8 +39,6 @@ const AddMateriaModal: React.FC<AddMateriaModalProps> = ({
     professorId: null,
   });
 
-  const { isDarkMode } = useThemeMode();
-
   const handleAddMateria = () => {
     if (newMateria.nome.trim() === "") return;
     onAddMateria(newMateria);

@@ -223,9 +223,7 @@ export default function ProfessorFormStepOne() {
                       });
                   }}
                   onBlur={() => fetchSuggestions("nome", nome)}
-                  placeholderTextColor={
-                    !nome && suggestions.nome && suggestionEnabled ? "#D32719" : "#888"
-                  }
+
                 />
                 {!nome && suggestions.nome && suggestionEnabled && (
                   <FieldSuggestionButton onPress={() => setNome(suggestions.nome!)} />

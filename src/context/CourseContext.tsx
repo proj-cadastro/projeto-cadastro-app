@@ -20,9 +20,7 @@ export const CourseProvider = ({ children }: { children: ReactNode }) => {
     const fetchData = useCallback(async () => {
         setLoading(true)
         try {
-            console.log("contexto sendo chamado")
             const coursesData = await getCourses()
-            console.log("cursos atualizads: ", coursesData)
             setCourses(coursesData)
         } catch (error: any) {
             const apiResponse = error.response?.data

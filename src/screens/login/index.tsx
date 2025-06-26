@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Image,
@@ -21,6 +21,9 @@ import { userLoginSchema } from "../../validations/usersValidations";
 import { FormStyles } from "../../style/FormStyles";
 import { useThemeMode } from "../../context/ThemeContext";
 import ThemeSwitch from "../../components/ThemeSwitch";
+import { useToast } from "../../utils/useToast";
+import Toast from "../../components/atoms/Toast";
+import { authEventEmitter } from "../../events/AuthEventEmitter";
 
 const LoginScreen = ({ navigation }: any) => {
   const [email, setEmail] = useState("");
@@ -31,6 +34,20 @@ const LoginScreen = ({ navigation }: any) => {
   const { login: authLogin } = useAuth();
 
   const { isDarkMode, toggleTheme, theme } = useThemeMode();
+  const { toast, showError, showInfo, hideToast } = useToast();
+
+  // Escuta o evento de logout por token expirado
+  useEffect(() => {
+    const handleTokenExpired = () => {
+      showInfo("Sua sessão expirou. Por favor, faça login novamente.");
+    };
+
+    authEventEmitter.on("logout", handleTokenExpired);
+
+    return () => {
+      authEventEmitter.off("logout", handleTokenExpired);
+    };
+  }, [showInfo]);
 
   const handleLogin = async () => {
     setFieldErrors({});
@@ -51,9 +68,8 @@ const LoginScreen = ({ navigation }: any) => {
         });
         setFieldErrors(errors);
       } else {
-        setFieldErrors({
-          api: error.response?.data?.erro || "Erro ao fazer login",
-        });
+        // Mostra toast de erro para credenciais inválidas
+        showError("Email ou senha incorretos. Verifique suas credenciais e tente novamente.");
       }
     } finally {
       setIsLoading(false);
@@ -93,9 +109,6 @@ const LoginScreen = ({ navigation }: any) => {
               )}
               {fieldErrors.senha && (
                 <Text style={styles.errorText}>{fieldErrors.senha}</Text>
-              )}
-              {fieldErrors.api && (
-                <Text style={styles.errorText}>{fieldErrors.api}</Text>
               )}
 
               <TextInput
@@ -191,6 +204,13 @@ const LoginScreen = ({ navigation }: any) => {
           </Card>
         </View>
       </TouchableWithoutFeedback>
+
+      <Toast
+        visible={toast.visible}
+        message={toast.message}
+        type={toast.type}
+        onDismiss={hideToast}
+      />
     </KeyboardAvoidingView>
   );
 };

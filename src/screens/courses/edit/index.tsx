@@ -337,6 +337,7 @@ const EditCourseScreen = () => {
                 onClose={() => setMateriaModalVisible(false)}
                 onAddMateria={handleAddMateria}
                 professors={professors}
+                isDarkMode={isDarkMode}
               />
             </Card.Content>
             <Card.Actions>

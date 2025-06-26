@@ -33,10 +33,8 @@ export const ProfessorProvider = ({ children }: { children: ReactNode }) => {
       titulacoes?: string[];
     }) => {
       try {
-        console.log("contexto sendo chamado");
 
         const professoresData = await getProfessors(filters);
-        console.log("cursos atualizads: ", professoresData);
 
         setProfessors(professoresData);
       } catch (error: any) {
