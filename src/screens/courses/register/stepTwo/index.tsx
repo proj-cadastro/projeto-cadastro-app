@@ -38,10 +38,9 @@ import { useCourse } from "../../../../context/CourseContext";
 import { useProfessor } from "../../../../context/ProfessorContext";
 import { coursesRegisterStep2Schema } from "../../../../validations/coursesRegisterValidations";
 import { RouteParamsProps } from "../../../../routes/rootStackParamList ";
-
 import { Materia } from "../../../../types/materia";
-
-import { useThemeMode } from "../../../../context/ThemeContext"; // Importa o contexto do tema
+import { useThemeMode } from "../../../../context/ThemeContext";
+import { TouchableOpacity } from "react-native";
 
 
 export default function StepTwo() {
@@ -62,7 +61,6 @@ export default function StepTwo() {
   const handleAddMateria = (materia: Materia) => {
     setMaterias([...materias, materia]);
   };
-  // Usa o contexto do tema
   const { isDarkMode } = useThemeMode();
 
   const handleSubmit = async () => {
@@ -151,6 +149,7 @@ export default function StepTwo() {
                         return updated;
                       });
                   }}
+                  backgroundColor={isDarkMode ? "#202020" : "#fff"}
                 />
 
                 <Text style={[
@@ -176,27 +175,38 @@ export default function StepTwo() {
                   }}
                   getLabel={(prof) => prof.nome}
                   getValue={(prof) => prof.id}
+                  backgroundColor={isDarkMode ? "#202020" : "#fff"}
                 />
-                <Text style={FormStyles.label}>Matérias Adicionadas</Text>
-                {materias.map((materia, index) => (
-                  <Text key={index} style={styles.materiaItem}>
-                    {materia.nome} - {materia.cargaHoraria}h
-                  </Text>
-                ))}
+                {materias.length > 0 && (
+                  <>
+                    <Text style={FormStyles.label}>Matérias Adicionadas</Text>
+                    {materias.map((materia, index) => (
+                      <Text key={index} style={styles.materiaItem}>
+                        {materia.nome} - {materia.cargaHoraria}h
+                      </Text>
+                    ))}
+                  </>
+                )}
 
-                <Button
-                  mode="outlined"
-                  onPress={() => setMateriaModalVisible(true)}
-                  style={{ marginVertical: 10 }}
+                <Card
+                  style={[
+                    styles.linkCard,
+                    { backgroundColor: isDarkMode ? "#444" : "#a1a1a1", marginTop: 16 }
+                  ]}
+                  mode="elevated"
                 >
-                  Adicionar Matéria
-                </Button>
+                  <TouchableOpacity onPress={() => setMateriaModalVisible(true)}>
+                    <Text style={styles.linkText}>Adicionar Matéria</Text>
+                  </TouchableOpacity>
+                </Card>
 
                 <AddMateriaModal
                   visible={isMateriaModalVisible}
                   onClose={() => setMateriaModalVisible(false)}
                   onAddMateria={handleAddMateria}
                   professors={professors}
+                  isDarkMode={isDarkMode}
+                  buttonColor={FormStyles.button.backgroundColor}
                 />
               </Card.Content>
 
@@ -260,5 +270,22 @@ const styles = StyleSheet.create({
   closeButton: {
     alignSelf: "flex-end",
     margin: 10,
+  },
+  linkCard: {
+    backgroundColor: "#a1a1a1",
+    borderRadius: 8,
+    elevation: 2,
+    paddingVertical: 6,
+    paddingHorizontal: 8,
+    marginBottom: 4,
+    minHeight: 36,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  linkText: {
+    color: "#fff",
+    textAlign: "center",
+    fontSize: 14,
+    fontWeight: "bold",
   },
 });

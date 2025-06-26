@@ -159,6 +159,7 @@ const EditCourseScreen = () => {
                 onSelect={(modelo: ModeloCurso) =>
                   setFormData({ ...formData, modelo })
                 }
+                backgroundColor={isDarkMode ? "#202020" : "#fff"}
               />
 
               <Text style={[
@@ -171,6 +172,7 @@ const EditCourseScreen = () => {
                 onSelect={(coordenadorId: number) => setFormData({ ...formData, coordenadorId })}
                 getLabel={(professor) => professor.nome}
                 getValue={(professor) => professor.id}
+                backgroundColor={isDarkMode ? "#202020" : "#fff"}
               />
 
             </Card.Content>

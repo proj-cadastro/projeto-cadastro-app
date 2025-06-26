@@ -17,6 +17,7 @@ const Finished = () => {
         title="Curso Cadastrado com Sucesso!"
         description="Seu curso já está disponível para relatórios!"
         onPressFn={() => navigation.navigate("ListCourses" as never)}
+        isDarkMode={isDarkMode}
       />
     </SafeAreaView>
   );

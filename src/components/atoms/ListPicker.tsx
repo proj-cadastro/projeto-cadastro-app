@@ -9,7 +9,7 @@ type Props<T> = {
   getValue?: (item: T) => any;
   suggestedLabel?: string;
   suggestionStyle?: any;
-  backgroundColor?: string; // nova prop
+  backgroundColor?: string;
 };
 
 export default function ListPicker<T>({

@@ -7,7 +7,8 @@ import { groupByTitulacao } from "../../utils/filterUtilities";
 import { InteractBtn } from "../../components/atoms/InteractBtn";
 import ProximityNotification from "../../components/ProximityNotification";
 import { buscarOuCacheUnidadeProxima } from "../../services/unit-location/unitService";
-import { useThemeMode } from "../../context/ThemeContext"; // Importa o contexto do tema
+import { useThemeMode } from "../../context/ThemeContext";
+
 
 const HomeScreen = () => {
   const { professors } = useProfessor();
