@@ -25,9 +25,7 @@ import {
 import ListPicker from "../../../../components/atoms/ListPicker";
 import HamburgerMenu from "../../../../components/HamburgerMenu";
 import AddMateriaModal from "../../../../components/AddMateriaModal";
-
-
-
+import Toast from "../../../../components/atoms/Toast";
 
 import { useRoute } from "@react-navigation/native";
 import { useNavigation } from "@react-navigation/native";
@@ -42,7 +40,7 @@ import { RouteParamsProps } from "../../../../routes/rootStackParamList ";
 import { Materia } from "../../../../types/materia";
 
 import { useThemeMode } from "../../../../context/ThemeContext"; // Importa o contexto do tema
-
+import { useToast } from "../../../../utils/useToast";
 
 export default function StepTwo() {
   const navigation = useNavigation();
@@ -55,9 +53,10 @@ export default function StepTwo() {
   const [coordenadorId, setCoordenadorId] = useState();
   const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
 
-
   const [isMateriaModalVisible, setMateriaModalVisible] = useState(false);
   const [materias, setMaterias] = useState<Materia[]>([]);
+
+  const { toast, showError, hideToast } = useToast();
 
   const handleAddMateria = (materia: Materia) => {
     setMaterias([...materias, materia]);
@@ -90,15 +89,20 @@ export default function StepTwo() {
         });
         setFieldErrors(errors);
       }
-      console.error(error.response?.data?.mensagem);
+      const errorMessage =
+        error.response?.data?.mensagem ||
+        "Erro ao cadastrar curso. Tente novamente.";
+      showError(errorMessage);
     }
   };
 
   return (
-    <SafeAreaView style={[
-      FormStyles.safeArea,
-      { backgroundColor: isDarkMode ? "#181818" : "#fff" }
-    ]}>
+    <SafeAreaView
+      style={[
+        FormStyles.safeArea,
+        { backgroundColor: isDarkMode ? "#181818" : "#fff" },
+      ]}
+    >
       <View style={FormStyles.menuContainer}>
         <HamburgerMenu />
       </View>
@@ -116,27 +120,40 @@ export default function StepTwo() {
           keyboardShouldPersistTaps="handled"
         >
           <View style={styles.cardWrapper}>
-            <Card style={[
-              FormStyles.card,
-              { backgroundColor: isDarkMode ? "#232323" : "#fff" }
-            ]} mode="elevated">
+            <Card
+              style={[
+                FormStyles.card,
+                { backgroundColor: isDarkMode ? "#232323" : "#fff" },
+              ]}
+              mode="elevated"
+            >
               <Card.Content>
-                <Text style={[
-                  FormStyles.title,
-                  { color: isDarkMode ? "#fff" : "#000" }
-                ]}>2º Etapa</Text>
+                <Text
+                  style={[
+                    FormStyles.title,
+                    { color: isDarkMode ? "#fff" : "#000" },
+                  ]}
+                >
+                  2º Etapa
+                </Text>
 
-                <Text style={[
-                  FormStyles.description,
-                  { color: isDarkMode ? "#fff" : "#000" }
-                ]}>
+                <Text
+                  style={[
+                    FormStyles.description,
+                    { color: isDarkMode ? "#fff" : "#000" },
+                  ]}
+                >
                   Insira os dados do curso para registrá-lo no sistema
                 </Text>
 
-                <Text style={[
-                  FormStyles.label,
-                  { color: isDarkMode ? "#fff" : "#000" }
-                ]}>Modalidade</Text>
+                <Text
+                  style={[
+                    FormStyles.label,
+                    { color: isDarkMode ? "#fff" : "#000" },
+                  ]}
+                >
+                  Modalidade
+                </Text>
                 {fieldErrors.modelo && (
                   <Text style={styles.errorText}>{fieldErrors.modelo}</Text>
                 )}
@@ -153,10 +170,14 @@ export default function StepTwo() {
                   }}
                 />
 
-                <Text style={[
-                  FormStyles.label,
-                  { color: isDarkMode ? "#fff" : "#000" }
-                ]}>Coordenador</Text>
+                <Text
+                  style={[
+                    FormStyles.label,
+                    { color: isDarkMode ? "#fff" : "#000" },
+                  ]}
+                >
+                  Coordenador
+                </Text>
                 {fieldErrors.coordenadorId && (
                   <Text style={styles.errorText}>
                     {fieldErrors.coordenadorId}
@@ -215,6 +236,13 @@ export default function StepTwo() {
           </View>
         </ScrollView>
       </View>
+
+      <Toast
+        visible={toast.visible}
+        message={toast.message}
+        type={toast.type}
+        onDismiss={hideToast}
+      />
     </SafeAreaView>
   );
 }
