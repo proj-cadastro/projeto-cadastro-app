@@ -30,6 +30,8 @@ import { getCourses } from "../../../services/course/cursoService";
 import { getProfessors } from "../../../services/professors/professorService";
 
 import { useThemeMode } from "../../../context/ThemeContext"; // Importa o contexto do tema
+import { useToast } from "../../../utils/useToast";
+import Toast from "../../../components/atoms/Toast";
 
 const ListProfessorScreen = () => {
   const [nome, setNome] = useState("");
@@ -54,6 +56,7 @@ const ListProfessorScreen = () => {
 
   // Usa o contexto do tema
   const { isDarkMode } = useThemeMode();
+  const { toast, showError, showSuccess, hideToast } = useToast();
 
   useEffect(() => {
     refreshProfessorsData();
@@ -132,9 +135,13 @@ const ListProfessorScreen = () => {
   const handleDelete = async (id: number) => {
     try {
       await deleteProfessor(id);
+      setTitulacoes({ Especialista: false, Mestre: false, Doutor: false });
+      showSuccess("Professor excluído com sucesso!");
       refreshProfessorsData();
     } catch (error: any) {
-      console.error(error.response.data.mensagem);
+      const errorMessage =
+        error.response?.data?.mensagem || "Erro ao excluir professor";
+      showError(errorMessage);
     }
   };
 
@@ -173,8 +180,10 @@ const ListProfessorScreen = () => {
     try {
       setIsLoading(true);
       await shareDataToPdfFile(professors, selectedColumns, "professor");
-    } catch (error) {
-      console.log(error);
+      showSuccess("Arquivo compartilhado com sucesso!");
+    } catch (error: any) {
+      const errorMessage = error?.message || "Erro ao compartilhar arquivo";
+      showError(errorMessage);
     } finally {
       setIsLoading(false);
       setIsModalVisible(false);
@@ -183,10 +192,12 @@ const ListProfessorScreen = () => {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaView style={[
-        TableStyle.container,
-        { backgroundColor: isDarkMode ? "#181818" : "#fff" }
-      ]}>
+      <SafeAreaView
+        style={[
+          TableStyle.container,
+          { backgroundColor: isDarkMode ? "#181818" : "#fff" },
+        ]}
+      >
         <View style={TableStyle.menuContainer}>
           <HamburgerMenu />
         </View>
@@ -194,10 +205,9 @@ const ListProfessorScreen = () => {
         {unidadeNome && <ProximityNotification unidadeNome={unidadeNome} />}
 
         <ScrollView contentContainerStyle={TableStyle.scrollContent}>
-          <Text style={[
-            TableStyle.title,
-            { color: isDarkMode ? "#fff" : "#000" }
-          ]}>
+          <Text
+            style={[TableStyle.title, { color: isDarkMode ? "#fff" : "#000" }]}
+          >
             Professores
           </Text>
 
@@ -208,18 +218,24 @@ const ListProfessorScreen = () => {
             onChangeText={setSearchTerm}
             style={[
               TableStyle.input,
-              { color: isDarkMode ? "#fff" : "#000", borderColor: isDarkMode ? "#444" : "#ccc" }
+              {
+                color: isDarkMode ? "#fff" : "#000",
+                borderColor: isDarkMode ? "#444" : "#ccc",
+              },
             ]}
-
           />
 
           <View style={TableStyle.filterRow}>
             <View style={TableStyle.filterGroup}>
               <TouchableOpacity onPress={() => setShowCursos((prev) => !prev)}>
-                <Text style={[
-                  TableStyle.filterText,
-                  { color: isDarkMode ? "#fff" : "#000" }
-                ]}>Cursos ▼</Text>
+                <Text
+                  style={[
+                    TableStyle.filterText,
+                    { color: isDarkMode ? "#fff" : "#000" },
+                  ]}
+                >
+                  Cursos ▼
+                </Text>
               </TouchableOpacity>
               {showCursos && (
                 <View style={TableStyle.submenuOverlay}>
@@ -241,10 +257,14 @@ const ListProfessorScreen = () => {
               <TouchableOpacity
                 onPress={() => setShowTitulacoes((prev) => !prev)}
               >
-                <Text style={[
-                  TableStyle.filterText,
-                  { color: isDarkMode ? "#fff" : "#000" }
-                ]}>Titulação ▼</Text>
+                <Text
+                  style={[
+                    TableStyle.filterText,
+                    { color: isDarkMode ? "#fff" : "#000" },
+                  ]}
+                >
+                  Titulação ▼
+                </Text>
               </TouchableOpacity>
               {showTitulacoes && (
                 <View style={TableStyle.submenuOverlay}>
@@ -265,15 +285,15 @@ const ListProfessorScreen = () => {
           </View>
 
           <View style={TableStyle.cardList}>
-
             {isLoading ? (
               <ActivityIndicator size="large" />
             ) : professors.length === 0 ? (
-              <Text style={[
-                TableStyle.emptyText,
-                { color: isDarkMode ? "#fff" : "#000" }
-              ]}>
-
+              <Text
+                style={[
+                  TableStyle.emptyText,
+                  { color: isDarkMode ? "#fff" : "#000" },
+                ]}
+              >
                 Nenhum Professor Encontrado
               </Text>
             ) : (
@@ -283,21 +303,31 @@ const ListProfessorScreen = () => {
                     onPress={() => prof.id && toggleCardExpansion(prof.id)}
                     style={[
                       TableStyle.card,
-                      { backgroundColor: isDarkMode ? "#232323" : "#fff" }
+                      { backgroundColor: isDarkMode ? "#232323" : "#fff" },
                     ]}
                   >
-                    <Text style={[
-                      TableStyle.cardTitle,
-                      { color: isDarkMode ? "#fff" : "#000" }
-                    ]}>{prof.nome}</Text>
-                    <Text style={[
-                      TableStyle.cardSubtitle,
-                      { color: isDarkMode ? "#ccc" : "#333" }
-                    ]}>{prof.email}</Text>
-                    <Text style={[
-                      TableStyle.cardSubtitle,
-                      { color: isDarkMode ? "#ccc" : "#333" }
-                    ]}>
+                    <Text
+                      style={[
+                        TableStyle.cardTitle,
+                        { color: isDarkMode ? "#fff" : "#000" },
+                      ]}
+                    >
+                      {prof.nome}
+                    </Text>
+                    <Text
+                      style={[
+                        TableStyle.cardSubtitle,
+                        { color: isDarkMode ? "#ccc" : "#333" },
+                      ]}
+                    >
+                      {prof.email}
+                    </Text>
+                    <Text
+                      style={[
+                        TableStyle.cardSubtitle,
+                        { color: isDarkMode ? "#ccc" : "#333" },
+                      ]}
+                    >
                       {prof.titulacao}
                     </Text>
                   </TouchableOpacity>
@@ -373,6 +403,13 @@ const ListProfessorScreen = () => {
           labels={professorLabels}
           loading={isLoading}
         />
+
+        <Toast
+          visible={toast.visible}
+          message={toast.message}
+          type={toast.type}
+          onDismiss={hideToast}
+        />
       </SafeAreaView>
     </GestureHandlerRootView>
   );
@@ -387,6 +424,4 @@ const styles = StyleSheet.create({
   },
 });
 
-
 export default ListProfessorScreen;
-

@@ -13,7 +13,14 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
 } from "react-native";
-import { Card, Button, ProgressBar, MD3Colors, Modal, Portal } from "react-native-paper";
+import {
+  Card,
+  Button,
+  ProgressBar,
+  MD3Colors,
+  Modal,
+  Portal,
+} from "react-native-paper";
 import ListPicker from "../../../../components/atoms/ListPicker";
 import HamburgerMenu from "../../../../components/HamburgerMenu";
 import { useRoute, useNavigation } from "@react-navigation/native";
@@ -32,6 +39,8 @@ import { sugerirProfessorIA } from "../../../../services/ia/iaService";
 import { FieldSuggestionButton } from "../../../../components/FieldSuggestionButton";
 import { useThemeMode } from "../../../../context/ThemeContext";
 import { getPlaceholderColor } from "../../../../utils/getPlaceholderColor";
+import { useToast } from "../../../../utils/useToast";
+import Toast from "../../../../components/atoms/Toast";
 
 export default function ProfessorFormStepTwo() {
   const navigation = useNavigation();
@@ -41,17 +50,27 @@ export default function ProfessorFormStepTwo() {
   const { partialDataProfessor } = route.params;
 
   const [lattes, setLattes] = useState(partialDataProfessor?.lattes || "");
-  const [referencia, setReferencia] = useState(partialDataProfessor?.referencia || "");
-  const [statusAtividade, setStatusAtividade] = useState(partialDataProfessor?.statusAtividade || "");
+  const [referencia, setReferencia] = useState(
+    partialDataProfessor?.referencia || ""
+  );
+  const [statusAtividade, setStatusAtividade] = useState(
+    partialDataProfessor?.statusAtividade || ""
+  );
   const [observacoes, setObservacoes] = useState("");
   const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
   const [modalVisible, setModalVisible] = useState(false);
   const [modalMsg, setModalMsg] = useState("");
   const [missingFields, setMissingFields] = useState<string[]>([]);
-  const [suggestions, setSuggestions] = useState<{ lattes?: string; referencia?: string; statusAtividade?: string; observacoes?: string }>({});
+  const [suggestions, setSuggestions] = useState<{
+    lattes?: string;
+    referencia?: string;
+    statusAtividade?: string;
+    observacoes?: string;
+  }>({});
   const [loadingSuggestions, setLoadingSuggestions] = useState(false);
 
   const { isDarkMode } = useThemeMode();
+  const { toast, showError, showSuccess, hideToast } = useToast();
 
   useEffect(() => {
     let isMounted = true;
@@ -91,7 +110,8 @@ export default function ProfessorFormStepTwo() {
       else if (lattes) partial.lattes = lattes;
       if (fieldChanged === "referencia" && value) partial.referencia = value;
       else if (referencia) partial.referencia = referencia;
-      if (fieldChanged === "statusAtividade" && value) partial.statusAtividade = value;
+      if (fieldChanged === "statusAtividade" && value)
+        partial.statusAtividade = value;
       else if (statusAtividade) partial.statusAtividade = statusAtividade;
       if (fieldChanged === "observacoes" && value) partial.observacoes = value;
       else if (observacoes) partial.observacoes = observacoes;
@@ -123,13 +143,16 @@ export default function ProfessorFormStepTwo() {
       if (response?.sucesso === false) {
         setModalMsg(
           response?.erro ||
-          "Erro ao criar professor. Verifique os campos e tente novamente."
+            "Erro ao criar professor. Verifique os campos e tente novamente."
         );
         setModalVisible(true);
         return;
       }
       refreshProfessorsData();
-      navigation.navigate("RegisterProfessorsFinished" as never);
+      showSuccess("Professor cadastrado com sucesso!");
+      setTimeout(() => {
+        navigation.navigate("RegisterProfessorsFinished" as never);
+      }, 1500);
     } catch (error: any) {
       if (error.name === "ValidationError") {
         const errors: { [key: string]: string } = {};
@@ -149,7 +172,9 @@ export default function ProfessorFormStepTwo() {
         setMissingFields([]);
         setModalVisible(true);
       }
-      console.error(error.response?.data);
+      const errorMessage =
+        error.response?.data?.mensagem || "Erro ao cadastrar professor";
+      showError(errorMessage);
     }
   };
 
@@ -159,10 +184,15 @@ export default function ProfessorFormStepTwo() {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <SafeAreaView style={[
-          [FormStyles.safeArea,
-          { backgroundColor: isDarkMode ? "#181818" : "#fff" }
-        ], { backgroundColor: isDarkMode ? "#181818" : "#fff" }]}>
+        <SafeAreaView
+          style={[
+            [
+              FormStyles.safeArea,
+              { backgroundColor: isDarkMode ? "#181818" : "#fff" },
+            ],
+            { backgroundColor: isDarkMode ? "#181818" : "#fff" },
+          ]}
+        >
           <View style={FormStyles.menuContainer}>
             <HamburgerMenu />
           </View>
@@ -179,25 +209,45 @@ export default function ProfessorFormStepTwo() {
               contentContainerStyle={FormStyles.scrollContent}
               keyboardShouldPersistTaps="handled"
             >
-              <Card style={[
-                FormStyles.card, { backgroundColor: isDarkMode ? "#232323" : "#fff" },
-                { backgroundColor: isDarkMode ? "#232323" : "#fff" }
-              ]} mode="elevated">
+              <Card
+                style={[
+                  FormStyles.card,
+                  { backgroundColor: isDarkMode ? "#232323" : "#fff" },
+                  { backgroundColor: isDarkMode ? "#232323" : "#fff" },
+                ]}
+                mode="elevated"
+              >
                 <Card.Content>
-                  <Text style={[[
-                    FormStyles.title, { color: isDarkMode ? "#fff" : "#000" }],
-                    { color: isDarkMode ? "#fff" : "#000" }
-                  ]}>2º Etapa</Text>
-                  <Text style={[[
-                    FormStyles.description, { color: isDarkMode ? "#fff" : "#000" }],
-                    { color: isDarkMode ? "#fff" : "#000" }
-                  ]}>
+                  <Text
+                    style={[
+                      [
+                        FormStyles.title,
+                        { color: isDarkMode ? "#fff" : "#000" },
+                      ],
+                      { color: isDarkMode ? "#fff" : "#000" },
+                    ]}
+                  >
+                    2º Etapa
+                  </Text>
+                  <Text
+                    style={[
+                      [
+                        FormStyles.description,
+                        { color: isDarkMode ? "#fff" : "#000" },
+                      ],
+                      { color: isDarkMode ? "#fff" : "#000" },
+                    ]}
+                  >
                     Insira os dados do professor para registrá-lo no sistema
                   </Text>
-                  <Text style={[
-                    FormStyles.label,
-                    { color: isDarkMode ? "#fff" : "#000" }
-                  ]}>Lattes</Text>
+                  <Text
+                    style={[
+                      FormStyles.label,
+                      { color: isDarkMode ? "#fff" : "#000" },
+                    ]}
+                  >
+                    Lattes
+                  </Text>
                   {fieldErrors.lattes && (
                     <Text style={styles.errorText}>{fieldErrors.lattes}</Text>
                   )}
@@ -211,9 +261,14 @@ export default function ProfessorFormStepTwo() {
                       style={[
                         FormStyles.input,
                         styles.inputFlex,
-                        { color: isDarkMode ? "#fff" : "#000", borderColor: isDarkMode ? "#444" : "#ccc" },
+                        {
+                          color: isDarkMode ? "#fff" : "#000",
+                          borderColor: isDarkMode ? "#444" : "#ccc",
+                        },
                         fieldErrors.lattes ? styles.inputError : null,
-                        !lattes && suggestions.lattes && suggestionEnabled ? styles.suggestionPlaceholder : null,
+                        !lattes && suggestions.lattes && suggestionEnabled
+                          ? styles.suggestionPlaceholder
+                          : null,
                       ]}
                       value={lattes}
                       onChangeText={(text) => {
@@ -233,15 +288,23 @@ export default function ProfessorFormStepTwo() {
                       })}
                     />
                     {!lattes && suggestions.lattes && suggestionEnabled && (
-                      <FieldSuggestionButton onPress={() => setLattes(suggestions.lattes!)} />
+                      <FieldSuggestionButton
+                        onPress={() => setLattes(suggestions.lattes!)}
+                      />
                     )}
                   </View>
-                  <Text style={[
-                    FormStyles.label,
-                    { color: isDarkMode ? "#fff" : "#000" }
-                  ]}>Referência</Text>
+                  <Text
+                    style={[
+                      FormStyles.label,
+                      { color: isDarkMode ? "#fff" : "#000" },
+                    ]}
+                  >
+                    Referência
+                  </Text>
                   {fieldErrors.referencia && (
-                    <Text style={styles.errorText}>{fieldErrors.referencia}</Text>
+                    <Text style={styles.errorText}>
+                      {fieldErrors.referencia}
+                    </Text>
                   )}
                   <View style={styles.inputRow}>
                     <View style={styles.pickerFlex}>
@@ -259,38 +322,62 @@ export default function ProfessorFormStepTwo() {
                           fetchSuggestions("referencia", ref);
                         }}
                         suggestedLabel={
-                          !referencia && suggestions.referencia && suggestionEnabled
+                          !referencia &&
+                          suggestions.referencia &&
+                          suggestionEnabled
                             ? suggestions.referencia
                             : undefined
                         }
-                        suggestionStyle={{ fontStyle: "italic", color: "#D32719" }}
+                        suggestionStyle={{
+                          fontStyle: "italic",
+                          color: "#D32719",
+                        }}
                         backgroundColor={isDarkMode ? "#202020" : "#fff"}
                       />
                     </View>
-                    {!referencia && suggestions.referencia && suggestionEnabled && (
-                      <FieldSuggestionButton onPress={() => setReferencia(suggestions.referencia!)} />
-                    )}
+                    {!referencia &&
+                      suggestions.referencia &&
+                      suggestionEnabled && (
+                        <FieldSuggestionButton
+                          onPress={() => setReferencia(suggestions.referencia!)}
+                        />
+                      )}
                   </View>
-                  <Text style={[
-                    FormStyles.label,
-                    { color: isDarkMode ? "#fff" : "#000" }
-                  ]}>Observações</Text>
+                  <Text
+                    style={[
+                      FormStyles.label,
+                      { color: isDarkMode ? "#fff" : "#000" },
+                    ]}
+                  >
+                    Observações
+                  </Text>
                   {fieldErrors.observacoes && (
-                    <Text style={styles.errorText}>{fieldErrors.observacoes}</Text>
+                    <Text style={styles.errorText}>
+                      {fieldErrors.observacoes}
+                    </Text>
                   )}
                   <View style={styles.inputRow}>
                     <TextInput
                       placeholder={
-                        !observacoes && suggestions.observacoes && suggestionEnabled
+                        !observacoes &&
+                        suggestions.observacoes &&
+                        suggestionEnabled
                           ? suggestions.observacoes
                           : "Professor de licença..."
                       }
                       style={[
                         FormStyles.input,
                         styles.inputFlex,
-                        { color: isDarkMode ? "#fff" : "#000", borderColor: isDarkMode ? "#444" : "#ccc" },
+                        {
+                          color: isDarkMode ? "#fff" : "#000",
+                          borderColor: isDarkMode ? "#444" : "#ccc",
+                        },
                         fieldErrors.observacoes ? styles.inputError : null,
-                        !observacoes && suggestions.observacoes && suggestionEnabled ? styles.suggestionPlaceholder : null,
+                        !observacoes &&
+                        suggestions.observacoes &&
+                        suggestionEnabled
+                          ? styles.suggestionPlaceholder
+                          : null,
                       ]}
                       onChangeText={(text) => {
                         setObservacoes(text);
@@ -302,23 +389,38 @@ export default function ProfessorFormStepTwo() {
                           });
                       }}
                       value={observacoes}
-                      onBlur={() => fetchSuggestions("observacoes", observacoes)}
+                      onBlur={() =>
+                        fetchSuggestions("observacoes", observacoes)
+                      }
                       placeholderTextColor={getPlaceholderColor({
                         isDarkMode,
                         suggestionEnabled,
-                        hasSuggestion: !observacoes && !!suggestions.observacoes,
+                        hasSuggestion:
+                          !observacoes && !!suggestions.observacoes,
                       })}
                     />
-                    {!observacoes && suggestions.observacoes && suggestionEnabled && (
-                      <FieldSuggestionButton onPress={() => setObservacoes(suggestions.observacoes!)} />
-                    )}
+                    {!observacoes &&
+                      suggestions.observacoes &&
+                      suggestionEnabled && (
+                        <FieldSuggestionButton
+                          onPress={() =>
+                            setObservacoes(suggestions.observacoes!)
+                          }
+                        />
+                      )}
                   </View>
-                  <Text style={[
-                    FormStyles.label,
-                    { color: isDarkMode ? "#fff" : "#000" }
-                  ]}>Professor está ativo?</Text>
+                  <Text
+                    style={[
+                      FormStyles.label,
+                      { color: isDarkMode ? "#fff" : "#000" },
+                    ]}
+                  >
+                    Professor está ativo?
+                  </Text>
                   {fieldErrors.statusAtividade && (
-                    <Text style={styles.errorText}>{fieldErrors.statusAtividade}</Text>
+                    <Text style={styles.errorText}>
+                      {fieldErrors.statusAtividade}
+                    </Text>
                   )}
                   <View style={styles.inputRow}>
                     <View style={styles.pickerFlex}>
@@ -336,17 +438,28 @@ export default function ProfessorFormStepTwo() {
                           fetchSuggestions("statusAtividade", status);
                         }}
                         suggestedLabel={
-                          !statusAtividade && suggestions.statusAtividade && suggestionEnabled
+                          !statusAtividade &&
+                          suggestions.statusAtividade &&
+                          suggestionEnabled
                             ? suggestions.statusAtividade
                             : undefined
                         }
-                        suggestionStyle={{ fontStyle: "italic", color: "#D32719" }}
+                        suggestionStyle={{
+                          fontStyle: "italic",
+                          color: "#D32719",
+                        }}
                         backgroundColor={isDarkMode ? "#202020" : "#fff"}
                       />
                     </View>
-                    {!statusAtividade && suggestions.statusAtividade && suggestionEnabled && (
-                      <FieldSuggestionButton onPress={() => setStatusAtividade(suggestions.statusAtividade!)} />
-                    )}
+                    {!statusAtividade &&
+                      suggestions.statusAtividade &&
+                      suggestionEnabled && (
+                        <FieldSuggestionButton
+                          onPress={() =>
+                            setStatusAtividade(suggestions.statusAtividade!)
+                          }
+                        />
+                      )}
                   </View>
                 </Card.Content>
                 <Card.Actions>
@@ -381,15 +494,22 @@ export default function ProfessorFormStepTwo() {
                 borderRadius: 10,
               }}
             >
-              <Text style={[
-                styles.modalTitle,
-                { color: isDarkMode ? "#fff" : "#000" }
-              ]}>
+              <Text
+                style={[
+                  styles.modalTitle,
+                  { color: isDarkMode ? "#fff" : "#000" },
+                ]}
+              >
                 Erro ao cadastrar professor
               </Text>
               {missingFields.length > 0 ? (
                 <>
-                  <Text style={{ marginBottom: 10, color: isDarkMode ? "#fff" : "#000" }}>
+                  <Text
+                    style={{
+                      marginBottom: 10,
+                      color: isDarkMode ? "#fff" : "#000",
+                    }}
+                  >
                     Preencha corretamente os campos obrigatórios:
                   </Text>
                   {missingFields.map((msg, idx) => (
@@ -400,7 +520,14 @@ export default function ProfessorFormStepTwo() {
                   <View style={{ height: 15 }} />
                 </>
               ) : (
-                <Text style={{ marginBottom: 35, color: isDarkMode ? "#fff" : "#000" }}>{modalMsg}</Text>
+                <Text
+                  style={{
+                    marginBottom: 35,
+                    color: isDarkMode ? "#fff" : "#000",
+                  }}
+                >
+                  {modalMsg}
+                </Text>
               )}
               <Button
                 mode="contained"
@@ -413,6 +540,13 @@ export default function ProfessorFormStepTwo() {
               </Button>
             </Modal>
           </Portal>
+
+          <Toast
+            visible={toast.visible}
+            message={toast.message}
+            type={toast.type}
+            onDismiss={hideToast}
+          />
         </SafeAreaView>
       </TouchableWithoutFeedback>
     </KeyboardAvoidingView>

@@ -19,6 +19,8 @@ import { userRegisterSchema } from "../../validations/usersValidations";
 import { FormStyles } from "../../style/FormStyles";
 import { useThemeMode } from "../../context/ThemeContext";
 import ThemeSwitch from "../../components/ThemeSwitch";
+import { useToast } from "../../utils/useToast";
+import Toast from "../../components/atoms/Toast";
 
 const RegisterScreen = ({ navigation }: any) => {
   const [nome, setNome] = useState("");
@@ -29,6 +31,7 @@ const RegisterScreen = ({ navigation }: any) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const { isDarkMode, toggleTheme, theme } = useThemeMode();
+  const { toast, showSuccess, showError, hideToast } = useToast();
 
   const handleRegister = async () => {
     setFieldErrors({});
@@ -39,7 +42,10 @@ const RegisterScreen = ({ navigation }: any) => {
         { abortEarly: false }
       );
       await signUp({ nome, email, senha });
-      navigation.navigate("Login");
+      showSuccess("Cadastro realizado com sucesso!");
+      setTimeout(() => {
+        navigation.navigate("Login");
+      }, 1500);
     } catch (error: any) {
       if (error.name === "ValidationError") {
         const errors: { [key: string]: string } = {};
@@ -48,10 +54,9 @@ const RegisterScreen = ({ navigation }: any) => {
         });
         setFieldErrors(errors);
       } else {
-        setFieldErrors({
-          api: error.response?.data?.mensagem || "Erro ao cadastrar",
-        });
-        console.error(error);
+        const errorMessage =
+          error.response?.data?.mensagem || "Erro ao cadastrar";
+        showError(errorMessage);
       }
     } finally {
       setIsLoading(false);
@@ -68,7 +73,14 @@ const RegisterScreen = ({ navigation }: any) => {
           <View style={styles.switchContainer}>
             <ThemeSwitch isDarkMode={isDarkMode} toggleTheme={toggleTheme} />
           </View>
-          <Card style={[FormStyles.card, styles.card, { backgroundColor: theme.colors.background }]} mode="elevated">
+          <Card
+            style={[
+              FormStyles.card,
+              styles.card,
+              { backgroundColor: theme.colors.background },
+            ]}
+            mode="elevated"
+          >
             <Card.Content>
               <Image
                 source={
@@ -79,8 +91,17 @@ const RegisterScreen = ({ navigation }: any) => {
                 style={styles.logo}
                 resizeMode="contain"
               />
-              <Text style={[FormStyles.title, { color: theme.colors.onBackground }]}>Cadastro</Text>
-              <Text style={[FormStyles.description, { color: theme.colors.onBackground }]}>
+              <Text
+                style={[FormStyles.title, { color: theme.colors.onBackground }]}
+              >
+                Cadastro
+              </Text>
+              <Text
+                style={[
+                  FormStyles.description,
+                  { color: theme.colors.onBackground },
+                ]}
+              >
                 Preencha os campos para criar sua conta.
               </Text>
             </Card.Content>
@@ -91,7 +112,11 @@ const RegisterScreen = ({ navigation }: any) => {
               <TextInput
                 style={[
                   FormStyles.input,
-                  { width: "100%", color: theme.colors.onBackground, borderColor: theme.colors.outline },
+                  {
+                    width: "100%",
+                    color: theme.colors.onBackground,
+                    borderColor: theme.colors.outline,
+                  },
                   fieldErrors.nome ? styles.inputError : null,
                 ]}
                 placeholder="Nome"
@@ -105,7 +130,11 @@ const RegisterScreen = ({ navigation }: any) => {
               <TextInput
                 style={[
                   FormStyles.input,
-                  { width: "100%", color: theme.colors.onBackground, borderColor: theme.colors.outline },
+                  {
+                    width: "100%",
+                    color: theme.colors.onBackground,
+                    borderColor: theme.colors.outline,
+                  },
                   fieldErrors.email ? styles.inputError : null,
                 ]}
                 placeholder="E-mail"
@@ -124,7 +153,11 @@ const RegisterScreen = ({ navigation }: any) => {
                   style={[
                     FormStyles.input,
                     { flex: 1 },
-                    { width: "100%", color: theme.colors.onBackground, borderColor: theme.colors.outline },
+                    {
+                      width: "100%",
+                      color: theme.colors.onBackground,
+                      borderColor: theme.colors.outline,
+                    },
                     fieldErrors.senha ? styles.inputError : null,
                   ]}
                   placeholder="Senha"
@@ -169,17 +202,28 @@ const RegisterScreen = ({ navigation }: any) => {
                 <Card
                   style={[
                     styles.linkCard,
-                    { backgroundColor: isDarkMode ? "#444" : "#a1a1a1" }
+                    { backgroundColor: isDarkMode ? "#444" : "#a1a1a1" },
                   ]}
                   mode="elevated"
                 >
-                  <TouchableOpacity onPress={() => navigation.navigate("Login")}>
-                    <Text style={styles.linkText}>Já tem uma conta? Entrar</Text>
+                  <TouchableOpacity
+                    onPress={() => navigation.navigate("Login")}
+                  >
+                    <Text style={styles.linkText}>
+                      Já tem uma conta? Entrar
+                    </Text>
                   </TouchableOpacity>
                 </Card>
               </View>
             </Card.Actions>
           </Card>
+
+          <Toast
+            visible={toast.visible}
+            message={toast.message}
+            type={toast.type}
+            onDismiss={hideToast}
+          />
         </View>
       </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
