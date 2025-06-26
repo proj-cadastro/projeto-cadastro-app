@@ -21,6 +21,8 @@ import { updateCourse } from "../../../services/course/cursoService";
 import { ModeloCurso } from "../../../enums/courses/courseEnum";
 import { useProfessor } from "../../../context/ProfessorContext";
 import { useThemeMode } from "../../../context/ThemeContext"; // Importa o contexto do tema
+import { useToast } from "../../../utils/useToast";
+import Toast from "../../../components/atoms/Toast";
 
 const EditCourseScreen = () => {
   const navigation = useNavigation();
@@ -37,6 +39,7 @@ const EditCourseScreen = () => {
 
   // Usa o contexto do tema
   const { isDarkMode } = useThemeMode();
+  const { toast, showError, showSuccess, hideToast } = useToast();
 
   useEffect(() => {
     if (course) {
@@ -74,10 +77,17 @@ const EditCourseScreen = () => {
       if (formData) {
         await updateCourse(id, formData);
         refreshCoursesData();
-        navigation.navigate("ListCourses" as never);
+        showSuccess("Curso atualizado com sucesso!");
+        setTimeout(() => {
+          navigation.navigate("ListCourses" as never);
+        }, 1500);
       }
     } catch (error: any) {
-      console.error(error.response?.data?.mensagem || error.message);
+      const errorMessage =
+        error.response?.data?.mensagem ||
+        error.message ||
+        "Erro ao atualizar curso";
+      showError(errorMessage);
     }
   };
 
@@ -340,6 +350,13 @@ const EditCourseScreen = () => {
           </Card>
         </ScrollView>
       </View>
+
+      <Toast
+        visible={toast.visible}
+        message={toast.message}
+        type={toast.type}
+        onDismiss={hideToast}
+      />
     </SafeAreaView>
   );
 };

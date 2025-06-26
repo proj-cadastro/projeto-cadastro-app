@@ -27,6 +27,8 @@ import { courseLabels } from "../../../utils/translateObject";
 import ProximityNotification from "../../../components/ProximityNotification";
 import { buscarOuCacheUnidadeProxima } from "../../../services/unit-location/unitService";
 import { useThemeMode } from "../../../context/ThemeContext"; // Importa o contexto do tema
+import { useToast } from "../../../utils/useToast";
+import Toast from "../../../components/atoms/Toast";
 
 const ListCoursesScreen = () => {
   const navigation = useNavigation<NavigationProp>();
@@ -48,6 +50,7 @@ const ListCoursesScreen = () => {
   const { refreshCoursesData } = useCourse();
 
   const { isDarkMode } = useThemeMode();
+  const { toast, showError, showSuccess, hideToast } = useToast();
 
   const columnOptions = Object.keys(courses[0] || {}).filter(
     (key) => key !== "id" && key !== "coordenadorId"
@@ -94,8 +97,10 @@ const ListCoursesScreen = () => {
     try {
       setIsLoading(true);
       await shareDataToPdfFile(courses, selectedColumns, "course");
-    } catch (error) {
-      console.log(error);
+      showSuccess("Arquivo compartilhado com sucesso!");
+    } catch (error: any) {
+      const errorMessage = error?.message || "Erro ao compartilhar arquivo";
+      showError(errorMessage);
     } finally {
       setIsModalVisible(false);
       setIsLoading(false);
@@ -105,10 +110,12 @@ const ListCoursesScreen = () => {
   const handleDelete = async (id: number) => {
     try {
       await deleteCourse(id);
-      console.log("Atualizando cursos após exclusão");
+      showSuccess("Curso excluído com sucesso!");
       await fetchCourses();
     } catch (error: any) {
-      console.error(error.response.data.mensagem);
+      const errorMessage =
+        error.response?.data?.mensagem || "Erro ao excluir curso";
+      showError(errorMessage);
     }
   };
 
@@ -297,6 +304,13 @@ const ListCoursesScreen = () => {
         onConfirm={handleShareData}
         labels={courseLabels}
         loading={isLoading}
+      />
+
+      <Toast
+        visible={toast.visible}
+        message={toast.message}
+        type={toast.type}
+        onDismiss={hideToast}
       />
     </SafeAreaView>
   );

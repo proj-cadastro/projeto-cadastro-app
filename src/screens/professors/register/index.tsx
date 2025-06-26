@@ -1,14 +1,14 @@
 import React from "react";
-import {
-  SafeAreaView,
-  View,
-  ScrollView,
-  Text,
-  StyleSheet,
-} from "react-native";
+import { SafeAreaView, View, ScrollView, Text, StyleSheet } from "react-native";
 import HamburgerMenu from "../../../components/HamburgerMenu";
 import { FormStyles } from "../../../style/FormStyles";
-import { Button, Card, Modal, Portal, ActivityIndicator } from "react-native-paper";
+import {
+  Button,
+  Card,
+  Modal,
+  Portal,
+  ActivityIndicator,
+} from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
 import { NavigationProp } from "../../../routes/rootStackParamList ";
 import { gerarProfessorIA } from "../../../services/ia/iaService";
@@ -17,6 +17,8 @@ import { AnimatedGradientButton } from "../../../components/atoms/AnimatedLinear
 import ProximityNotification from "../../../components/ProximityNotification";
 import { buscarOuCacheUnidadeProxima } from "../../../services/unit-location/unitService";
 import { useThemeMode } from "../../../context/ThemeContext";
+import { useToast } from "../../../utils/useToast";
+import Toast from "../../../components/atoms/Toast";
 
 const RegisterProfessorScreen = () => {
   const navigation = useNavigation<NavigationProp>();
@@ -27,8 +29,8 @@ const RegisterProfessorScreen = () => {
   const [loadingMsg, setLoadingMsg] = React.useState("Gerando professor...");
   const [unidadeNome, setUnidadeNome] = React.useState<string | null>(null);
 
-
   const { isDarkMode } = useThemeMode();
+  const { toast, showError, hideToast } = useToast();
 
   React.useEffect(() => {
     const fetchUnidade = async () => {
@@ -65,15 +67,17 @@ const RegisterProfessorScreen = () => {
       setLoading(false);
       setLoadingMsg("Gerando professor...");
       setErrorMsg("Não foi possível gerar o professor. Tente novamente.");
-      console.error("Erro ao gerar professor com IA:", e);
+      showError("Erro ao gerar professor com IA. Tente novamente.");
     }
   };
 
   return (
-    <SafeAreaView style={[
-      FormStyles.safeArea,
-      { backgroundColor: isDarkMode ? "#181818" : "#fff" }
-    ]}>
+    <SafeAreaView
+      style={[
+        FormStyles.safeArea,
+        { backgroundColor: isDarkMode ? "#181818" : "#fff" },
+      ]}
+    >
       <View style={FormStyles.menuContainer}>
         <HamburgerMenu />
       </View>
@@ -83,11 +87,19 @@ const RegisterProfessorScreen = () => {
           contentContainerStyle={FormStyles.scrollContent}
           keyboardShouldPersistTaps="handled"
         >
-          <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-            <Card style={[
-              FormStyles.card,
-              { width: "90%", backgroundColor: isDarkMode ? "#232323" : "#fff" }
-            ]} mode="elevated">
+          <View
+            style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+          >
+            <Card
+              style={[
+                FormStyles.card,
+                {
+                  width: "90%",
+                  backgroundColor: isDarkMode ? "#232323" : "#fff",
+                },
+              ]}
+              mode="elevated"
+            >
               <Card.Content>
                 <LottieView
                   source={require("../../../../assets/register.json")}
@@ -96,17 +108,23 @@ const RegisterProfessorScreen = () => {
                   speed={0.3}
                   style={{
                     width: "100%",
-                    height: 150
+                    height: 150,
                   }}
                 />
-                <Text style={[
-                  FormStyles.title,
-                  { color: isDarkMode ? "#fff" : "#000" }
-                ]}>Cadastro de Professor</Text>
-                <Text style={[
-                  FormStyles.description,
-                  { color: isDarkMode ? "#fff" : "#000" }
-                ]}>
+                <Text
+                  style={[
+                    FormStyles.title,
+                    { color: isDarkMode ? "#fff" : "#000" },
+                  ]}
+                >
+                  Cadastro de Professor
+                </Text>
+                <Text
+                  style={[
+                    FormStyles.description,
+                    { color: isDarkMode ? "#fff" : "#000" },
+                  ]}
+                >
                   Escolha como deseja cadastrar.
                 </Text>
               </Card.Content>
@@ -127,7 +145,9 @@ const RegisterProfessorScreen = () => {
                   mode="contained"
                   labelStyle={{ color: "white" }}
                   style={[FormStyles.button]}
-                  onPress={() => navigation.navigate("ImportProfessors" as never)}
+                  onPress={() =>
+                    navigation.navigate("ImportProfessors" as never)
+                  }
                 >
                   Importar Planilha
                 </Button>
@@ -157,7 +177,7 @@ const RegisterProfessorScreen = () => {
                         loop
                         style={{
                           width: 40,
-                          height: 38
+                          height: 38,
                         }}
                       />
                     </View>
@@ -176,33 +196,46 @@ const RegisterProfessorScreen = () => {
             }}
             contentContainerStyle={[
               styles.modalContainer,
-              { backgroundColor: isDarkMode ? "#232323" : "white" }
+              { backgroundColor: isDarkMode ? "#232323" : "white" },
             ]}
           >
             {loading ? (
               <View style={{ alignItems: "center" }}>
                 <ActivityIndicator size="large" color="#D32719" />
-                <Text style={{ marginTop: 16, color: isDarkMode ? "#fff" : "#000" }}>{loadingMsg}</Text>
+                <Text
+                  style={{ marginTop: 16, color: isDarkMode ? "#fff" : "#000" }}
+                >
+                  {loadingMsg}
+                </Text>
               </View>
             ) : (
               <>
-                <Text style={[
-                  styles.modalTitle,
-                  { color: isDarkMode ? "#fff" : "#000" }
-                ]}>Gerar Professor com IA</Text>
-                <Text style={[
-                  styles.modalDescription,
-                  { color: isDarkMode ? "#fff" : "#000" }
-                ]}>
+                <Text
+                  style={[
+                    styles.modalTitle,
+                    { color: isDarkMode ? "#fff" : "#000" },
+                  ]}
+                >
+                  Gerar Professor com IA
+                </Text>
+                <Text
+                  style={[
+                    styles.modalDescription,
+                    { color: isDarkMode ? "#fff" : "#000" },
+                  ]}
+                >
                   A IA irá preencher automaticamente os campos:{" "}
                   <Text style={styles.bold}>Nome</Text>,{" "}
                   <Text style={styles.bold}>Titulação</Text>,{" "}
                   <Text style={styles.bold}>Referência</Text>,{" "}
                   <Text style={styles.bold}>Status de Atividade</Text> e{" "}
-                  <Text style={styles.bold}>Lattes</Text>. Você poderá revisar e completar os demais campos.
+                  <Text style={styles.bold}>Lattes</Text>. Você poderá revisar e
+                  completar os demais campos.
                 </Text>
                 {errorMsg && (
-                  <Text style={{ color: "red", marginBottom: 10 }}>{errorMsg}</Text>
+                  <Text style={{ color: "red", marginBottom: 10 }}>
+                    {errorMsg}
+                  </Text>
                 )}
                 <View style={styles.modalButtonRow}>
                   <Button
@@ -213,14 +246,14 @@ const RegisterProfessorScreen = () => {
                     }}
                     style={[
                       styles.cancelButton,
-                      { 
+                      {
                         backgroundColor: isDarkMode ? "#444" : "transparent", // <-- cor igual à dos botões da tela de login
-                        borderColor: isDarkMode ? "#444" : "black"
-                      }
+                        borderColor: isDarkMode ? "#444" : "black",
+                      },
                     ]}
                     labelStyle={[
                       styles.cancelButtonLabel,
-                      { color: isDarkMode ? "#fff" : "black" }
+                      { color: isDarkMode ? "#fff" : "black" },
                     ]}
                   >
                     Cancelar
@@ -240,6 +273,13 @@ const RegisterProfessorScreen = () => {
           </Modal>
         </Portal>
       </View>
+
+      <Toast
+        visible={toast.visible}
+        message={toast.message}
+        type={toast.type}
+        onDismiss={hideToast}
+      />
     </SafeAreaView>
   );
 };
