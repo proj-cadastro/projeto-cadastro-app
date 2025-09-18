@@ -151,7 +151,7 @@ const RegisterProfessorScreen = () => {
                 >
                   Importar Planilha
                 </Button>
-                <View style={{ alignItems: "center", width: "100%" }}>
+                {/* <View style={{ alignItems: "center", width: "100%" }}>
                   <AnimatedGradientButton onPress={() => setModalVisible(true)}>
                     <View
                       style={{
@@ -182,7 +182,7 @@ const RegisterProfessorScreen = () => {
                       />
                     </View>
                   </AnimatedGradientButton>
-                </View>
+                </View> */}
               </Card.Actions>
             </Card>
           </View>
