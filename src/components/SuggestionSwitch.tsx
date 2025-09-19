@@ -7,15 +7,17 @@ type Props = {
   value: boolean;
   onValueChange: (value: boolean) => void;
   label?: string;
+  labelColor?: string;
 };
 
 export const SuggestionSwitch: React.FC<Props> = ({
   value,
   onValueChange,
   label = "Sugestões de \n     Cadastro",
+  labelColor = "#333"
 }) => (
   <View style={styles.container}>
-    <Text style={styles.label}>{label}</Text>
+    <Text style={[styles.label, { color: labelColor }]}>{label}</Text>
     <AnimatedGradientWrapper style={styles.gradientWrapper} enabled={value}>
       <Switch
         value={value}
@@ -41,7 +43,6 @@ const styles = StyleSheet.create({
   label: {
     marginRight: 8,
     fontSize: 10,
-    color: "#333",
     fontWeight: "600",
   },
   gradientWrapper: {

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+
 import {
   SafeAreaView,
   View,
@@ -24,10 +25,10 @@ import {
 import ListPicker from "../../../../components/atoms/ListPicker";
 import HamburgerMenu from "../../../../components/HamburgerMenu";
 import AddMateriaModal from "../../../../components/AddMateriaModal";
+import Toast from "../../../../components/atoms/Toast";
 
 import { useRoute } from "@react-navigation/native";
 import { useNavigation } from "@react-navigation/native";
-
 import { FormStyles } from "../../../../style/FormStyles";
 import { postCourse } from "../../../../services/course/cursoService";
 import { ModeloCurso } from "../../../../enums/courses/courseEnum";
@@ -36,27 +37,31 @@ import { useProfessor } from "../../../../context/ProfessorContext";
 import { coursesRegisterStep2Schema } from "../../../../validations/coursesRegisterValidations";
 import { RouteParamsProps } from "../../../../routes/rootStackParamList ";
 import { Materia } from "../../../../types/materia";
+import { useThemeMode } from "../../../../context/ThemeContext";
+import { TouchableOpacity } from "react-native";
+import { useToast } from "../../../../utils/useToast";
+
 
 export default function StepTwo() {
   const navigation = useNavigation();
-
   const { refreshCoursesData } = useCourse();
   const { professors } = useProfessor();
-
   const route = useRoute<RouteParamsProps<"RegisterCourseStepTwo">>();
   const { partialDataCurso } = route.params;
 
   const [modelo, setModelo] = useState<ModeloCurso>();
   const [coordenadorId, setCoordenadorId] = useState();
-
   const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
 
   const [isMateriaModalVisible, setMateriaModalVisible] = useState(false);
   const [materias, setMaterias] = useState<Materia[]>([]);
 
+  const { toast, showError, hideToast } = useToast();
+
   const handleAddMateria = (materia: Materia) => {
     setMaterias([...materias, materia]);
   };
+  const { isDarkMode } = useThemeMode();
 
   const handleSubmit = async () => {
     try {
@@ -83,12 +88,20 @@ export default function StepTwo() {
         });
         setFieldErrors(errors);
       }
-      console.error(error.response?.data?.mensagem);
+      const errorMessage =
+        error.response?.data?.mensagem ||
+        "Erro ao cadastrar curso. Tente novamente.";
+      showError(errorMessage);
     }
   };
 
   return (
-    <SafeAreaView style={FormStyles.safeArea}>
+    <SafeAreaView
+      style={[
+        FormStyles.safeArea,
+        { backgroundColor: isDarkMode ? "#181818" : "#fff" },
+      ]}
+    >
       <View style={FormStyles.menuContainer}>
         <HamburgerMenu />
       </View>
@@ -106,15 +119,40 @@ export default function StepTwo() {
           keyboardShouldPersistTaps="handled"
         >
           <View style={styles.cardWrapper}>
-            <Card style={[FormStyles.card]} mode="elevated">
+            <Card
+              style={[
+                FormStyles.card,
+                { backgroundColor: isDarkMode ? "#232323" : "#fff" },
+              ]}
+              mode="elevated"
+            >
               <Card.Content>
-                <Text style={FormStyles.title}>2º Etapa</Text>
+                <Text
+                  style={[
+                    FormStyles.title,
+                    { color: isDarkMode ? "#fff" : "#000" },
+                  ]}
+                >
+                  2º Etapa
+                </Text>
 
-                <Text style={FormStyles.description}>
+                <Text
+                  style={[
+                    FormStyles.description,
+                    { color: isDarkMode ? "#fff" : "#000" },
+                  ]}
+                >
                   Insira os dados do curso para registrá-lo no sistema
                 </Text>
 
-                <Text style={FormStyles.label}>Modalidade</Text>
+                <Text
+                  style={[
+                    FormStyles.label,
+                    { color: isDarkMode ? "#fff" : "#000" },
+                  ]}
+                >
+                  Modalidade
+                </Text>
                 {fieldErrors.modelo && (
                   <Text style={styles.errorText}>{fieldErrors.modelo}</Text>
                 )}
@@ -129,9 +167,17 @@ export default function StepTwo() {
                         return updated;
                       });
                   }}
+                  backgroundColor={isDarkMode ? "#202020" : "#fff"}
                 />
 
-                <Text style={FormStyles.label}>Coordenador</Text>
+                <Text
+                  style={[
+                    FormStyles.label,
+                    { color: isDarkMode ? "#fff" : "#000" },
+                  ]}
+                >
+                  Coordenador
+                </Text>
                 {fieldErrors.coordenadorId && (
                   <Text style={styles.errorText}>
                     {fieldErrors.coordenadorId}
@@ -151,27 +197,38 @@ export default function StepTwo() {
                   }}
                   getLabel={(prof) => prof.nome}
                   getValue={(prof) => prof.id}
+                  backgroundColor={isDarkMode ? "#202020" : "#fff"}
                 />
-                <Text style={FormStyles.label}>Matérias Adicionadas</Text>
-                {materias.map((materia, index) => (
-                  <Text key={index} style={styles.materiaItem}>
-                    {materia.nome} - {materia.cargaHoraria}h
-                  </Text>
-                ))}
+                {materias.length > 0 && (
+                  <>
+                    <Text style={FormStyles.label}>Matérias Adicionadas</Text>
+                    {materias.map((materia, index) => (
+                      <Text key={index} style={styles.materiaItem}>
+                        {materia.nome} - {materia.cargaHoraria}h
+                      </Text>
+                    ))}
+                  </>
+                )}
 
-                <Button
-                  mode="outlined"
-                  onPress={() => setMateriaModalVisible(true)}
-                  style={{ marginVertical: 10 }}
+                <Card
+                  style={[
+                    styles.linkCard,
+                    { backgroundColor: isDarkMode ? "#444" : "#a1a1a1", marginTop: 16 }
+                  ]}
+                  mode="elevated"
                 >
-                  Adicionar Matéria
-                </Button>
+                  <TouchableOpacity onPress={() => setMateriaModalVisible(true)}>
+                    <Text style={styles.linkText}>Adicionar Matéria</Text>
+                  </TouchableOpacity>
+                </Card>
 
                 <AddMateriaModal
                   visible={isMateriaModalVisible}
                   onClose={() => setMateriaModalVisible(false)}
                   onAddMateria={handleAddMateria}
                   professors={professors}
+                  isDarkMode={isDarkMode}
+                  buttonColor={FormStyles.button.backgroundColor}
                 />
               </Card.Content>
 
@@ -190,6 +247,13 @@ export default function StepTwo() {
           </View>
         </ScrollView>
       </View>
+
+      <Toast
+        visible={toast.visible}
+        message={toast.message}
+        type={toast.type}
+        onDismiss={hideToast}
+      />
     </SafeAreaView>
   );
 }
@@ -235,5 +299,22 @@ const styles = StyleSheet.create({
   closeButton: {
     alignSelf: "flex-end",
     margin: 10,
+  },
+  linkCard: {
+    backgroundColor: "#a1a1a1",
+    borderRadius: 8,
+    elevation: 2,
+    paddingVertical: 6,
+    paddingHorizontal: 8,
+    marginBottom: 4,
+    minHeight: 36,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  linkText: {
+    color: "#fff",
+    textAlign: "center",
+    fontSize: 14,
+    fontWeight: "bold",
   },
 });

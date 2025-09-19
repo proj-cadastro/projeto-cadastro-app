@@ -11,11 +11,14 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import { useAuth } from "../context/AuthContext";
 import Icon from "react-native-vector-icons/MaterialIcons";
+import { useThemeMode } from "../context/ThemeContext";
+import ThemeSwitch from "./ThemeSwitch";
 
 export default function HamburgerMenu() {
   const [visible, setVisible] = useState(false);
   const navigation = useNavigation();
   const { logout } = useAuth();
+  const { isDarkMode, toggleTheme, theme } = useThemeMode(); 
 
   const handleLogout = () => {
     setVisible(false);
@@ -25,7 +28,7 @@ export default function HamburgerMenu() {
   return (
     <View>
       <TouchableOpacity onPress={() => setVisible(true)} style={styles.icon}>
-        <Text style={{ fontSize: 40 }}>☰</Text>
+        <Text style={{ fontSize: 40, color: theme.colors.onBackground }}>☰</Text>
       </TouchableOpacity>
 
       <Modal
@@ -39,19 +42,21 @@ export default function HamburgerMenu() {
           onPress={() => setVisible(false)}
           activeOpacity={1}
         >
-          <View style={styles.menu}>
+          <View style={[styles.menu, { backgroundColor: theme.colors.background }]}>
             <ScrollView contentContainerStyle={styles.menuItemsContainer}>
 
               <View style={styles.logoContainer}>
                 <Image
-                  source={require("../../assets/logo_fatec_cor.png")}
+                  source={
+                    isDarkMode
+                      ? require("../../assets/logo_fatec_cor2.png")
+                      : require("../../assets/logo_fatec_cor.png")
+                  }
                   style={styles.logo}
                   resizeMode="contain"
                 />
               </View>
 
-
-              {/* Item solto */}
               <TouchableOpacity
                 style={styles.menuItem}
                 onPress={() => {
@@ -60,17 +65,15 @@ export default function HamburgerMenu() {
                 }}
               >
                 <View style={styles.iconRow}>
-                  <Icon name="home" size={20} style={styles.iconItem} />
-                  <Text style={styles.menuText}>Início</Text>
+                  <Icon name="home" size={20} style={[styles.iconItem, { color: theme.colors.onBackground }]} />
+                  <Text style={[styles.menuText, { color: theme.colors.onBackground }]}>Início</Text>
                 </View>
               </TouchableOpacity>
 
-              {/* Separador */}
-              <View style={styles.separator} />
+              <View style={[styles.separator, { backgroundColor: theme.colors.outline }]} />
 
-              {/* Seção Professor */}
               <View style={styles.categoryContainer}>
-                <Text style={styles.categoryLabel}>Professor</Text>
+                <Text style={[styles.categoryLabel, { color: theme.colors.onBackground }]}>Professor</Text>
 
                 <TouchableOpacity
                   style={styles.menuItem}
@@ -80,8 +83,8 @@ export default function HamburgerMenu() {
                   }}
                 >
                   <View style={styles.iconRow}>
-                    <Icon name="list" size={20} style={styles.iconItem} />
-                    <Text style={styles.menuText}>Lista</Text>
+                    <Icon name="list" size={20} style={[styles.iconItem, { color: theme.colors.onBackground }]} />
+                    <Text style={[styles.menuText, { color: theme.colors.onBackground }]}>Lista</Text>
                   </View>
                 </TouchableOpacity>
 
@@ -93,18 +96,16 @@ export default function HamburgerMenu() {
                   }}
                 >
                   <View style={styles.iconRow}>
-                    <Icon name="person-add" size={20} style={styles.iconItem} />
-                    <Text style={styles.menuText}>Cadastro</Text>
+                    <Icon name="person-add" size={20} style={[styles.iconItem, { color: theme.colors.onBackground }]} />
+                    <Text style={[styles.menuText, { color: theme.colors.onBackground }]}>Cadastro</Text>
                   </View>
                 </TouchableOpacity>
               </View>
 
-              {/* Separador */}
-              <View style={styles.separator} />
+              <View style={[styles.separator, { backgroundColor: theme.colors.outline }]} />
 
-              {/* Seção Curso */}
               <View style={styles.categoryContainer}>
-                <Text style={styles.categoryLabel}>Curso</Text>
+                <Text style={[styles.categoryLabel, { color: theme.colors.onBackground }]}>Curso</Text>
 
                 <TouchableOpacity
                   style={styles.menuItem}
@@ -114,8 +115,8 @@ export default function HamburgerMenu() {
                   }}
                 >
                   <View style={styles.iconRow}>
-                    <Icon name="list-alt" size={20} style={styles.iconItem} />
-                    <Text style={styles.menuText}>Lista</Text>
+                    <Icon name="list-alt" size={20} style={[styles.iconItem, { color: theme.colors.onBackground }]} />
+                    <Text style={[styles.menuText, { color: theme.colors.onBackground }]}>Lista</Text>
                   </View>
                 </TouchableOpacity>
 
@@ -127,21 +128,43 @@ export default function HamburgerMenu() {
                   }}
                 >
                   <View style={styles.iconRow}>
-                    <Icon name="playlist-add" size={20} style={styles.iconItem} />
-                    <Text style={styles.menuText}>Cadastro</Text>
+                    <Icon name="playlist-add" size={20} style={[styles.iconItem, { color: theme.colors.onBackground }]} />
+                    <Text style={[styles.menuText, { color: theme.colors.onBackground }]}>Cadastro</Text>
                   </View>
                 </TouchableOpacity>
               </View>
+
+              <View style={[styles.separator, { backgroundColor: theme.colors.outline }]} />
+
+              <View style={styles.categoryContainer}>
+                <Text style={[styles.categoryLabel, { color: theme.colors.onBackground }]}>Visualização</Text>
+                <View style={styles.themeRow}>
+                  <TouchableOpacity
+                    style={styles.menuItem}
+                    onPress={toggleTheme}
+                    activeOpacity={0.7}
+                  >
+                    <View style={styles.iconRow}>
+                      <Icon name="brightness-6" size={20} style={[styles.iconItem, { color: theme.colors.onBackground }]} />
+                      <Text style={[styles.menuText, { color: theme.colors.onBackground }]}>Tema</Text>
+                    </View>
+                  </TouchableOpacity>
+                  <View style={styles.themeSwitch}>
+                    <ThemeSwitch isDarkMode={isDarkMode} toggleTheme={toggleTheme} />
+                  </View>
+                </View>
+              </View>
+
             </ScrollView>
 
-            <View style={styles.logoutButton}>
+            <View style={[styles.logoutButton, { borderTopColor: theme.colors.outline }]}>
               <TouchableOpacity onPress={() => {
                 setVisible(false)
                 navigation.navigate("SupportPage" as never)
               }}>
                 <View style={[styles.iconRow, { marginBottom: 30 }]}>
-                  <Icon name="contact-support" size={20} style={styles.iconItem} />
-                  <Text style={styles.menuText}>Falar com Suporte</Text>
+                  <Icon name="contact-support" size={20} style={[styles.iconItem, { color: theme.colors.onBackground }]} />
+                  <Text style={[styles.menuText, { color: theme.colors.onBackground }]}>Falar com Suporte</Text>
                 </View>
               </TouchableOpacity>
 
@@ -151,7 +174,6 @@ export default function HamburgerMenu() {
                   <Text style={styles.logoutText}>Sair</Text>
                 </View>
               </TouchableOpacity>
-
             </View>
           </View>
         </TouchableOpacity>
@@ -205,7 +227,7 @@ const styles = StyleSheet.create({
   logoutButton: {
     paddingVertical: 16,
     borderTopWidth: 1,
-    borderTopColor: "#eee",
+    borderTopColor: "#eee", 
   },
   logoutText: {
     fontSize: 18,
@@ -226,5 +248,15 @@ const styles = StyleSheet.create({
   logo: {
     width: 130,
     height: 50,
+    marginTop: 10,
   },
+  themeRow: {
+  flexDirection: "row",
+  alignItems: "center",
+  justifyContent: "space-between",
+  width: "100%",
+  },
+  themeSwitch: {
+  marginRight: 16, 
+},
 });

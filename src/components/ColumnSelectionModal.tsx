@@ -35,7 +35,6 @@ const ColumnSelectionModal: React.FC<ColumnSelectionModalProps> = ({
         const updatedColumns = selectedColumns.includes(label)
           ? selectedColumns.filter((col) => col !== label)
           : [...selectedColumns, label];
-        console.log("colunas selecionadas: ", updatedColumns)
         setSelectedColumns(updatedColumns);
       }}
       activeOpacity={0.7}

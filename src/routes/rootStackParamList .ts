@@ -17,7 +17,6 @@ export type RootStackParamList = {
 
   RegisterProfessorsStepTwo: { 
     partialDataProfessor: ProfessorIAData;
-    suggestionEnabled: boolean;
   };
 
   EditProfessors: { id: number };

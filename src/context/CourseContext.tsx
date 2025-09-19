@@ -3,6 +3,7 @@
 import { getCourses } from "../services/course/cursoService"
 import { createContext, useContext, useEffect, useState, ReactNode, useCallback } from 'react'
 import { Course } from "../types/courses"
+import { useToast } from "../utils/useToast"
 
 type CourseContextType = {
     courses: Course[]
@@ -16,15 +17,17 @@ export const CourseContext = createContext<CourseContextType | undefined>(undefi
 export const CourseProvider = ({ children }: { children: ReactNode }) => {
     const [courses, setCourses] = useState<Course[]>([])
     const [loading, setLoading] = useState(true)
+    const { showError } = useToast()
 
     const fetchData = useCallback(async () => {
+        setLoading(true)
         try {
             const coursesData = await getCourses()
             setCourses(coursesData)
         } catch (error: any) {
             const apiResponse = error.response?.data
             if (apiResponse && apiResponse.success === false) {
-                console.error(apiResponse.mensagem)
+                showError(apiResponse.mensagem)
             }
         } finally {
             setLoading(false)

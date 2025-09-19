@@ -4,10 +4,10 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { isTokenValid } from "../utils/jwt";
 import { authEventEmitter } from "../events/AuthEventEmitter";
 
-const api = axios.create({
-  
-  baseURL: API_URL,
+const baseURL = API_URL;
 
+const api = axios.create({
+  baseURL: "http://192.168.1.12:3000/",
   headers: {
     "Content-Type": "application/json",
   },
@@ -20,7 +20,6 @@ api.interceptors.request.use(async (config) => {
     const isValid = await isTokenValid(token);
     if (!isValid) {
       authEventEmitter.emit("logout");
-      console.log("Vencido");
       throw new axios.Cancel("Token Expirado, por favor faça login");
     }
     config.headers.Authorization = `Bearer ${token}`;

@@ -73,9 +73,13 @@ export default function BarsChart({ label, data, chartType = "bar" }: Props) {
             },
             formatYLabel: (yValue) => {
               const y = Number(yValue);
-              return yLabels.some((val) => Math.round(val) === Math.round(y))
-                ? String(Math.round(y))
-                : "";
+              if (max <= 20) {
+                return String(y);
+              } else if (max <= 60) {
+                return y % 10 === 0 ? String(y) : "";
+              } else {
+                return y % 20 === 0 ? String(y) : "";
+              }
             },
           }}
         />

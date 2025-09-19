@@ -7,18 +7,22 @@ import {
   Text,
   KeyboardAvoidingView,
   TouchableWithoutFeedback,
+  TouchableOpacity,
   Keyboard,
   Platform,
 } from "react-native";
 import { Button, Card } from "react-native-paper";
 import ListPicker from "./atoms/ListPicker";
 import { Materia } from "../types/materia";
+import { FormStyles } from "../style/FormStyles";
 
 interface AddMateriaModalProps {
   visible: boolean;
   onClose: () => void;
   onAddMateria: (materia: Materia) => void;
   professors: any[];
+  isDarkMode: boolean;
+  buttonColor?: string;
 }
 
 const AddMateriaModal: React.FC<AddMateriaModalProps> = ({
@@ -26,6 +30,8 @@ const AddMateriaModal: React.FC<AddMateriaModalProps> = ({
   onClose,
   onAddMateria,
   professors,
+  isDarkMode,
+  buttonColor,
 }) => {
   const [newMateria, setNewMateria] = useState<Materia>({
     nome: "",
@@ -34,6 +40,7 @@ const AddMateriaModal: React.FC<AddMateriaModalProps> = ({
   });
 
   const handleAddMateria = () => {
+    if (newMateria.nome.trim() === "") return;
     onAddMateria(newMateria);
     setNewMateria({ nome: "", cargaHoraria: 0, professorId: null });
     onClose();
@@ -51,29 +58,73 @@ const AddMateriaModal: React.FC<AddMateriaModalProps> = ({
           style={styles.modalContainer}
           behavior={Platform.OS === "ios" ? "padding" : "height"}
         >
-          <Card style={styles.modalCard}>
+          <Card style={[
+            styles.modalCard,
+            { backgroundColor: isDarkMode ? "#232323" : "#fff" }
+          ]}>
             <Card.Content>
-              <Text style={styles.title}>Adicionar Matéria</Text>
+              <View style={{ height: 16 }} />
 
-              <Button mode="text" onPress={onClose} style={styles.closeButton}>
-                Fechar
-              </Button>
+              <Text
+                style={[
+                  styles.title,
+                  {
+                    fontSize: 22,
+                    color: isDarkMode ? "#fff" : "#000",
+                    textAlign: "center",
+                    marginBottom: 18,
+                    fontWeight: "bold",
+                  },
+                ]}
+              >
+                Adicionar Matéria
+              </Text>
 
-              <Text style={styles.label}>Nome da Matéria</Text>
+              <Text
+                style={[
+                  styles.label,
+                  { color: isDarkMode ? "#fff" : "#000", fontSize: 15, fontWeight: "bold" }
+                ]}
+              >
+                Nome da Matéria
+              </Text>
               <TextInput
-                style={styles.input}
+                style={[
+                  styles.input,
+                  {
+                    color: isDarkMode ? "#fff" : "#000",
+                    borderColor: isDarkMode ? "#444" : "#ccc",
+                    backgroundColor: isDarkMode ? "#232323" : "#fff",
+                  },
+                ]}
                 placeholder="Digite o nome da matéria"
+                placeholderTextColor={isDarkMode ? "#888" : "#888"}
                 value={newMateria.nome}
                 onChangeText={(text) =>
                   setNewMateria({ ...newMateria, nome: text })
                 }
               />
 
-              <Text style={styles.label}>Carga Horária</Text>
+              <Text
+                style={[
+                  styles.label,
+                  { color: isDarkMode ? "#fff" : "#000", fontSize: 15, fontWeight: "bold" }
+                ]}
+              >
+                Carga Horária
+              </Text>
               <TextInput
-                style={styles.input}
+                style={[
+                  styles.input,
+                  {
+                    color: isDarkMode ? "#fff" : "#000",
+                    borderColor: isDarkMode ? "#444" : "#ccc",
+                    backgroundColor: isDarkMode ? "#232323" : "#fff",
+                  },
+                ]}
                 placeholder="Digite a carga horária"
-                value={newMateria.cargaHoraria.toString()}
+                placeholderTextColor={isDarkMode ? "#888" : "#888"}
+                value={newMateria.cargaHoraria ? newMateria.cargaHoraria.toString() : ""}
                 onChangeText={(text) =>
                   setNewMateria({
                     ...newMateria,
@@ -83,19 +134,49 @@ const AddMateriaModal: React.FC<AddMateriaModalProps> = ({
                 keyboardType="numeric"
               />
 
-              <Text style={styles.label}>Professor</Text>
-              <ListPicker
-                items={professors}
-                onSelect={(id) =>
-                  setNewMateria({ ...newMateria, professorId: id })
-                }
-                getLabel={(prof) => prof.nome}
-                getValue={(prof) => prof.id}
-              />
+              <Text
+                style={[
+                  styles.label,
+                  { color: isDarkMode ? "#fff" : "#000", fontSize: 15, fontWeight: "bold" }
+                ]}
+              >
+                Professor
+              </Text>
+              <View style={{ marginBottom: 24 }}>
+                <ListPicker
+                  items={professors}
+                  onSelect={(id) =>
+                    setNewMateria({ ...newMateria, professorId: id })
+                  }
+                  getLabel={(prof) => prof.nome}
+                  getValue={(prof) => prof.id}
+                  backgroundColor={isDarkMode ? "#202020" : "#fff"}
+                />
+              </View>
 
-              <Button mode="outlined" onPress={handleAddMateria}>
+              <Button
+                mode="contained"
+                buttonColor={buttonColor || "#D32719"}
+                labelStyle={{ color: "white" }}
+                style={[FormStyles.button, { marginTop: 8 }]}
+                onPress={handleAddMateria}
+              >
                 Adicionar
               </Button>
+
+              <Card
+                style={[
+                  styles.linkCard,
+                  { backgroundColor: isDarkMode ? "#444" : "#a1a1a1", marginTop: 12 }
+                ]}
+                mode="elevated"
+              >
+                <TouchableWithoutFeedback onPress={onClose}>
+                  <View>
+                    <Text style={styles.linkText}>Fechar</Text>
+                  </View>
+                </TouchableWithoutFeedback>
+              </Card>
             </Card.Content>
           </Card>
         </KeyboardAvoidingView>
@@ -114,6 +195,8 @@ const styles = StyleSheet.create({
   modalCard: {
     width: "90%",
     padding: 20,
+    minHeight: 500,
+    backgroundColor: "#fff",
   },
   title: {
     fontSize: 18,
@@ -123,6 +206,7 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     marginBottom: 5,
+    marginTop: 8,
   },
   input: {
     marginBottom: 10,
@@ -131,10 +215,23 @@ const styles = StyleSheet.create({
     padding: 8,
     borderRadius: 4,
   },
-  closeButton: {
-    alignSelf: "flex-end",
-    marginBottom: 10,
+  linkCard: {
+    backgroundColor: "#a1a1a1",
+    borderRadius: 8,
+    elevation: 2,
+    paddingVertical: 6,
+    paddingHorizontal: 8,
+    marginBottom: 4,
+    minHeight: 36,
+    justifyContent: "center",
+    alignItems: "center",
   },
+  linkText: {
+      color: "#fff",
+      textAlign: "center",
+      fontSize: 14,
+      fontWeight: "bold",
+    },
 });
 
 export default AddMateriaModal;

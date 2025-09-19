@@ -1,7 +1,6 @@
 import React from "react";
 import { Button } from "react-native-paper";
-import { StyleSheet } from "react-native";
-import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import { StyleSheet, Image } from "react-native";
 
 type Props = {
   onPress: () => void;
@@ -16,7 +15,11 @@ export const FieldSuggestionButton: React.FC<Props> = ({ onPress }) => (
     labelStyle={styles.suggestionButtonLabel}
     contentStyle={styles.suggestionButtonContent}
   >
-    <Icon name="check" size={26} color="#fff" />
+    <Image
+      source={require("../../assets/check.png")}
+      style={{ width: 20, height: 20, marginRight: -3 }}
+      resizeMode="contain"
+    />
   </Button>
 );
 
@@ -42,5 +45,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: 0,
+    paddingRight: 0,
   },
 });

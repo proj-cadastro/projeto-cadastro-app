@@ -12,8 +12,11 @@ import {
 import { Card, Button, ProgressBar, MD3Colors } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
 import { FormStyles } from "../../../../style/FormStyles";
-import { coursesRegisterSchema } from "../../../../validations/coursesRegisterValidations";
+import { coursesRegisterSchema, siglaValidationSchema, codigoValidationSchema } from "../../../../validations/coursesRegisterValidations";
 import { NavigationProp } from "../../../../routes/rootStackParamList ";
+import { useThemeMode } from "../../../../context/ThemeContext";
+import { useToast } from "../../../../utils/useToast";
+import Toast from "../../../../components/atoms/Toast";
 
 export default function StepOne() {
   const navigation = useNavigation<NavigationProp>();
@@ -22,6 +25,39 @@ export default function StepOne() {
   const [sigla, setSigla] = useState("");
   const [codigo, setCodigo] = useState("");
   const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
+
+  const { isDarkMode } = useThemeMode();
+  const { toast, showWarning, hideToast } = useToast();
+
+  const validateSigla = (value: string) => {
+    if (value.length > 0) {
+      try {
+        siglaValidationSchema.validateSync(value);
+      } catch (error: any) {
+        showWarning(error.message);
+      }
+    }
+  };
+
+  const validateCodigo = (value: string) => {
+    if (value.length > 0) {
+      try {
+        codigoValidationSchema.validateSync(value);
+      } catch (error: any) {
+        showWarning(error.message);
+      }
+    }
+  };
+
+  const handleSiglaChange = (value: string) => {
+    setSigla(value);
+    validateSigla(value);
+  };
+
+  const handleCodigoChange = (value: string) => {
+    setCodigo(value);
+    validateCodigo(value);
+  };
 
   const handleAdvance = () => {
     try {
@@ -49,29 +85,46 @@ export default function StepOne() {
   };
 
   return (
-    <SafeAreaView style={FormStyles.safeArea}>
+    <SafeAreaView style={[
+      FormStyles.safeArea,
+      { backgroundColor: isDarkMode ? "#181818" : "#fff" }
+    ]}>
       <View style={[FormStyles.container, styles.centerContainer]}>
         <ScrollView
           contentContainerStyle={FormStyles.scrollContent}
           keyboardShouldPersistTaps="handled"
         >
           <View style={styles.cardWrapper}>
-            <Card style={FormStyles.card} mode="elevated">
+            <Card style={[
+              FormStyles.card,
+              { backgroundColor: isDarkMode ? "#232323" : "#fff" }
+            ]} mode="elevated">
               <Card.Content style={{ flex: 1 }}>
-                <Text style={FormStyles.title}>Cadastro de Curso</Text>
+                <Text style={[
+                  FormStyles.title,
+                  { color: isDarkMode ? "#fff" : "#000" }
+                ]}>Cadastro de Curso</Text>
 
-                <Text style={FormStyles.description}>
+                <Text style={[
+                  FormStyles.description,
+                  { color: isDarkMode ? "#fff" : "#000" }
+                ]}>
                   Insira os dados do Curso para registrá-lo no sistema
                 </Text>
 
-                <Text style={FormStyles.label}>Nome do Curso</Text>
+                <Text style={[
+                  FormStyles.label,
+                  { color: isDarkMode ? "#fff" : "#000" }
+                ]}>Nome do Curso</Text>
                 {fieldErrors.nome && (
                   <Text style={styles.errorText}>{fieldErrors.nome}</Text>
                 )}
                 <TextInput
                   placeholder="Nome do Curso"
+                  placeholderTextColor={isDarkMode ? "#aaa" : "#888"}
                   style={[
                     FormStyles.input,
+                    { color: isDarkMode ? "#fff" : "#000", borderColor: isDarkMode ? "#444" : "#ccc" },
                     fieldErrors.nome ? styles.inputError : null,
                   ]}
                   value={nome}
@@ -80,32 +133,42 @@ export default function StepOne() {
 
                 <View style={{ flexDirection: "row", gap: 8 }}>
                   <View style={{ flex: 1 }}>
-                    <Text style={FormStyles.label}>Sigla</Text>
+                    <Text style={[
+                      FormStyles.label,
+                      { color: isDarkMode ? "#fff" : "#000" }
+                    ]}>Sigla</Text>
                     {fieldErrors.sigla && (
                       <Text style={styles.errorText}>{fieldErrors.sigla}</Text>
                     )}
                     <TextInput
                       placeholder="Sigla"
+                      placeholderTextColor={isDarkMode ? "#aaa" : "#888"}
                       style={[
                         FormStyles.input,
+                        { color: isDarkMode ? "#fff" : "#000", borderColor: isDarkMode ? "#444" : "#ccc" },
                         fieldErrors.sigla ? styles.inputError : null,
                       ]}
-                      onChangeText={setSigla}
+                      onChangeText={handleSiglaChange}
                       value={sigla}
                     />
                   </View>
                   <View style={{ flex: 1 }}>
-                    <Text style={FormStyles.label}>Código</Text>
+                    <Text style={[
+                      FormStyles.label,
+                      { color: isDarkMode ? "#fff" : "#000" }
+                    ]}>Código</Text>
                     {fieldErrors.codigo && (
                       <Text style={styles.errorText}>{fieldErrors.codigo}</Text>
                     )}
                     <TextInput
                       placeholder="Código"
+                      placeholderTextColor={isDarkMode ? "#aaa" : "#888"}
                       style={[
                         FormStyles.input,
+                        { color: isDarkMode ? "#fff" : "#000", borderColor: isDarkMode ? "#444" : "#ccc" },
                         fieldErrors.codigo ? styles.inputError : null,
                       ]}
-                      onChangeText={setCodigo}
+                      onChangeText={handleCodigoChange}
                       value={codigo}
                     />
                   </View>
@@ -127,6 +190,13 @@ export default function StepOne() {
           </View>
         </ScrollView>
       </View>
+
+      <Toast
+        visible={toast.visible}
+        message={toast.message}
+        type={toast.type}
+        onDismiss={hideToast}
+      />
     </SafeAreaView>
   );
 }

@@ -7,6 +7,8 @@ import { groupByTitulacao } from "../../utils/filterUtilities";
 import { InteractBtn } from "../../components/atoms/InteractBtn";
 import ProximityNotification from "../../components/ProximityNotification";
 import { buscarOuCacheUnidadeProxima } from "../../services/unit-location/unitService";
+import { useThemeMode } from "../../context/ThemeContext";
+
 
 const HomeScreen = () => {
   const { professors } = useProfessor();
@@ -14,6 +16,8 @@ const HomeScreen = () => {
 
   const [chartType, setChartType] = useState<"bar" | "pie">("bar");
   const [unidadeNome, setUnidadeNome] = useState<string | null>(null);
+
+  const { isDarkMode } = useThemeMode();
 
   useEffect(() => {
     const fetchUnidade = async () => {
@@ -34,15 +38,21 @@ const HomeScreen = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: isDarkMode ? "#181818" : "#fff" }]}>
       <View style={styles.menuContainer}>
         <HamburgerMenu />
       </View>
       {unidadeNome && <ProximityNotification unidadeNome={unidadeNome} />}
       {professors.length !== 0 ? (
         <View style={styles.content}>
-          <Text style={styles.title}>Distribuição de Professores por Titulação</Text>
-          <Chart data={data} label={labels} chartType={chartType} />
+          <Text style={[styles.title, { color: isDarkMode ? "#fff" : "#333" }]}>
+            Distribuição de Professores por Titulação
+          </Text>
+          <Chart
+            data={data}
+            label={labels}
+            chartType={chartType}
+          />
           <View style={styles.fabContainer}>
             <InteractBtn
               name={chartType === "bar" ? "pie-chart" : "bar-chart"}
@@ -56,7 +66,7 @@ const HomeScreen = () => {
             source={require("../../../assets/logoFatecCapi.png")}
             style={styles.logo}
           />
-          <Text style={styles.title}>
+          <Text style={[styles.title, { color: isDarkMode ? "#fff" : "#333" }]}>
             Bem vindo ao Sistema Gerenciador de Professores da Fatec Votorantim!
           </Text>
         </View>
@@ -68,7 +78,7 @@ const HomeScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: "#fff", // será sobrescrito inline
     position: "relative",
   },
   menuContainer: {
@@ -88,7 +98,7 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: "bold",
     marginBottom: 24,
-    color: "#333",
+    color: "#333", // será sobrescrito inline
     alignSelf: "center",
     textAlign: "center",
   },

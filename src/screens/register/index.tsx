@@ -13,9 +13,14 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { Card, Button, IconButton } from "react-native-paper";
+
 import { signUp } from "../../services/users/userService";
 import { userRegisterSchema } from "../../validations/usersValidations";
 import { FormStyles } from "../../style/FormStyles";
+import { useThemeMode } from "../../context/ThemeContext";
+import ThemeSwitch from "../../components/ThemeSwitch";
+import { useToast } from "../../utils/useToast";
+import Toast from "../../components/atoms/Toast";
 
 const RegisterScreen = ({ navigation }: any) => {
   const [nome, setNome] = useState("");
@@ -24,6 +29,9 @@ const RegisterScreen = ({ navigation }: any) => {
   const [showPassword, setShowPassword] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
   const [isLoading, setIsLoading] = useState(false);
+
+  const { isDarkMode, toggleTheme, theme } = useThemeMode();
+  const { toast, showSuccess, showError, hideToast } = useToast();
 
   const handleRegister = async () => {
     setFieldErrors({});
@@ -34,7 +42,10 @@ const RegisterScreen = ({ navigation }: any) => {
         { abortEarly: false }
       );
       await signUp({ nome, email, senha });
-      navigation.navigate("Login");
+      showSuccess("Cadastro realizado com sucesso!");
+      setTimeout(() => {
+        navigation.navigate("Login");
+      }, 1500);
     } catch (error: any) {
       if (error.name === "ValidationError") {
         const errors: { [key: string]: string } = {};
@@ -43,10 +54,9 @@ const RegisterScreen = ({ navigation }: any) => {
         });
         setFieldErrors(errors);
       } else {
-        setFieldErrors({
-          api: error.response?.data?.mensagem || "Erro ao cadastrar",
-        });
-        console.error(error);
+        const errorMessage =
+          error.response?.data?.mensagem || "Erro ao cadastrar";
+        showError(errorMessage);
       }
     } finally {
       setIsLoading(false);
@@ -55,20 +65,43 @@ const RegisterScreen = ({ navigation }: any) => {
 
   return (
     <KeyboardAvoidingView
-      style={{ flex: 1 }}
+      style={{ flex: 1, backgroundColor: theme.colors.background }}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={styles.fullScreenContainer}>
-          <Card style={[FormStyles.card, styles.card]} mode="elevated">
+          <View style={styles.switchContainer}>
+            <ThemeSwitch isDarkMode={isDarkMode} toggleTheme={toggleTheme} />
+          </View>
+          <Card
+            style={[
+              FormStyles.card,
+              styles.card,
+              { backgroundColor: theme.colors.background },
+            ]}
+            mode="elevated"
+          >
             <Card.Content>
               <Image
-                source={require("../../../assets/logoFatecCapi.png")}
+                source={
+                  isDarkMode
+                    ? require("../../../assets/logoFatecCapi_lightCapivara2.png")
+                    : require("../../../assets/logoFatecCapi.png")
+                }
                 style={styles.logo}
                 resizeMode="contain"
               />
-              <Text style={FormStyles.title}>Cadastro</Text>
-              <Text style={FormStyles.description}>
+              <Text
+                style={[FormStyles.title, { color: theme.colors.onBackground }]}
+              >
+                Cadastro
+              </Text>
+              <Text
+                style={[
+                  FormStyles.description,
+                  { color: theme.colors.onBackground },
+                ]}
+              >
                 Preencha os campos para criar sua conta.
               </Text>
             </Card.Content>
@@ -79,44 +112,56 @@ const RegisterScreen = ({ navigation }: any) => {
               <TextInput
                 style={[
                   FormStyles.input,
-                  { width: "100%" },
+                  {
+                    width: "100%",
+                    color: theme.colors.onBackground,
+                    borderColor: theme.colors.outline,
+                  },
                   fieldErrors.nome ? styles.inputError : null,
                 ]}
                 placeholder="Nome"
+                placeholderTextColor={theme.colors.outline}
                 value={nome}
                 onChangeText={setNome}
               />
-
               {fieldErrors.email && (
                 <Text style={styles.errorText}>{fieldErrors.email}</Text>
               )}
               <TextInput
                 style={[
                   FormStyles.input,
-                  { width: "100%" },
+                  {
+                    width: "100%",
+                    color: theme.colors.onBackground,
+                    borderColor: theme.colors.outline,
+                  },
                   fieldErrors.email ? styles.inputError : null,
                 ]}
                 placeholder="E-mail"
+                placeholderTextColor={theme.colors.outline}
                 value={email}
                 onChangeText={setEmail}
                 autoCapitalize="none"
                 keyboardType="email-address"
                 autoComplete="email"
               />
-
               {fieldErrors.senha && (
                 <Text style={styles.errorText}>{fieldErrors.senha}</Text>
               )}
-
-              {/* Campo senha com IconButton */}
               <View style={styles.passwordContainer}>
                 <TextInput
                   style={[
                     FormStyles.input,
                     { flex: 1 },
+                    {
+                      width: "100%",
+                      color: theme.colors.onBackground,
+                      borderColor: theme.colors.outline,
+                    },
                     fieldErrors.senha ? styles.inputError : null,
                   ]}
                   placeholder="Senha"
+                  placeholderTextColor={theme.colors.outline}
                   secureTextEntry={!showPassword}
                   value={senha}
                   onChangeText={setSenha}
@@ -125,13 +170,17 @@ const RegisterScreen = ({ navigation }: any) => {
                   icon={showPassword ? "eye-off" : "eye"}
                   size={20}
                   onPress={() => setShowPassword(!showPassword)}
+                  style={{
+                    marginRight: 4,
+                    marginBottom: 12,
+                    backgroundColor: "transparent",
+                  }}
+                  iconColor={theme.colors.outline}
                 />
               </View>
-
               {fieldErrors.api && (
                 <Text style={styles.errorText}>{fieldErrors.api}</Text>
               )}
-
               {isLoading ? (
                 <ActivityIndicator
                   size="large"
@@ -149,16 +198,32 @@ const RegisterScreen = ({ navigation }: any) => {
                   Cadastrar
                 </Button>
               )}
-
               <View style={styles.linksContainer}>
-                <Card style={styles.linkCard} mode="elevated">
-                  <TouchableOpacity onPress={() => navigation.navigate("Login")}>
-                    <Text style={styles.linkText}>Já tem uma conta? Entrar</Text>
+                <Card
+                  style={[
+                    styles.linkCard,
+                    { backgroundColor: isDarkMode ? "#444" : "#a1a1a1" },
+                  ]}
+                  mode="elevated"
+                >
+                  <TouchableOpacity
+                    onPress={() => navigation.navigate("Login")}
+                  >
+                    <Text style={styles.linkText}>
+                      Já tem uma conta? Entrar
+                    </Text>
                   </TouchableOpacity>
                 </Card>
               </View>
             </Card.Actions>
           </Card>
+
+          <Toast
+            visible={toast.visible}
+            message={toast.message}
+            type={toast.type}
+            onDismiss={hideToast}
+          />
         </View>
       </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
@@ -171,13 +236,19 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     padding: 16,
-    backgroundColor: "#fff",
+  },
+  switchContainer: {
+    position: "absolute",
+    top: 40,
+    right: 24,
+    flexDirection: "row",
+    alignItems: "center",
+    zIndex: 2,
   },
   card: {
     width: "100%",
     maxWidth: 400,
     padding: 10,
-    backgroundColor: "#fff",
   },
   logo: {
     width: 300,

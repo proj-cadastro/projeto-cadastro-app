@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Image,
@@ -12,11 +12,18 @@ import {
   Keyboard,
   TouchableWithoutFeedback,
 } from "react-native";
+
 import { Card, Button, IconButton } from "react-native-paper";
+
 import { useAuth } from "../../context/AuthContext";
 import { login as loginService } from "../../services/users/authService";
 import { userLoginSchema } from "../../validations/usersValidations";
 import { FormStyles } from "../../style/FormStyles";
+import { useThemeMode } from "../../context/ThemeContext";
+import ThemeSwitch from "../../components/ThemeSwitch";
+import { useToast } from "../../utils/useToast";
+import Toast from "../../components/atoms/Toast";
+import { authEventEmitter } from "../../events/AuthEventEmitter";
 
 const LoginScreen = ({ navigation }: any) => {
   const [email, setEmail] = useState("");
@@ -25,6 +32,22 @@ const LoginScreen = ({ navigation }: any) => {
   const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
   const [isLoading, setIsLoading] = useState(false);
   const { login: authLogin } = useAuth();
+
+  const { isDarkMode, toggleTheme, theme } = useThemeMode();
+  const { toast, showError, showInfo, hideToast } = useToast();
+
+  // Escuta o evento de logout por token expirado
+  useEffect(() => {
+    const handleTokenExpired = () => {
+      showInfo("Sua sessão expirou. Por favor, faça login novamente.");
+    };
+
+    authEventEmitter.on("logout", handleTokenExpired);
+
+    return () => {
+      authEventEmitter.off("logout", handleTokenExpired);
+    };
+  }, [showInfo]);
 
   const handleLogin = async () => {
     setFieldErrors({});
@@ -45,9 +68,8 @@ const LoginScreen = ({ navigation }: any) => {
         });
         setFieldErrors(errors);
       } else {
-        setFieldErrors({
-          api: error.response?.data?.erro || "Erro ao fazer login",
-        });
+        // Mostra toast de erro para credenciais inválidas
+        showError("Email ou senha incorretos. Verifique suas credenciais e tente novamente.");
       }
     } finally {
       setIsLoading(false);
@@ -56,20 +78,27 @@ const LoginScreen = ({ navigation }: any) => {
 
   return (
     <KeyboardAvoidingView
-      style={{ flex: 1 }}
+      style={{ flex: 1, backgroundColor: theme.colors.background }}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
         <View style={styles.fullScreenContainer}>
-          <Card style={[FormStyles.card, styles.card]} mode="elevated">
+          <View style={styles.switchContainer}>
+            <ThemeSwitch isDarkMode={isDarkMode} toggleTheme={toggleTheme} />
+          </View>
+          <Card style={[FormStyles.card, styles.card, { backgroundColor: theme.colors.background }]} mode="elevated">
             <Card.Content>
               <Image
-                source={require("../../../assets/logoFatecCapi.png")}
+                source={
+                  isDarkMode
+                    ? require("../../../assets/logoFatecCapi_lightCapivara2.png")
+                    : require("../../../assets/logoFatecCapi.png")
+                }
                 style={styles.logo}
                 resizeMode="contain"
               />
-              <Text style={FormStyles.title}>Login</Text>
-              <Text style={FormStyles.description}>
+              <Text style={[FormStyles.title, { color: theme.colors.onBackground }]}>Login</Text>
+              <Text style={[FormStyles.description, { color: theme.colors.onBackground }]}>
                 Entre com seu e-mail e senha para acessar o sistema.
               </Text>
             </Card.Content>
@@ -81,14 +110,11 @@ const LoginScreen = ({ navigation }: any) => {
               {fieldErrors.senha && (
                 <Text style={styles.errorText}>{fieldErrors.senha}</Text>
               )}
-              {fieldErrors.api && (
-                <Text style={styles.errorText}>{fieldErrors.api}</Text>
-              )}
 
-              {/* Campo Email */}
               <TextInput
                 placeholder="E-mail"
-                style={[FormStyles.input, { width: "100%" }]}
+                placeholderTextColor={theme.colors.outline}
+                style={[FormStyles.input, { width: "100%", color: theme.colors.onBackground, borderColor: theme.colors.outline }]}
                 value={email}
                 onChangeText={setEmail}
                 autoCapitalize="none"
@@ -96,11 +122,19 @@ const LoginScreen = ({ navigation }: any) => {
                 autoComplete="email"
               />
 
-              {/* Campo Senha com botão mostrar/ocultar */}
               <View style={styles.passwordContainer}>
                 <TextInput
                   placeholder="Senha"
-                  style={[FormStyles.input, { flex: 1 }]}
+                  placeholderTextColor={theme.colors.outline}
+                  style={[
+                    FormStyles.input,
+                    {
+                      flex: 1,
+                      color: theme.colors.onBackground,
+                      borderColor: theme.colors.outline,
+                      backgroundColor: theme.colors.background,
+                    },
+                  ]}
                   value={password}
                   onChangeText={setPassword}
                   secureTextEntry={!showPassword}
@@ -109,10 +143,15 @@ const LoginScreen = ({ navigation }: any) => {
                   icon={showPassword ? "eye-off" : "eye"}
                   size={20}
                   onPress={() => setShowPassword(!showPassword)}
+                  style={{
+                    marginRight: 4,
+                    marginBottom: 12,
+                    backgroundColor: "transparent",
+                  }}
+                  iconColor={theme.colors.outline}
                 />
               </View>
 
-              {/* Loader ou botão */}
               {isLoading ? (
                 <ActivityIndicator
                   size="large"
@@ -131,16 +170,27 @@ const LoginScreen = ({ navigation }: any) => {
                 </Button>
               )}
 
-              {/* Links de ações */}
               <View style={styles.linksContainer}>
-                <Card style={styles.linkCard} mode="elevated">
+                <Card
+                  style={[
+                    styles.linkCard,
+                    { backgroundColor: isDarkMode ? "#444" : "#a1a1a1" }
+                  ]}
+                  mode="elevated"
+                >
                   <TouchableOpacity
                     onPress={() => navigation.navigate("ForgetPasswordStepOne")}
                   >
                     <Text style={styles.linkText}>Esqueceu sua senha?</Text>
                   </TouchableOpacity>
                 </Card>
-                <Card style={styles.linkCard} mode="elevated">
+                <Card
+                  style={[
+                    styles.linkCard,
+                    { backgroundColor: isDarkMode ? "#444" : "#a1a1a1" }
+                  ]}
+                  mode="elevated"
+                >
                   <TouchableOpacity
                     onPress={() => navigation.navigate("Register")}
                   >
@@ -154,6 +204,13 @@ const LoginScreen = ({ navigation }: any) => {
           </Card>
         </View>
       </TouchableWithoutFeedback>
+
+      <Toast
+        visible={toast.visible}
+        message={toast.message}
+        type={toast.type}
+        onDismiss={hideToast}
+      />
     </KeyboardAvoidingView>
   );
 };
@@ -164,13 +221,19 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     padding: 16,
-    backgroundColor: "#fff",
+  },
+  switchContainer: {
+    position: "absolute",
+    top: 40,
+    right: 24,
+    flexDirection: "row",
+    alignItems: "center",
+    zIndex: 2,
   },
   card: {
     width: "100%",
     maxWidth: 400,
     padding: 10,
-    backgroundColor: "#fff",
   },
   logo: {
     width: 300,
@@ -207,7 +270,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   linkText: {
-    color: "#fff",
+    color: "#fff", // Mantém o texto branco original
     textAlign: "center",
     fontSize: 14,
   },

@@ -17,17 +17,24 @@ import { FormStyles } from "../../../../style/FormStyles";
 import { Titulacao } from "../../../../enums/professors/professorEnum";
 import { professorRegisterSchema } from "../../../../validations/professorsRegisterValidations";
 import HamburgerMenu from "../../../../components/HamburgerMenu";
+
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import locationAnimation from "../../../../../assets/location-icon.json";
 import { UnitSuggestionButton } from "../../../../components/UnitSuggestionButton";
 import { SuggestionSwitch } from "../../../../components/SuggestionSwitch";
 import { sugerirProfessorIA } from "../../../../services/ia/iaService";
 import { FieldSuggestionButton } from "../../../../components/FieldSuggestionButton";
+import { useSuggestionSwitch } from "../../../../context/SuggestionSwitchContext";
+
+import { useThemeMode } from "../../../../context/ThemeContext";
+import { getPlaceholderColor } from "../../../../utils/getPlaceholderColor";
 
 export default function ProfessorFormStepOne() {
   const navigation = useNavigation<NavigationProp>();
   const route = useRoute<RouteParamsProps<"RegisterProfessorsStepOne">>();
   const iaData = route.params?.iaData;
+
+  const { suggestionEnabled, setSuggestionEnabled } = useSuggestionSwitch();
 
   const [nome, setNome] = useState(iaData?.nome || "");
   const [email, setEmail] = useState(iaData?.email || "");
@@ -36,7 +43,6 @@ export default function ProfessorFormStepOne() {
   const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
   const [unidadeSugerida, setUnidadeSugerida] = useState<{ id: string; nome: string } | null>(null);
   const [showSuggestion, setShowSuggestion] = useState(false);
-  const [suggestionEnabled, setSuggestionEnabled] = useState(false);
   const [suggestions, setSuggestions] = useState<{ nome?: string; email?: string; titulacao?: string }>({});
   const [loadingSuggestions, setLoadingSuggestions] = useState(false);
 
@@ -84,7 +90,7 @@ export default function ProfessorFormStepOne() {
               setUnidadeSugerida({ id: unidade.id, nome: unidade.nome });
               setShowSuggestion(true);
             }, 600);
-          } catch {}
+          } catch {  }
         }
       });
     } else {
@@ -104,7 +110,7 @@ export default function ProfessorFormStepOne() {
       else if (email) partial.email = email;
       if (fieldChanged === "titulacao" && value) partial.titulacao = value;
       else if (titulacao) partial.titulacao = titulacao;
-      const data = await sugerirProfessorIA(partial);
+      const data = await sugerirProfessorIA(partial); 
       setSuggestions(data);
     } catch (e) {
       setSuggestions({});
@@ -112,6 +118,8 @@ export default function ProfessorFormStepOne() {
       setLoadingSuggestions(false);
     }
   };
+
+  const { isDarkMode } = useThemeMode();
 
   const handleAdvance = () => {
     try {
@@ -130,7 +138,6 @@ export default function ProfessorFormStepOne() {
           statusAtividade: iaData?.statusAtividade,
           lattes: iaData?.lattes,
         },
-        suggestionEnabled,
       });
     } catch (error: any) {
       if (error.name === "ValidationError") {
@@ -144,7 +151,10 @@ export default function ProfessorFormStepOne() {
   };
 
   return (
-    <SafeAreaView style={FormStyles.safeArea}>
+    <SafeAreaView style={[
+      FormStyles.safeArea,
+      { backgroundColor: isDarkMode ? "#181818" : "#fff" }
+    ]}>
       <View style={FormStyles.menuContainer}>
         <HamburgerMenu />
       </View>
@@ -160,16 +170,29 @@ export default function ProfessorFormStepOne() {
           contentContainerStyle={FormStyles.scrollContent}
           keyboardShouldPersistTaps="handled"
         >
-          <Card style={FormStyles.card} mode="elevated">
+          <Card style={[
+            FormStyles.card,
+            { backgroundColor: isDarkMode ? "#232323" : "#fff" }
+          ]} mode="elevated">
             <Card.Content>
-              <Text style={FormStyles.title}>Cadastro de Professor</Text>
-              <Text style={FormStyles.description}>
+              <Text style={[
+                FormStyles.title,
+                { color: isDarkMode ? "#fff" : "#000" }
+              ]}>Cadastro de Professor</Text>
+              <Text style={[
+                FormStyles.description,
+                { color: isDarkMode ? "#fff" : "#000" }
+              ]}>
                 Insira os dados do professor para registrá-lo no sistema
               </Text>
-              <Text style={FormStyles.label}>Nome</Text>
+              <Text style={[
+                FormStyles.label,
+                { color: isDarkMode ? "#fff" : "#000" }
+              ]}>Nome</Text>
               {fieldErrors.nome && (
                 <Text style={styles.errorText}>{fieldErrors.nome}</Text>
               )}
+
               <View style={styles.inputRow}>
                 <TextInput
                   placeholder={
@@ -179,10 +202,16 @@ export default function ProfessorFormStepOne() {
                   }
                   style={[
                     FormStyles.input,
+                    { color: isDarkMode ? "#fff" : "#000", borderColor: isDarkMode ? "#444" : "#ccc" },
                     styles.inputFlex,
                     fieldErrors.nome ? styles.inputError : null,
                     !nome && suggestions.nome && suggestionEnabled ? styles.suggestionPlaceholder : null,
                   ]}
+                  placeholderTextColor={getPlaceholderColor({
+                    isDarkMode,
+                    suggestionEnabled,
+                    hasSuggestion: !nome && !!suggestions.nome,
+                  })}
                   value={nome}
                   onChangeText={(text) => {
                     setNome(text);
@@ -194,15 +223,13 @@ export default function ProfessorFormStepOne() {
                       });
                   }}
                   onBlur={() => fetchSuggestions("nome", nome)}
-                  placeholderTextColor={
-                    !nome && suggestions.nome && suggestionEnabled ? "#D32719" : "#888"
-                  }
+
                 />
                 {!nome && suggestions.nome && suggestionEnabled && (
                   <FieldSuggestionButton onPress={() => setNome(suggestions.nome!)} />
                 )}
               </View>
-              <Text style={FormStyles.label}>Email</Text>
+              <Text style={[FormStyles.label, { color: isDarkMode ? "#fff" : "#000" }]}>Email</Text>
               {fieldErrors.email && (
                 <Text style={styles.errorText}>{fieldErrors.email}</Text>
               )}
@@ -216,6 +243,7 @@ export default function ProfessorFormStepOne() {
                   style={[
                     FormStyles.input,
                     styles.inputFlex,
+                    { color: isDarkMode ? "#fff" : "#000", borderColor: isDarkMode ? "#444" : "#ccc" },
                     fieldErrors.email ? styles.inputError : null,
                     !nome && suggestions.nome && suggestionEnabled ? styles.suggestionPlaceholder : null,
                   ]}
@@ -241,7 +269,7 @@ export default function ProfessorFormStepOne() {
                   <FieldSuggestionButton onPress={() => setEmail(suggestions.email!)} />
                 )}
               </View>
-              <Text style={FormStyles.label}>Titulação</Text>
+              <Text style={[FormStyles.label, { color: isDarkMode ? "#fff" : "#000" }]}>Titulação</Text>
               {fieldErrors.titulacao && (
                 <Text style={styles.errorText}>{fieldErrors.titulacao}</Text>
               )}
@@ -265,13 +293,14 @@ export default function ProfessorFormStepOne() {
                         : undefined
                     }
                     suggestionStyle={{ fontStyle: "italic", color: "#D32719" }}
+                    backgroundColor={isDarkMode ? "#202020" : "#fff"}
                   />
                 </View>
                 {!titulacao && suggestions.titulacao && suggestionEnabled && (
                   <FieldSuggestionButton onPress={() => setTitulacao(suggestions.titulacao!)} />
                 )}
               </View>
-              <Text style={FormStyles.label}>Código da Unidade</Text>
+              <Text style={[FormStyles.label, { color: isDarkMode ? "#fff" : "#000" }]}>Código da Unidade</Text>
               {fieldErrors.idUnidade && (
                 <Text style={styles.errorText}>{fieldErrors.idUnidade}</Text>
               )}
@@ -285,6 +314,7 @@ export default function ProfessorFormStepOne() {
                   style={[
                     FormStyles.input,
                     styles.inputFlex,
+                    { width: "100%", color: isDarkMode ? "#fff" : "#000", borderColor: isDarkMode ? "#444" : "#ccc" },
                     !idUnidade && showSuggestion && unidadeSugerida?.id
                       ? styles.suggestionPlaceholder
                       : null,
@@ -313,6 +343,7 @@ export default function ProfessorFormStepOne() {
                   />
                 )}
               </View>
+
             </Card.Content>
             <Card.Actions>
               <Button
@@ -328,6 +359,8 @@ export default function ProfessorFormStepOne() {
           <SuggestionSwitch
             value={suggestionEnabled}
             onValueChange={setSuggestionEnabled}
+            label={`Sugestões de \n     Cadastro`}
+            labelColor={isDarkMode ? "#ccc" : "#333"}
           />
         </ScrollView>
       </View>

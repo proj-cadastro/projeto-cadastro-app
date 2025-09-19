@@ -7,17 +7,20 @@ import { useProfessor } from "../../../context/ProfessorContext";
 import { TableStyle } from "../../../style/TableStyle";
 import { FormStyles } from "../../../style/FormStyles";
 import { NavigationProp } from "../../../routes/rootStackParamList ";
+import { useThemeMode } from "../../../context/ThemeContext"; // Importa o contexto do tema
 
 const DetailsProfessors = () => {
   const navigation = useNavigation<NavigationProp>();
   const route = useRoute<RouteProp<{ params: { id: number } }, "params">>();
   const { professors } = useProfessor();
 
+  const { isDarkMode } = useThemeMode();
+
   const id = route.params?.id;
   const professor = professors.find((p) => p.id === id);
 
   return (
-    <SafeAreaView>
+    <SafeAreaView style={{ flex: 1, backgroundColor: isDarkMode ? "#181818" : "#fff" }}>
       <View style={TableStyle.menuContainer}>
         <HamburgerMenu />
       </View>
@@ -46,6 +49,7 @@ const DetailsProfessors = () => {
             marginTop: 20,
             textAlign: "center",
             paddingHorizontal: 18,
+            color: isDarkMode ? "#fff" : "#000",
           },
         ]}
       >
@@ -58,7 +62,7 @@ const DetailsProfessors = () => {
             marginHorizontal: 8,
             padding: 24,
             borderRadius: 20,
-            backgroundColor: "#fff",
+            backgroundColor: isDarkMode ? "#232323" : "#fff",
             elevation: 4,
             shadowColor: "#000",
             shadowOpacity: 0.08,
@@ -70,7 +74,7 @@ const DetailsProfessors = () => {
             style={{
               fontSize: 24,
               fontWeight: "bold",
-              color: "#22223b",
+              color: isDarkMode ? "#fff" : "#22223b",
               marginBottom: 12,
               letterSpacing: 0.5,
             }}
@@ -78,11 +82,11 @@ const DetailsProfessors = () => {
             {professor.nome}
           </Text>
           <View style={{ marginBottom: 16 }}>
-            <InfoLine label="Email" value={professor.email} />
-            <InfoLine label="Titulação" value={professor.titulacao} />
-            <InfoLine label="Status" value={professor.statusAtividade} />
-            <InfoLine label="Referência" value={professor.referencia} />
-            <InfoLine label="ID Unidade" value={professor.idUnidade} />
+            <InfoLine label="Email" value={professor.email} isDarkMode={isDarkMode} />
+            <InfoLine label="Titulação" value={professor.titulacao} isDarkMode={isDarkMode} />
+            <InfoLine label="Status" value={professor.statusAtividade} isDarkMode={isDarkMode} />
+            <InfoLine label="Referência" value={professor.referencia} isDarkMode={isDarkMode} />
+            <InfoLine label="ID Unidade" value={professor.idUnidade} isDarkMode={isDarkMode} />
             <InfoLine
               label="Lattes"
               value={professor.lattes}
@@ -90,11 +94,13 @@ const DetailsProfessors = () => {
                 color: "#007bff",
                 textDecorationLine: "underline",
               }}
+              isDarkMode={isDarkMode}
             />
             <InfoLine
               label="Observações"
               value={professor.observacoes || "Nenhuma"}
               valueStyle={{ fontStyle: "italic", color: "#6c757d" }}
+              isDarkMode={isDarkMode}
             />
           </View>
           {professor.cursoCoordenado ? (
@@ -102,7 +108,7 @@ const DetailsProfessors = () => {
               style={{
                 marginTop: 10,
                 padding: 14,
-                backgroundColor: "#f1f3f6",
+                backgroundColor: isDarkMode ? "#181818" : "#f1f3f6",
                 borderRadius: 12,
                 borderLeftWidth: 4,
                 borderLeftColor: "#007bff",
@@ -112,24 +118,27 @@ const DetailsProfessors = () => {
                 style={{
                   fontWeight: "bold",
                   marginBottom: 6,
-                  color: "#22223b",
+                  color: isDarkMode ? "#fff" : "#22223b",
                 }}
               >
                 Curso Coordenado
               </Text>
-              <InfoLine label="Nome" value={professor.cursoCoordenado.nome} />
-              <InfoLine label="Sigla" value={professor.cursoCoordenado.sigla} />
+              <InfoLine label="Nome" value={professor.cursoCoordenado.nome} isDarkMode={isDarkMode} />
+              <InfoLine label="Sigla" value={professor.cursoCoordenado.sigla} isDarkMode={isDarkMode} />
               <InfoLine
                 label="Código"
                 value={professor.cursoCoordenado.codigo}
+                isDarkMode={isDarkMode}
               />
               <InfoLine
                 label="Modelo"
                 value={professor.cursoCoordenado.modelo}
+                isDarkMode={isDarkMode}
               />
               <InfoLine
                 label="ID"
                 value={professor.cursoCoordenado.id?.toString()}
+                isDarkMode={isDarkMode}
               />
             </View>
           ) : (
@@ -145,7 +154,10 @@ const DetailsProfessors = () => {
           )}
         </View>
       ) : (
-        <Text style={TableStyle.emptyText}>Professor não encontrado.</Text>
+        <Text style={[
+          TableStyle.emptyText,
+          { color: isDarkMode ? "#fff" : "#000" }
+        ]}>Professor não encontrado.</Text>
       )}
 
       <View style={{ margin: 16 }}>
@@ -158,6 +170,7 @@ const DetailsProfessors = () => {
               });
           }}
           style={FormStyles.button}
+          labelStyle={{ color: "white" }}
         >
           Editar Professor
         </Button>
@@ -170,23 +183,25 @@ const InfoLine = ({
   label,
   value,
   valueStyle,
+  isDarkMode,
 }: {
   label: string;
   value: string;
   valueStyle?: any;
+  isDarkMode?: boolean;
 }) => (
   <View style={{ flexDirection: "row", marginBottom: 6 }}>
     <Text
       style={{
         fontWeight: "600",
-        color: "#495057",
+        color: isDarkMode ? "#ccc" : "#495057",
         width: 110,
       }}
     >
       {label}:
     </Text>
     <Text
-      style={[{ color: "#22223b", flex: 1 }, valueStyle]}
+      style={[{ color: isDarkMode ? "#fff" : "#22223b", flex: 1 }, valueStyle]}
       numberOfLines={2}
       ellipsizeMode="tail"
     >

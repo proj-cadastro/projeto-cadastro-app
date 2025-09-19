@@ -53,7 +53,7 @@ Cada sprint no desenvolvimento ágil resulta em uma entrega funcional e incremen
 
 ## 📋 Requisitos Não Funcionais
 
-| ID     | Requisito Não Funcional   | Categoria         | Descrição                                                                 |
+| ID     | Requisito Não Funcional    | Categoria         | Descrição                                                                 |
 |--------|----------------------------|-------------------|---------------------------------------------------------------------------|
 | RnF01  | Tempo de resposta          | Desempenho        | A aplicação foi pensada para que o usuário não aguarde muito tempo de resposta. |
 | RnF02  | Interface intuitiva        | Usabilidade       | A interface foi pensada para ser simples, com navegação fácil e consistente.     |

@@ -24,10 +24,8 @@ export async function getLoggedUser() {
   if (!token) {
     throw new Error("Token não encontrado no AsyncStorage");
   }
-  console.log(token)
   const payload = decodeJwt(token);
   
-  console.log(payload.userId)
   const response = await api.get(`/usuarios/${payload.userId}`)
   return response.data.data
 }

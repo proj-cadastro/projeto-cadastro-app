@@ -30,17 +30,12 @@ export const DocPicker = () => {
 
             if (!result.canceled) {
                 const data = result.assets[0]
-                console.log('name', data.name)
-                console.log('size', data.size)
-                console.log('uri', data.uri)
 
                 setFile(data)
                 setConfirmationModalVisibility(true)
-            } else {
-                setErrorModalVisibility(true)
             }
         } catch (error) {
-
+            console.log(error)
         } finally {
             setLoading(false)
         }
@@ -51,19 +46,24 @@ export const DocPicker = () => {
 
 
     const handleSubmit = async () => {
+        setLoading(true)
         try {
             if (file) {
                 await uploadFile(file)
                 setSuccessModalVisibility(true)
             }
-        } catch (error: any) {
+        } catch (dataError: any) {
+            const errorMsg =
+                dataError.response?.data?.mensagem ||
+                "Erro inesperado. Tente novamente.";
+            setError(errorMsg)
             setErrorModalVisibility(true)
-            setError(error.response?.data?.mensagem)
         } finally {
             setLoading(false)
             setConfirmationModalVisibility(false)
         }
     }
+
 
     return (
         <View >
@@ -89,7 +89,7 @@ export const DocPicker = () => {
                         margin: 20,
                         borderRadius: 10,
                     }}>
-                    <Text style={[FormStyles.description, { fontSize: 17, color: "black", fontWeight: 'bold' }]}>Erro ao importar planilha</Text>
+                    <Text style={[FormStyles.description, { fontSize: 17, color: "black", fontWeight: 'bold' }]}>Erro</Text>
                     <Text style={FormStyles.description}>{error}</Text>
                     <Button
                         onPress={() => setErrorModalVisibility(false)}
