@@ -7,7 +7,7 @@ import { authEventEmitter } from "../events/AuthEventEmitter";
 const baseURL = API_URL;
 
 const api = axios.create({
-  baseURL: baseURL,
+  baseURL: "http://192.168.1.12:3000/",
   headers: {
     "Content-Type": "application/json",
   },

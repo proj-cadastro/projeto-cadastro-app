@@ -30,12 +30,16 @@ apiIA.interceptors.response.use(
     ) {
       console.error("Erro de autenticação na IA: Not authenticated");
       customError.userMessage = "Erro de autenticação na IA";
+      
     } else if (error.response?.status === 500) {
       customError.userMessage = "Erro interno do servidor da IA";
+
     } else if (error.response?.status === 404) {
       customError.userMessage = "Serviço da IA não encontrado";
+
     } else if (!error.response) {
       customError.userMessage = "Erro de conexão com a IA";
+
     }
 
     return Promise.reject(customError);
