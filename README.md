@@ -77,15 +77,15 @@ Durante o desenvolvimento do sistema de cadastro de professores e cursos, a fase
  
 Essa API RESTful utiliza os métodos HTTP POST, GET, PUT e DELETE, completando os métodos básicos do CRUD. Além disso, a aplicação é construída sobre a arquitetura MVC.
 > 🔗 **Links gerais** <br>
-> - Documentação do software: [clique aqui para acessar](https://github.com/VitorRuan/Sprints/tree/main/Documenta%C3%A7%C3%A3o)
+> - Relatório de Analise de Segurança: [clique aqui para acessar](https://github.com/lucas-adami/atividade-avaliativa-27-11/blob/master/analise_seguranca_sistema_completo.pdf)
+> - 
 > - Links para os repositórios criados:
 >    - **Protótipo de alta fidelidade:** https://www.figma.com/design/doeCpjTHXJP6kbePOpOJs9/Cadastro-de-Professores?node-id=0-1&t=8qEmhLqBiF7zHTU5-0
 >    - **Frontend:** [acessar Frontend](https://github.com/proj-cadastro/projeto-cadastro-app)
 >    - **Backend:** [acessar Backend](https://github.com/proj-cadastro/projeto-cadastro-app-api)
->    
-<!--
-- **API - Publicada:** 
--->
+>    - **API Machine Learning:** .[acessar API ML](https://github.com/proj-cadastro/projeto-cadastro-ml-api)
+>  
+
 >    
  
 → [Voltar ao topo](#topo)
