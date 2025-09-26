@@ -8,7 +8,10 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "release": "standard-version && node scripts/updateAppJson.js"
+    "release": "standard-version && node scripts/updateAppJson.js",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage --coverageReporters=text-summary --coverageReporters=text"
   },
   "dependencies": {
     "@babel/runtime": "^7.28.4",
@@ -52,8 +55,16 @@
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
+    "@babel/preset-env": "^7.28.3",
+    "@babel/preset-typescript": "^7.27.1",
+    "@jest/types": "^30.0.5",
+    "@types/babel__preset-env": "^7",
+    "@types/jest": "^30.0.0",
     "@types/react": "~19.1.10",
     "@types/react-native-vector-icons": "^6.4.18",
+    "babel-jest": "^30.1.2",
+    "jest": "^30.1.3",
+    "jest-environment-node": "^30.1.2",
     "react-native-dotenv": "^3.4.11",
     "standard-version": "^9.5.0",
     "typescript": "~5.9.2"
