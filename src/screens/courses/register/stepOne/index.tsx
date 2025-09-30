@@ -8,6 +8,10 @@ import {
   Text,
   TextInput,
   StyleSheet,
+  Platform,
+  KeyboardAvoidingView,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from "react-native";
 import { Card, Button, ProgressBar, MD3Colors } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
@@ -85,119 +89,139 @@ export default function StepOne() {
   };
 
   return (
-    <SafeAreaView style={[
-      FormStyles.safeArea,
-      { backgroundColor: isDarkMode ? "#181818" : "#fff" }
-    ]}>
-      <View style={[FormStyles.container, styles.centerContainer]}>
-        <ScrollView
-          contentContainerStyle={FormStyles.scrollContent}
-          keyboardShouldPersistTaps="handled"
-        >
-          <View style={styles.cardWrapper}>
-            <Card style={[
-              FormStyles.card,
-              { backgroundColor: isDarkMode ? "#232323" : "#fff" }
-            ]} mode="elevated">
-              <Card.Content style={{ flex: 1 }}>
-                <Text style={[
-                  FormStyles.title,
-                  { color: isDarkMode ? "#fff" : "#000" }
-                ]}>Cadastro de Curso</Text>
+    <KeyboardAvoidingView
+      style={{ flex: 1, backgroundColor: isDarkMode ? "#181818" : "#fff" }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 0}
+    >
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <SafeAreaView style={[
+          FormStyles.safeArea,
+          { backgroundColor: isDarkMode ? "#181818" : "#fff" }
+        ]}>
+          <View style={FormStyles.container}>
+            <ScrollView
+              contentContainerStyle={[FormStyles.scrollContent, styles.scrollPadding]}
+              keyboardShouldPersistTaps="handled"
+              showsVerticalScrollIndicator={false}
+            >
+              <Card style={[
+                FormStyles.card,
+                { backgroundColor: isDarkMode ? "#232323" : "#fff" },
+                styles.cardMargin
+              ]} mode="elevated">
+                <Card.Content>
+                  <Text style={[
+                    FormStyles.title,
+                    { color: isDarkMode ? "#fff" : "#000" }
+                  ]}>
+                    Cadastro de Curso
+                  </Text>
 
-                <Text style={[
-                  FormStyles.description,
-                  { color: isDarkMode ? "#fff" : "#000" }
-                ]}>
-                  Insira os dados do Curso para registrá-lo no sistema
-                </Text>
+                  <Text style={[
+                    FormStyles.description,
+                    { color: isDarkMode ? "#fff" : "#000" }
+                  ]}>
+                    Insira os dados do Curso para registrá-lo no sistema
+                  </Text>
 
-                <Text style={[
-                  FormStyles.label,
-                  { color: isDarkMode ? "#fff" : "#000" }
-                ]}>Nome do Curso</Text>
-                {fieldErrors.nome && (
-                  <Text style={styles.errorText}>{fieldErrors.nome}</Text>
-                )}
-                <TextInput
-                  placeholder="Nome do Curso"
-                  placeholderTextColor={isDarkMode ? "#aaa" : "#888"}
-                  style={[
-                    FormStyles.input,
-                    { color: isDarkMode ? "#fff" : "#000", borderColor: isDarkMode ? "#444" : "#ccc" },
-                    fieldErrors.nome ? styles.inputError : null,
-                  ]}
-                  value={nome}
-                  onChangeText={setNome}
-                />
+                  <Text style={[
+                    FormStyles.label,
+                    { color: isDarkMode ? "#fff" : "#000" }
+                  ]}>
+                    Nome do Curso
+                  </Text>
+                  {fieldErrors.nome && (
+                    <Text style={styles.errorText}>{fieldErrors.nome}</Text>
+                  )}
+                  <TextInput
+                    placeholder="Nome do Curso"
+                    placeholderTextColor={isDarkMode ? "#aaa" : "#888"}
+                    style={[
+                      FormStyles.input,
+                      { color: isDarkMode ? "#fff" : "#000", borderColor: isDarkMode ? "#444" : "#ccc" },
+                      fieldErrors.nome ? styles.inputError : null,
+                    ]}
+                    value={nome}
+                    onChangeText={setNome}
+                    returnKeyType="next"
+                  />
 
-                <View style={{ flexDirection: "row", gap: 8 }}>
-                  <View style={{ flex: 1 }}>
-                    <Text style={[
-                      FormStyles.label,
-                      { color: isDarkMode ? "#fff" : "#000" }
-                    ]}>Sigla</Text>
-                    {fieldErrors.sigla && (
-                      <Text style={styles.errorText}>{fieldErrors.sigla}</Text>
-                    )}
-                    <TextInput
-                      placeholder="Sigla"
-                      placeholderTextColor={isDarkMode ? "#aaa" : "#888"}
-                      style={[
-                        FormStyles.input,
-                        { color: isDarkMode ? "#fff" : "#000", borderColor: isDarkMode ? "#444" : "#ccc" },
-                        fieldErrors.sigla ? styles.inputError : null,
-                      ]}
-                      onChangeText={handleSiglaChange}
-                      value={sigla}
-                    />
+                  <View style={styles.rowContainer}>
+                    <View style={styles.halfInput}>
+                      <Text style={[
+                        FormStyles.label,
+                        { color: isDarkMode ? "#fff" : "#000" }
+                      ]}>
+                        Sigla
+                      </Text>
+                      {fieldErrors.sigla && (
+                        <Text style={styles.errorText}>{fieldErrors.sigla}</Text>
+                      )}
+                      <TextInput
+                        placeholder="Sigla"
+                        placeholderTextColor={isDarkMode ? "#aaa" : "#888"}
+                        style={[
+                          FormStyles.input,
+                          { color: isDarkMode ? "#fff" : "#000", borderColor: isDarkMode ? "#444" : "#ccc" },
+                          fieldErrors.sigla ? styles.inputError : null,
+                        ]}
+                        onChangeText={handleSiglaChange}
+                        value={sigla}
+                        returnKeyType="next"
+                      />
+                    </View>
+                    <View style={styles.halfInput}>
+                      <Text style={[
+                        FormStyles.label,
+                        { color: isDarkMode ? "#fff" : "#000" }
+                      ]}>
+                        Código
+                      </Text>
+                      {fieldErrors.codigo && (
+                        <Text style={styles.errorText}>{fieldErrors.codigo}</Text>
+                      )}
+                      <TextInput
+                        placeholder="Código"
+                        placeholderTextColor={isDarkMode ? "#aaa" : "#888"}
+                        style={[
+                          FormStyles.input,
+                          { color: isDarkMode ? "#fff" : "#000", borderColor: isDarkMode ? "#444" : "#ccc" },
+                          fieldErrors.codigo ? styles.inputError : null,
+                        ]}
+                        onChangeText={handleCodigoChange}
+                        value={codigo}
+                        keyboardType="numeric"
+                        returnKeyType="done"
+                      />
+                    </View>
                   </View>
-                  <View style={{ flex: 1 }}>
-                    <Text style={[
-                      FormStyles.label,
-                      { color: isDarkMode ? "#fff" : "#000" }
-                    ]}>Código</Text>
-                    {fieldErrors.codigo && (
-                      <Text style={styles.errorText}>{fieldErrors.codigo}</Text>
-                    )}
-                    <TextInput
-                      placeholder="Código"
-                      placeholderTextColor={isDarkMode ? "#aaa" : "#888"}
-                      style={[
-                        FormStyles.input,
-                        { color: isDarkMode ? "#fff" : "#000", borderColor: isDarkMode ? "#444" : "#ccc" },
-                        fieldErrors.codigo ? styles.inputError : null,
-                      ]}
-                      onChangeText={handleCodigoChange}
-                      value={codigo}
-                    />
-                  </View>
-                </View>
-              </Card.Content>
+                </Card.Content>
 
-              <Card.Actions style={{ marginTop: "auto" }}>
-                <Button
-                  labelStyle={{ color: "white" }}
-                  style={FormStyles.button}
-                  onPress={handleAdvance}
-                >
-                  Avançar
-                </Button>
-              </Card.Actions>
+                <Card.Actions>
+                  <Button
+                    labelStyle={{ color: "white" }}
+                    style={FormStyles.button}
+                    onPress={handleAdvance}
+                  >
+                    Avançar
+                  </Button>
+                </Card.Actions>
 
-              <ProgressBar progress={0.5} color={MD3Colors.neutral40} />
-            </Card>
+                <ProgressBar progress={0.5} color={MD3Colors.neutral40} />
+              </Card>
+            </ScrollView>
           </View>
-        </ScrollView>
-      </View>
 
-      <Toast
-        visible={toast.visible}
-        message={toast.message}
-        type={toast.type}
-        onDismiss={hideToast}
-      />
-    </SafeAreaView>
+          <Toast
+            visible={toast.visible}
+            message={toast.message}
+            type={toast.type}
+            onDismiss={hideToast}
+          />
+        </SafeAreaView>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -213,15 +237,21 @@ const styles = StyleSheet.create({
     borderColor: "red",
     borderWidth: 1,
   },
-  centerContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+  scrollPadding: {
+    paddingVertical: 20,
+    paddingBottom: Platform.OS === 'ios' ? 100 : 80,
+    flexGrow: 1,
   },
-  cardWrapper: {
-    width: "96%",
-    alignSelf: "center",
-    justifyContent: "center",
+  cardMargin: {
+    marginHorizontal: 16,
+    marginVertical: 10,
+  },
+  rowContainer: {
+    flexDirection: "row", 
+    gap: 8,
+    marginTop: 8,
+  },
+  halfInput: {
     flex: 1,
   },
 });
