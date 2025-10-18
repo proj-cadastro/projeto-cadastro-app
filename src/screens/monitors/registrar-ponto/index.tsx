@@ -1,11 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Modal,
   View,
   Text,
   TouchableOpacity,
   StyleSheet,
-  ScrollView,
 } from "react-native";
 import { Button } from "react-native-paper";
 import Icon from "react-native-vector-icons/MaterialIcons";
@@ -15,46 +14,28 @@ interface RegistroPontoModalProps {
   onClose: () => void;
   monitorNome: string;
   isDarkMode?: boolean;
+  onConfirm: (entrada: string, saida: string) => void;
+  tipo: "entrada" | "saida";
 }
+
+const pad = (n: number) => n.toString().padStart(2, "0");
 
 const RegistroPontoModal: React.FC<RegistroPontoModalProps> = ({
   visible,
   onClose,
   monitorNome,
   isDarkMode = false,
+  onConfirm,
+  tipo,
 }) => {
-  // Dados mockados dos registros baseados na imagem
-  const registros = [
-    {
-      dia: "Quarta-feira",
-      entrada: "08:00",
-      saida: "12:00",
-      entrada2: "09:00",
-      saida2: "13:00"
-    },
-    {
-      dia: "Terça-feira",
-      entrada: "9a",
-      saida: "13:00"
-    },
-    {
-      dia: "Segunda",
-      entrada: "08:30",
-      saida: "12:30"
-    }
-  ];
+  const now = new Date();
+  const [hora, setHora] = useState<number>(now.getHours());
+  const [minuto, setMinuto] = useState<number>(now.getMinutes());
 
-  const handleRegistrarPonto = () => {
-    // Lógica para registrar ponto
-    console.log("Ponto registrado!");
-    // Pode adicionar aqui a lógica de API
-    onClose();
-  };
-
-  const handleVerRegistro = () => {
-    // Lógica para ver registros completos
-    console.log("Ver registros completos");
-  };
+  const incrementHora = () => setHora((prev) => (prev + 1) % 24);
+  const decrementHora = () => setHora((prev) => (prev === 0 ? 23 : prev - 1));
+  const incrementMinuto = () => setMinuto((prev) => (prev + 1) % 60);
+  const decrementMinuto = () => setMinuto((prev) => (prev === 0 ? 59 : prev - 1));
 
   return (
     <Modal
@@ -63,92 +44,102 @@ const RegistroPontoModal: React.FC<RegistroPontoModalProps> = ({
       transparent={true}
       onRequestClose={onClose}
     >
-      <View style={styles.modalOverlay}>
-        <View style={[
-          styles.modalContainer,
-          { backgroundColor: isDarkMode ? "#232323" : "#fff" }
-        ]}>
-          {/* Header com botão fechar */}
+      <View style={styles.overlay}>
+        <View
+          style={[
+            styles.container,
+            { backgroundColor: isDarkMode ? "#232323" : "#fff" },
+          ]}
+        >
           <View style={styles.modalHeader}>
-            <Text style={[
-              styles.modalTitle,
-              { color: isDarkMode ? "#fff" : "#000" }
-            ]}>
-              REGISTRO DE PONTO
+            <Text
+              style={[
+                styles.modalTitle,
+                { color: isDarkMode ? "#fff" : "#000" },
+              ]}
+            >
+              {tipo === "entrada" ? "REGISTRAR ENTRADA" : "REGISTRAR SAÍDA"}
             </Text>
             <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-              <Icon name="close" size={24} color={isDarkMode ? "#fff" : "#000"} />
+              <Icon
+                name="close"
+                size={24}
+                color={isDarkMode ? "#fff" : "#000"}
+              />
             </TouchableOpacity>
           </View>
 
-          <ScrollView style={styles.modalContent}>
-            {/* Nome do monitor */}
-            <Text style={[
+          <Text
+            style={[
               styles.monitorName,
-              { color: isDarkMode ? "#fff" : "#000" }
-            ]}>
-              {monitorNome}
-            </Text>
+              { color: isDarkMode ? "#fff" : "#000" },
+            ]}
+          >
+            {monitorNome}
+          </Text>
 
-            {/* Lista de registros */}
-            <View style={styles.registrosContainer}>
-              {registros.map((registro, index) => (
-                <View key={index} style={[
-                  styles.registroItem,
-                  { backgroundColor: isDarkMode ? "#181818" : "#f8f9fa" }
-                ]}>
-                  <Text style={[
-                    styles.diaText,
-                    { color: isDarkMode ? "#fff" : "#000" }
-                  ]}>
-                    <Text style={styles.diaBold}>{registro.dia}</Text>
-                    {registro.entrada && registro.saida && (
-                      <Text> - {registro.entrada}, Saída: {registro.saida}</Text>
-                    )}
-                  </Text>
-                  
-                  {/* Segundo horário se existir */}
-                  {registro.entrada2 && registro.saida2 && (
-                    <Text style={[
-                      styles.horarioExtra,
-                      { color: isDarkMode ? "#ccc" : "#666" }
-                    ]}>
-                      Entrada: {registro.entrada2}, Saída: {registro.saida2}
-                    </Text>
-                  )}
-                  
-                  {/* Caso especial para terça-feira */}
-                  {registro.dia === "Terça-feira" && (
-                    <Text style={[
-                      styles.horarioExtra,
-                      { color: isDarkMode ? "#ccc" : "#666" }
-                    ]}>
-                      Entrada: {registro.entrada}: {registro.saida}
-                    </Text>
-                  )}
-                </View>
-              ))}
+          <Text
+            style={{
+              color: isDarkMode ? "#fff" : "#000",
+              marginBottom: 8,
+            }}
+          >
+            Selecione o horário de {tipo === "entrada" ? "entrada" : "saída"}:
+          </Text>
+
+          {/* Campo de hora e minuto com setas */}
+          <View style={styles.timeRow}>
+            {/* Hora */}
+            <TouchableOpacity onPress={decrementHora} style={styles.arrowButton}>
+              <Icon name="chevron-left" size={32} color="#28a745" />
+            </TouchableOpacity>
+            <View style={styles.timeBox}>
+              <Text style={styles.timeText}>{pad(hora)}</Text>
             </View>
-          </ScrollView>
+            <TouchableOpacity onPress={incrementHora} style={styles.arrowButton}>
+              <Icon name="chevron-right" size={32} color="#28a745" />
+            </TouchableOpacity>
 
-          {/* Botões de ação */}
+            <Text style={styles.colon}>:</Text>
+
+            {/* Minuto */}
+            <TouchableOpacity onPress={decrementMinuto} style={styles.arrowButton}>
+              <Icon name="chevron-left" size={32} color="#28a745" />
+            </TouchableOpacity>
+            <View style={styles.timeBox}>
+              <Text style={styles.timeText}>{pad(minuto)}</Text>
+            </View>
+            <TouchableOpacity onPress={incrementMinuto} style={styles.arrowButton}>
+              <Icon name="chevron-right" size={32} color="#28a745" />
+            </TouchableOpacity>
+          </View>
+
+          <Text
+            style={{
+              color: isDarkMode ? "#fff" : "#000",
+              fontSize: 16,
+              marginVertical: 16,
+              textAlign: "center",
+            }}
+          >
+            Horário selecionado: {pad(hora)}:{pad(minuto)}
+          </Text>
+
           <View style={styles.buttonContainer}>
             <Button
               mode="contained"
-              style={styles.registrarButton}
-              labelStyle={{ color: "white", fontWeight: "bold" }}
-              onPress={handleRegistrarPonto}
+              style={{
+                backgroundColor: tipo === "entrada" ? "#28a745" : "#dc3545",
+                borderRadius: 8,
+              }}
+              onPress={() =>
+                onConfirm(
+                  `${pad(hora)}:${pad(minuto)}`,
+                  tipo === "entrada" ? "Não definida" : `${pad(hora)}:${pad(minuto)}`
+                )
+              }
             >
-              REGISTRAR PONTO
-            </Button>
-
-            <Button
-              mode="contained"
-              style={styles.verRegistroButton}
-              labelStyle={{ color: "white", fontWeight: "bold" }}
-              onPress={handleVerRegistro}
-            >
-              VER REGISTRO
+              {tipo === "entrada" ? "REGISTRAR ENTRADA" : "REGISTRAR SAÍDA"}
             </Button>
           </View>
         </View>
@@ -158,30 +149,26 @@ const RegistroPontoModal: React.FC<RegistroPontoModalProps> = ({
 };
 
 const styles = StyleSheet.create({
-  modalOverlay: {
+  overlay: {
     flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    backgroundColor: "rgba(0,0,0,0.4)",
     justifyContent: "center",
     alignItems: "center",
   },
-  modalContainer: {
+  container: {
     width: "90%",
-    maxHeight: "80%",
-    backgroundColor: "#fff",
     borderRadius: 12,
-    elevation: 5,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
+    padding: 24,
+    alignItems: "center",
   },
   modalHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    padding: 16,
+    padding: 8,
     borderBottomWidth: 1,
     borderBottomColor: "#eee",
+    width: "100%",
   },
   modalTitle: {
     fontSize: 16,
@@ -191,10 +178,6 @@ const styles = StyleSheet.create({
   closeButton: {
     padding: 4,
   },
-  modalContent: {
-    padding: 16,
-    maxHeight: 400,
-  },
   monitorName: {
     fontSize: 20,
     fontWeight: "bold",
@@ -202,42 +185,40 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     color: "#000",
   },
-  registrosContainer: {
-    marginBottom: 16,
+  timeRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    marginVertical: 16,
   },
-  registroItem: {
-    padding: 12,
-    marginBottom: 8,
-    backgroundColor: "#f8f9fa",
-    borderRadius: 8,
-    borderLeftWidth: 3,
-    borderLeftColor: "#007bff",
+  arrowButton: {
+    padding: 4,
   },
-  diaText: {
-    fontSize: 14,
-    color: "#000",
-    lineHeight: 20,
+  timeBox: {
+    width: 56,
+    height: 56,
+    borderRadius: 12,
+    backgroundColor: "#f1f1f1",
+    justifyContent: "center",
+    alignItems: "center",
+    marginHorizontal: 4,
+    borderWidth: 1,
+    borderColor: "#ccc",
   },
-  diaBold: {
+  timeText: {
+    fontSize: 28,
     fontWeight: "bold",
+    color: "#22223b",
   },
-  horarioExtra: {
-    fontSize: 13,
-    color: "#666",
-    marginTop: 4,
-    paddingLeft: 8,
+  colon: {
+    fontSize: 28,
+    fontWeight: "bold",
+    marginHorizontal: 8,
+    color: "#22223b",
   },
   buttonContainer: {
     padding: 16,
-    gap: 12,
-  },
-  registrarButton: {
-    backgroundColor: "#dc3545",
-    borderRadius: 8,
-  },
-  verRegistroButton: {
-    backgroundColor: "#343a40",
-    borderRadius: 8,
+    width: "100%",
   },
 });
 

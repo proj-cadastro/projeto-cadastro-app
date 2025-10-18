@@ -1,31 +1,54 @@
 import React, { useState } from "react";
-import { View, Text, SafeAreaView } from "react-native";
+import { View, Text, SafeAreaView, Modal } from "react-native";
 import { Button } from "react-native-paper";
 import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";
 import HamburgerMenu from "../../../components/HamburgerMenu";
-import RegistroPontoModal from "../../../screens/monitors/registrar-ponto"; // ADICIONADO: Import do modal
+import RegistroPontoModal from "../../../screens/monitors/registrar-ponto";
 import { TableStyle } from "../../../style/TableStyle";
 import { FormStyles } from "../../../style/FormStyles";
 import { NavigationProp } from "../../../routes/rootStackParamList ";
 import { useThemeMode } from "../../../context/ThemeContext";
+
+const diasSemana = [
+  "Segunda-feira",
+  "Terça-feira",
+  "Quarta-feira",
+  "Quinta-feira",
+  "Sexta-feira",
+];
+
+const registrosSemanaMock = [
+  { dia: "Segunda-feira", entrada: "08:00", saida: "12:00" },
+  { dia: "Terça-feira", entrada: "08:15", saida: "12:10" },
+  { dia: "Quarta-feira", entrada: "", saida: "" },
+  { dia: "Quinta-feira", entrada: "08:30", saida: "" },
+  { dia: "Sexta-feira", entrada: "", saida: "" },
+];
 
 const DetailsMonitor = () => {
   const navigation = useNavigation<NavigationProp>();
   const route = useRoute<RouteProp<{ params: { id: number } }, "params">>();
   const { isDarkMode } = useThemeMode();
 
-  // ADICIONADO: Estado para controlar o modal
   const [modalVisible, setModalVisible] = useState(false);
+  const [confirmVisible, setConfirmVisible] = useState(false);
+  const [horaSelecionada, setHoraSelecionada] = useState<string>("");
+
+  // ESTADO PARA ENTRADA E SAÍDA
+  const [entrada, setEntrada] = useState("Não definida");
+  const [saida, setSaida] = useState("Não definida");
+
+  const [modalTipo, setModalTipo] = useState<"entrada" | "saida">("entrada");
+  const [modalRegistrosVisible, setModalRegistrosVisible] = useState(false);
 
   const id = route.params?.id;
-  
-  // Dados mockados do monitor baseados na imagem
+
   const monitor = {
     id: id,
     nome: "João Silva",
     cronograma: {
-      entrada: "08:00",
-      saida: "Não definida",
+      entrada,
+      saida,
       horarios: {
         segunda: "2h",
         terca: "2h", 
@@ -36,16 +59,41 @@ const DetailsMonitor = () => {
     }
   };
 
-  // ADICIONADO: Função para abrir o modal
+  // Função chamada ao registrar ponto
   const handleRegistrarPonto = () => {
+    if (entrada !== "Não definida" && entrada !== "") {
+      setModalTipo("saida");
+    } else {
+      setModalTipo("entrada");
+    }
     setModalVisible(true);
   };
 
+  // Função para atualizar entrada e saída
+  const handleConfirmarPonto = (novaEntrada: string, novaSaida: string) => {
+    if (modalTipo === "entrada") {
+      setEntrada(novaEntrada);
+    }
+    if (modalTipo === "saida") {
+      setSaida(novaSaida);
+    }
+    setModalVisible(false);
+  };
+
+  // No DetailsMonitor
+  const handleRegistrarPontoModal = (hora: string) => {
+    setHoraSelecionada(hora);
+    setConfirmVisible(true);
+  };
+
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: isDarkMode ? "#181818" : "#fff" }}>
-      <View style={TableStyle.menuContainer}>
-        <HamburgerMenu />
-      </View>
+    <SafeAreaView style={{
+      flex: 1,
+      backgroundColor: isDarkMode ? "#181818" : "#fff",
+      justifyContent: "center",
+      alignItems: "center"
+    }}>
+     
       
       <View
         style={{
@@ -56,13 +104,7 @@ const DetailsMonitor = () => {
           marginTop: 10,
         }}
       >
-        <Button
-          onPress={() => navigation.goBack()}
-          style={FormStyles.goBackButton}
-          labelStyle={{ color: "white" }}
-        >
-          Voltar
-        </Button>
+       
       </View>
 
       <Text
@@ -157,7 +199,7 @@ const DetailsMonitor = () => {
                 fontSize: 16,
               }}
             >
-              Horários
+              Horário de hoje:
             </Text>
             
             <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
@@ -210,12 +252,9 @@ const DetailsMonitor = () => {
                 borderRadius: 8,
               }}
               labelStyle={{ color: "white", fontWeight: "bold" }}
-              onPress={() => {
-                // Simular ação de ver registro
-                console.log("Ver registro");
-              }}
+              onPress={() => setModalRegistrosVisible(true)}
             >
-              VER REGISTRO
+              VER REGISTROS
             </Button>
           </View>
         </View>
@@ -226,13 +265,142 @@ const DetailsMonitor = () => {
         ]}>Monitor não encontrado.</Text>
       )}
 
-      {/* ADICIONADO: Modal de registro de ponto */}
+      {/* MODIFICADO: Passa função para atualizar entrada/saída */}
       <RegistroPontoModal
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
         monitorNome={monitor?.nome || "Monitor"}
         isDarkMode={isDarkMode}
+        onConfirm={handleConfirmarPonto}
+        tipo={modalTipo}
       />
+
+      <Modal
+        visible={confirmVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setConfirmVisible(false)}
+      >
+        <View style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundColor: "rgba(0,0,0,0.4)"
+        }}>
+          <View style={{
+            backgroundColor: isDarkMode ? "#232323" : "#fff",
+            padding: 24,
+            borderRadius: 12,
+            alignItems: "center",
+            width: "80%"
+          }}>
+            <Text style={{
+              fontSize: 18,
+              fontWeight: "bold",
+              color: isDarkMode ? "#fff" : "#000",
+              marginBottom: 16
+            }}>
+              Tem certeza que deseja registrar?
+            </Text>
+            <Text style={{
+              fontSize: 16,
+              color: "#28a745",
+              marginBottom: 24
+            }}>
+              Horário: {horaSelecionada}
+            </Text>
+            <Button
+              mode="contained"
+              style={{ backgroundColor: "#dc3545", marginBottom: 8 }}
+              onPress={() => {
+                if (modalTipo === "entrada") setEntrada(horaSelecionada);
+                if (modalTipo === "saida") setSaida(horaSelecionada);
+                setConfirmVisible(false);
+                setModalVisible(false);
+              }}
+            >
+              Confirmar
+            </Button>
+            <Button
+              mode="outlined"
+              onPress={() => setConfirmVisible(false)}
+            >
+              Cancelar
+            </Button>
+          </View>
+        </View>
+      </Modal>
+
+      {/* MODAL DE REGISTROS DA SEMANA */}
+      <Modal
+        visible={modalRegistrosVisible}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setModalRegistrosVisible(false)}
+      >
+        <View style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundColor: "rgba(0,0,0,0.4)"
+        }}>
+          <View style={{
+            backgroundColor: isDarkMode ? "#232323" : "#fff",
+            padding: 24,
+            borderRadius: 12,
+            width: "90%",
+            maxHeight: "80%",
+          }}>
+            <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+              <Text style={{
+                fontSize: 18,
+                fontWeight: "bold",
+                color: isDarkMode ? "#fff" : "#000",
+              }}>
+                REGISTROS DA SEMANA
+              </Text>
+              <Button
+                mode="text"
+                onPress={() => setModalRegistrosVisible(false)}
+                labelStyle={{ color: isDarkMode ? "#fff" : "#000", fontSize: 18 }}
+              >
+                X
+              </Button>
+            </View>
+            {registrosSemanaMock.map((registro, idx) => (
+              <View key={registro.dia} style={{
+                padding: 12,
+                marginBottom: 8,
+                backgroundColor: isDarkMode ? "#181818" : "#f8f9fa",
+                borderRadius: 8,
+                borderLeftWidth: 3,
+                borderLeftColor: registro.entrada ? "#007bff" : "#ccc",
+              }}>
+                <Text style={{
+                  fontWeight: "bold",
+                  color: isDarkMode ? "#fff" : "#000",
+                  fontSize: 15,
+                }}>
+                  {registro.dia}
+                </Text>
+                <Text style={{
+                  color: registro.entrada ? "#28a745" : "#dc3545",
+                  fontSize: 14,
+                  marginTop: 4,
+                }}>
+                  Entrada: {registro.entrada || "—"}
+                </Text>
+                <Text style={{
+                  color: registro.saida ? "#007bff" : "#dc3545",
+                  fontSize: 14,
+                }}>
+                  Saída: {registro.saida || "—"}
+                </Text>
+              </View>
+            ))}
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 };
