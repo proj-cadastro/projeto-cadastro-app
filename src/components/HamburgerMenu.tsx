@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useAuth } from "../context/AuthContext";
-import Icon from "react-native-vector-icons/MaterialIcons";
+import { MaterialIcons } from '@expo/vector-icons';
 import { useThemeMode } from "../context/ThemeContext";
 import ThemeSwitch from "./ThemeSwitch";
 
@@ -65,7 +65,7 @@ export default function HamburgerMenu() {
                 }}
               >
                 <View style={styles.iconRow}>
-                  <Icon name="home" size={20} style={[styles.iconItem, { color: theme.colors.onBackground }]} />
+                  <MaterialIcons name="home" size={20} style={[styles.iconItem, { color: theme.colors.onBackground }]} />
                   <Text style={[styles.menuText, { color: theme.colors.onBackground }]}>Início</Text>
                 </View>
               </TouchableOpacity>
@@ -83,7 +83,7 @@ export default function HamburgerMenu() {
                   }}
                 >
                   <View style={styles.iconRow}>
-                    <Icon name="list" size={20} style={[styles.iconItem, { color: theme.colors.onBackground }]} />
+                    <MaterialIcons name="list" size={20} style={[styles.iconItem, { color: theme.colors.onBackground }]} />
                     <Text style={[styles.menuText, { color: theme.colors.onBackground }]}>Lista</Text>
                   </View>
                 </TouchableOpacity>
@@ -96,7 +96,7 @@ export default function HamburgerMenu() {
                   }}
                 >
                   <View style={styles.iconRow}>
-                    <Icon name="person-add" size={20} style={[styles.iconItem, { color: theme.colors.onBackground }]} />
+                    <MaterialIcons name="person-add" size={20} style={[styles.iconItem, { color: theme.colors.onBackground }]} />
                     <Text style={[styles.menuText, { color: theme.colors.onBackground }]}>Cadastro</Text>
                   </View>
                 </TouchableOpacity>
@@ -115,7 +115,7 @@ export default function HamburgerMenu() {
                   }}
                 >
                   <View style={styles.iconRow}>
-                    <Icon name="list-alt" size={20} style={[styles.iconItem, { color: theme.colors.onBackground }]} />
+                    <MaterialIcons name="list-alt" size={20} style={[styles.iconItem, { color: theme.colors.onBackground }]} />
                     <Text style={[styles.menuText, { color: theme.colors.onBackground }]}>Lista</Text>
                   </View>
                 </TouchableOpacity>
@@ -128,7 +128,7 @@ export default function HamburgerMenu() {
                   }}
                 >
                   <View style={styles.iconRow}>
-                    <Icon name="playlist-add" size={20} style={[styles.iconItem, { color: theme.colors.onBackground }]} />
+                    <MaterialIcons name="playlist-add" size={20} style={[styles.iconItem, { color: theme.colors.onBackground }]} />
                     <Text style={[styles.menuText, { color: theme.colors.onBackground }]}>Cadastro</Text>
                   </View>
                 </TouchableOpacity>
@@ -145,7 +145,7 @@ export default function HamburgerMenu() {
                     activeOpacity={0.7}
                   >
                     <View style={styles.iconRow}>
-                      <Icon name="brightness-6" size={20} style={[styles.iconItem, { color: theme.colors.onBackground }]} />
+                      <MaterialIcons name="brightness-6" size={20} style={[styles.iconItem, { color: theme.colors.onBackground }]} />
                       <Text style={[styles.menuText, { color: theme.colors.onBackground }]}>Tema</Text>
                     </View>
                   </TouchableOpacity>
@@ -163,14 +163,14 @@ export default function HamburgerMenu() {
                 navigation.navigate("SupportPage" as never)
               }}>
                 <View style={[styles.iconRow, { marginBottom: 30 }]}>
-                  <Icon name="contact-support" size={20} style={[styles.iconItem, { color: theme.colors.onBackground }]} />
+                  <MaterialIcons name="contact-support" size={20} style={[styles.iconItem, { color: theme.colors.onBackground }]} />
                   <Text style={[styles.menuText, { color: theme.colors.onBackground }]}>Falar com Suporte</Text>
                 </View>
               </TouchableOpacity>
 
               <TouchableOpacity onPress={handleLogout}>
                 <View style={styles.iconRow}>
-                  <Icon name="logout" size={20} color="#d00" style={styles.iconItem} />
+                  <MaterialIcons name="logout" size={20} color="#d00" style={styles.iconItem} />
                   <Text style={styles.logoutText}>Sair</Text>
                 </View>
               </TouchableOpacity>

@@ -9,7 +9,9 @@ export interface UserData {
 }
 
 export async function signUp(data: UserData) {
+  console.log("Chegou no service", api);
   const response = await api.post("/usuarios", data);
+  console.log("Usuário criado:", response);
   return response.data;
 }
 

@@ -105,6 +105,7 @@ export default function StepTwo() {
       <View style={FormStyles.menuContainer}>
         <HamburgerMenu />
       </View>
+      
       <Button
         mode="outlined"
         onPress={() => navigation.goBack()}
@@ -113,138 +114,151 @@ export default function StepTwo() {
       >
         Voltar
       </Button>
-      <View style={[FormStyles.container, styles.centerContainer]}>
+      
+      <View style={FormStyles.container}>
         <ScrollView
-          contentContainerStyle={FormStyles.scrollContent}
+          contentContainerStyle={[FormStyles.scrollContent, styles.scrollPadding]} // ADICIONADO: Padding customizado
           keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false} // ADICIONADO: Remove indicador
         >
-          <View style={styles.cardWrapper}>
-            <Card
-              style={[
-                FormStyles.card,
-                { backgroundColor: isDarkMode ? "#232323" : "#fff" },
-              ]}
-              mode="elevated"
-            >
-              <Card.Content>
-                <Text
-                  style={[
-                    FormStyles.title,
-                    { color: isDarkMode ? "#fff" : "#000" },
-                  ]}
-                >
-                  2º Etapa
-                </Text>
+          {/* MODIFICADO: Removido cardWrapper e usado margin direta no card */}
+          <Card
+            style={[
+              FormStyles.card,
+              { backgroundColor: isDarkMode ? "#232323" : "#fff" },
+              styles.cardMargin // ADICIONADO: Margem customizada
+            ]}
+            mode="elevated"
+          >
+            <Card.Content>
+              <Text
+                style={[
+                  FormStyles.title,
+                  { color: isDarkMode ? "#fff" : "#000" },
+                ]}
+              >
+                2º Etapa
+              </Text>
 
-                <Text
-                  style={[
-                    FormStyles.description,
-                    { color: isDarkMode ? "#fff" : "#000" },
-                  ]}
-                >
-                  Insira os dados do curso para registrá-lo no sistema
-                </Text>
+              <Text
+                style={[
+                  FormStyles.description,
+                  { color: isDarkMode ? "#fff" : "#000" },
+                ]}
+              >
+                Insira os dados do curso para registrá-lo no sistema
+              </Text>
 
-                <Text
-                  style={[
+              <Text
+                style={[
+                  FormStyles.label,
+                  { color: isDarkMode ? "#fff" : "#000" },
+                ]}
+              >
+                Modalidade
+              </Text>
+              {fieldErrors.modelo && (
+                <Text style={styles.errorText}>{fieldErrors.modelo}</Text>
+              )}
+              <ListPicker
+                items={Object.values(ModeloCurso)}
+                onSelect={(modelo) => {
+                  setModelo(modelo);
+                  if (fieldErrors.modelo)
+                    setFieldErrors((prev) => {
+                      const updated = { ...prev };
+                      delete updated.modelo;
+                      return updated;
+                    });
+                }}
+                backgroundColor={isDarkMode ? "#202020" : "#fff"}
+              />
+
+              <Text
+                style={[
+                  FormStyles.label,
+                  { color: isDarkMode ? "#fff" : "#000" },
+                ]}
+              >
+                Coordenador
+              </Text>
+              {fieldErrors.coordenadorId && (
+                <Text style={styles.errorText}>
+                  {fieldErrors.coordenadorId}
+                </Text>
+              )}
+              <ListPicker
+                items={professors}
+                onSelect={(id) => {
+                  setCoordenadorId(id);
+
+                  if (fieldErrors.coordenadorId)
+                    setFieldErrors((prev) => {
+                      const updated = { ...prev };
+                      delete updated.coordenadorId;
+                      return updated;
+                    });
+                }}
+                getLabel={(prof) => prof.nome}
+                getValue={(prof) => prof.id}
+                backgroundColor={isDarkMode ? "#202020" : "#fff"}
+              />
+              {materias.length > 0 && (
+                <>
+                  <Text style={[
                     FormStyles.label,
-                    { color: isDarkMode ? "#fff" : "#000" },
-                  ]}
-                >
-                  Modalidade
-                </Text>
-                {fieldErrors.modelo && (
-                  <Text style={styles.errorText}>{fieldErrors.modelo}</Text>
-                )}
-                <ListPicker
-                  items={Object.values(ModeloCurso)}
-                  onSelect={(modelo) => {
-                    setModelo(modelo);
-                    if (fieldErrors.modelo)
-                      setFieldErrors((prev) => {
-                        const updated = { ...prev };
-                        delete updated.modelo;
-                        return updated;
-                      });
-                  }}
-                  backgroundColor={isDarkMode ? "#202020" : "#fff"}
-                />
-
-                <Text
-                  style={[
-                    FormStyles.label,
-                    { color: isDarkMode ? "#fff" : "#000" },
-                  ]}
-                >
-                  Coordenador
-                </Text>
-                {fieldErrors.coordenadorId && (
-                  <Text style={styles.errorText}>
-                    {fieldErrors.coordenadorId}
+                    { color: isDarkMode ? "#fff" : "#000" }
+                  ]}>
+                    Matérias Adicionadas
                   </Text>
-                )}
-                <ListPicker
-                  items={professors}
-                  onSelect={(id) => {
-                    setCoordenadorId(id);
+                  {materias.map((materia, index) => (
+                    <Text 
+                      key={index} 
+                      style={[
+                        styles.materiaItem,
+                        { color: isDarkMode ? "#fff" : "#000" }
+                      ]}
+                    >
+                      {materia.nome} - {materia.cargaHoraria}h
+                    </Text>
+                  ))}
+                </>
+              )}
 
-                    if (fieldErrors.coordenadorId)
-                      setFieldErrors((prev) => {
-                        const updated = { ...prev };
-                        delete updated.coordenadorId;
-                        return updated;
-                      });
-                  }}
-                  getLabel={(prof) => prof.nome}
-                  getValue={(prof) => prof.id}
-                  backgroundColor={isDarkMode ? "#202020" : "#fff"}
-                />
-                {materias.length > 0 && (
-                  <>
-                    <Text style={FormStyles.label}>Matérias Adicionadas</Text>
-                    {materias.map((materia, index) => (
-                      <Text key={index} style={styles.materiaItem}>
-                        {materia.nome} - {materia.cargaHoraria}h
-                      </Text>
-                    ))}
-                  </>
-                )}
+              <Card
+                style={[
+                  styles.linkCard,
+                  { backgroundColor: isDarkMode ? "#444" : "#a1a1a1", marginTop: 16 }
+                ]}
+                mode="elevated"
+              >
+                <TouchableOpacity onPress={() => setMateriaModalVisible(true)}>
+                  <Text style={styles.linkText}>Adicionar Matéria</Text>
+                </TouchableOpacity>
+              </Card>
 
-                <Card
-                  style={[
-                    styles.linkCard,
-                    { backgroundColor: isDarkMode ? "#444" : "#a1a1a1", marginTop: 16 }
-                  ]}
-                  mode="elevated"
-                >
-                  <TouchableOpacity onPress={() => setMateriaModalVisible(true)}>
-                    <Text style={styles.linkText}>Adicionar Matéria</Text>
-                  </TouchableOpacity>
-                </Card>
+              <AddMateriaModal
+                visible={isMateriaModalVisible}
+                onClose={() => setMateriaModalVisible(false)}
+                onAddMateria={handleAddMateria}
+                professors={professors}
+                isDarkMode={isDarkMode}
+                buttonColor={FormStyles.button.backgroundColor}
+              />
+            </Card.Content>
 
-                <AddMateriaModal
-                  visible={isMateriaModalVisible}
-                  onClose={() => setMateriaModalVisible(false)}
-                  onAddMateria={handleAddMateria}
-                  professors={professors}
-                  isDarkMode={isDarkMode}
-                  buttonColor={FormStyles.button.backgroundColor}
-                />
-              </Card.Content>
+            <Card.Actions>
+              <Button
+                labelStyle={{ color: "white" }}
+                style={FormStyles.button}
+                onPress={handleSubmit}
+              >
+                Finalizar
+              </Button>
+            </Card.Actions>
 
-              <Card.Actions>
-                <Button
-                  labelStyle={{ color: "white" }}
-                  style={FormStyles.button}
-                  onPress={handleSubmit}
-                >
-                  Finalizar
-                </Button>
-              </Card.Actions>
-
-              <ProgressBar progress={0.8} color={MD3Colors.neutral40} />
-            </Card>
-          </View>
+            <ProgressBar progress={0.8} color={MD3Colors.neutral40} />
+          </Card>
         </ScrollView>
       </View>
 
@@ -270,16 +284,18 @@ const styles = StyleSheet.create({
     borderColor: "red",
     borderWidth: 1,
   },
-  centerContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+  // REMOVIDO: centerContainer que estava centralizando
+  // REMOVIDO: cardWrapper que era desnecessário
+  
+  // ADICIONADO: Novos estilos para melhor controle do layout
+  scrollPadding: {
+    paddingVertical: 20, // Padding superior e inferior
+    paddingBottom: Platform.OS === 'ios' ? 100 : 80, // Padding extra
+    flexGrow: 1, // Permite que o scroll funcione corretamente
   },
-  cardWrapper: {
-    width: "96%",
-    alignSelf: "center",
-    justifyContent: "center",
-    flex: 1,
+  cardMargin: {
+    marginHorizontal: 16, // Margem lateral para o card
+    marginVertical: 10, // Margem vertical
   },
   materiaItem: {
     fontSize: 14,

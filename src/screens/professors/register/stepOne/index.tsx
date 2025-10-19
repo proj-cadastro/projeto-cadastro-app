@@ -8,6 +8,10 @@ import {
   Text,
   TextInput,
   StyleSheet,
+  Keyboard,
+  TouchableWithoutFeedback,
+  Platform,
+  KeyboardAvoidingView,
 } from "react-native";
 import { Card, Button, ProgressBar, MD3Colors } from "react-native-paper";
 import ListPicker from "../../../../components/atoms/ListPicker";
@@ -45,6 +49,42 @@ export default function ProfessorFormStepOne() {
   const [showSuggestion, setShowSuggestion] = useState(false);
   const [suggestions, setSuggestions] = useState<{ nome?: string; email?: string; titulacao?: string }>({});
   const [loadingSuggestions, setLoadingSuggestions] = useState(false);
+  
+  // ADICIONADO: Estado para controlar a visibilidade do menu hambúrguer
+  const [showHamburgerMenu, setShowHamburgerMenu] = useState(true);
+
+  // ADICIONADO: Listeners do teclado para controlar a visibilidade do menu
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => {
+      setShowHamburgerMenu(false); // Esconde o menu quando o teclado aparecer
+    });
+
+    const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
+      setShowHamburgerMenu(true); // Mostra o menu quando o teclado sumir
+    });
+
+    return () => {
+      keyboardDidShowListener?.remove();
+      keyboardDidHideListener?.remove();
+    };
+  }, []);
+
+  // ADICIONADO: Função para esconder o menu ao focar em input
+  const handleInputFocus = () => {
+    setShowHamburgerMenu(false);
+  };
+
+  // ADICIONADO: Função para mostrar o menu ao desfocar de input (opcional)
+  const handleInputBlur = (fieldChanged?: string, value?: string) => {
+    // Só mostra o menu novamente se o teclado não estiver visível
+    // Você pode remover essa linha se quiser que o menu só apareça quando o teclado sumir
+    // setShowHamburgerMenu(true);
+    
+    // Mantém a função de sugestões existente
+    if (fieldChanged && value !== undefined) {
+      fetchSuggestions(fieldChanged, value);
+    }
+  };
 
   useEffect(() => {
     let isMounted = true;
@@ -151,25 +191,38 @@ export default function ProfessorFormStepOne() {
   };
 
   return (
+    
+    <KeyboardAvoidingView
+          style={{ flex: 1, backgroundColor: isDarkMode ? "#181818" : "#fff" }}
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+        >
+          
     <SafeAreaView style={[
       FormStyles.safeArea,
       { backgroundColor: isDarkMode ? "#181818" : "#fff" }
     ]}>
-      <View style={FormStyles.menuContainer}>
-        <HamburgerMenu />
-      </View>
+
+      {/* MODIFICADO: Menu só aparece se showHamburgerMenu for true */}
+      {showHamburgerMenu && (
+        <View style={FormStyles.menuContainer}>
+          <HamburgerMenu />
+        </View>
+      )}
+
       <Button
         onPress={() => navigation.goBack()}
         style={FormStyles.goBackButton}
         labelStyle={{ color: "white" }}
       >
         Voltar
-      </Button>
+      </Button>            
+
       <View style={FormStyles.container}>
-        <ScrollView
+        <ScrollView        
           contentContainerStyle={FormStyles.scrollContent}
           keyboardShouldPersistTaps="handled"
         >
+        
           <Card style={[
             FormStyles.card,
             { backgroundColor: isDarkMode ? "#232323" : "#fff" }
@@ -222,8 +275,8 @@ export default function ProfessorFormStepOne() {
                         return updated;
                       });
                   }}
-                  onBlur={() => fetchSuggestions("nome", nome)}
-
+                  onFocus={handleInputFocus} // ADICIONADO: Esconde menu ao focar
+                  onBlur={() => handleInputBlur("nome", nome)} // MODIFICADO: Usa nova função
                 />
                 {!nome && suggestions.nome && suggestionEnabled && (
                   <FieldSuggestionButton onPress={() => setNome(suggestions.nome!)} />
@@ -245,7 +298,7 @@ export default function ProfessorFormStepOne() {
                     styles.inputFlex,
                     { color: isDarkMode ? "#fff" : "#000", borderColor: isDarkMode ? "#444" : "#ccc" },
                     fieldErrors.email ? styles.inputError : null,
-                    !nome && suggestions.nome && suggestionEnabled ? styles.suggestionPlaceholder : null,
+                    !email && suggestions.email && suggestionEnabled ? styles.suggestionPlaceholder : null, // CORRIGIDO: usando email ao invés de nome
                   ]}
                   onChangeText={(text) => {
                     setEmail(text);
@@ -260,7 +313,8 @@ export default function ProfessorFormStepOne() {
                   autoCapitalize="none"
                   keyboardType="email-address"
                   autoComplete="email"
-                  onBlur={() => fetchSuggestions("email", email)}
+                  onFocus={handleInputFocus} // ADICIONADO: Esconde menu ao focar
+                  onBlur={() => handleInputBlur("email", email)} // MODIFICADO: Usa nova função
                   placeholderTextColor={
                     !email && suggestions.email && suggestionEnabled ? "#D32719" : "#888"
                   }
@@ -335,6 +389,8 @@ export default function ProfessorFormStepOne() {
                       });
                   }}
                   value={idUnidade}
+                  onFocus={handleInputFocus} // ADICIONADO: Esconde menu ao focar
+                  onBlur={() => handleInputBlur()} // ADICIONADO: Controla visibilidade do menu
                 />
                 {showSuggestion && unidadeSugerida?.id && !idUnidade && (
                   <UnitSuggestionButton
@@ -364,7 +420,11 @@ export default function ProfessorFormStepOne() {
           />
         </ScrollView>
       </View>
+      
     </SafeAreaView>
+    
+    </KeyboardAvoidingView>
+    
   );
 }
 
