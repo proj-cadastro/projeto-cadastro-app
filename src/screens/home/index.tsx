@@ -9,7 +9,6 @@ import ProximityNotification from "../../components/ProximityNotification";
 import { buscarOuCacheUnidadeProxima } from "../../services/unit-location/unitService";
 import { useThemeMode } from "../../context/ThemeContext";
 
-
 const HomeScreen = () => {
   const { professors } = useProfessor();
   const { labels, data } = groupByTitulacao(professors);
@@ -38,7 +37,12 @@ const HomeScreen = () => {
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: isDarkMode ? "#181818" : "#fff" }]}>
+    <SafeAreaView
+      style={[
+        styles.container,
+        { backgroundColor: isDarkMode ? "#181818" : "#fff" },
+      ]}
+    >
       <View style={styles.menuContainer}>
         <HamburgerMenu />
       </View>
@@ -48,11 +52,7 @@ const HomeScreen = () => {
           <Text style={[styles.title, { color: isDarkMode ? "#fff" : "#333" }]}>
             Distribuição de Professores por Titulação
           </Text>
-          <Chart
-            data={data}
-            label={labels}
-            chartType={chartType}
-          />
+          <Chart data={data} label={labels} chartType={chartType} />
           <View style={styles.fabContainer}>
             <InteractBtn
               name={chartType === "bar" ? "pie-chart" : "bar-chart"}
@@ -113,6 +113,24 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 20,
     paddingTop: 40,
+  },
+  waitingContent: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 20,
+    paddingTop: 40,
+  },
+  waitingTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 16,
+    textAlign: "center",
+  },
+  waitingText: {
+    fontSize: 16,
+    textAlign: "center",
+    marginBottom: 20,
   },
   fabContainer: {
     position: "absolute",

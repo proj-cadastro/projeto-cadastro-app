@@ -31,7 +31,8 @@ const LoginScreen = ({ navigation }: any) => {
   const [showPassword, setShowPassword] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
   const [isLoading, setIsLoading] = useState(false);
-  const { login: authLogin } = useAuth();
+
+  const { login: authLogin, user, userRole } = useAuth();
 
   const { isDarkMode, toggleTheme, theme } = useThemeMode();
   const { toast, showError, showInfo, hideToast } = useToast();
@@ -58,8 +59,9 @@ const LoginScreen = ({ navigation }: any) => {
         { email, senha: password },
         { abortEarly: false }
       );
-      const token = await loginService(email, password);
-      authLogin(token);
+      const loginResponse = await loginService(email, password);
+
+      await authLogin(loginResponse.token, loginResponse.user);
     } catch (error: any) {
       if (error.name === "ValidationError") {
         const errors: { [key: string]: string } = {};
@@ -69,7 +71,9 @@ const LoginScreen = ({ navigation }: any) => {
         setFieldErrors(errors);
       } else {
         // Mostra toast de erro para credenciais inválidas
-        showError("Email ou senha incorretos. Verifique suas credenciais e tente novamente.");
+        showError(
+          "Email ou senha incorretos. Verifique suas credenciais e tente novamente."
+        );
       }
     } finally {
       setIsLoading(false);
@@ -86,7 +90,14 @@ const LoginScreen = ({ navigation }: any) => {
           <View style={styles.switchContainer}>
             <ThemeSwitch isDarkMode={isDarkMode} toggleTheme={toggleTheme} />
           </View>
-          <Card style={[FormStyles.card, styles.card, { backgroundColor: theme.colors.background }]} mode="elevated">
+          <Card
+            style={[
+              FormStyles.card,
+              styles.card,
+              { backgroundColor: theme.colors.background },
+            ]}
+            mode="elevated"
+          >
             <Card.Content>
               <Image
                 source={
@@ -97,8 +108,17 @@ const LoginScreen = ({ navigation }: any) => {
                 style={styles.logo}
                 resizeMode="contain"
               />
-              <Text style={[FormStyles.title, { color: theme.colors.onBackground }]}>Login</Text>
-              <Text style={[FormStyles.description, { color: theme.colors.onBackground }]}>
+              <Text
+                style={[FormStyles.title, { color: theme.colors.onBackground }]}
+              >
+                Login
+              </Text>
+              <Text
+                style={[
+                  FormStyles.description,
+                  { color: theme.colors.onBackground },
+                ]}
+              >
                 Entre com seu e-mail e senha para acessar o sistema.
               </Text>
             </Card.Content>
@@ -114,7 +134,14 @@ const LoginScreen = ({ navigation }: any) => {
               <TextInput
                 placeholder="E-mail"
                 placeholderTextColor={theme.colors.outline}
-                style={[FormStyles.input, { width: "100%", color: theme.colors.onBackground, borderColor: theme.colors.outline }]}
+                style={[
+                  FormStyles.input,
+                  {
+                    width: "100%",
+                    color: theme.colors.onBackground,
+                    borderColor: theme.colors.outline,
+                  },
+                ]}
                 value={email}
                 onChangeText={setEmail}
                 autoCapitalize="none"
@@ -174,7 +201,7 @@ const LoginScreen = ({ navigation }: any) => {
                 <Card
                   style={[
                     styles.linkCard,
-                    { backgroundColor: isDarkMode ? "#444" : "#a1a1a1" }
+                    { backgroundColor: isDarkMode ? "#444" : "#a1a1a1" },
                   ]}
                   mode="elevated"
                 >
@@ -187,7 +214,7 @@ const LoginScreen = ({ navigation }: any) => {
                 <Card
                   style={[
                     styles.linkCard,
-                    { backgroundColor: isDarkMode ? "#444" : "#a1a1a1" }
+                    { backgroundColor: isDarkMode ? "#444" : "#a1a1a1" },
                   ]}
                   mode="elevated"
                 >
