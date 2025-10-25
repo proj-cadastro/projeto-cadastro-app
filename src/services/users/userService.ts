@@ -68,3 +68,18 @@ export async function updateUserStatus(
 ): Promise<void> {
   await api.patch(`/usuarios/${userId}/status`, { isActive });
 }
+
+export interface UpdateUserDto {
+  nome?: string;
+  email?: string;
+  role?: string;
+  isActive?: boolean;
+}
+
+export async function updateUserById(
+  userId: string,
+  data: UpdateUserDto
+): Promise<UsuarioResponse> {
+  const response = await api.put(`/usuarios/${userId}`, data);
+  return response.data.data || response.data;
+}

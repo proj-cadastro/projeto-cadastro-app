@@ -15,7 +15,6 @@ import {
   Modal,
   Portal,
   TextInput,
-  Switch,
   DataTable,
   FAB,
   IconButton,
@@ -29,6 +28,7 @@ import Toast from "../../components/atoms/Toast";
 import {
   getAllUsers,
   updateUserStatus,
+  updateUserById,
 } from "../../services/users/userService";
 import {
   createMonitor,
@@ -44,6 +44,8 @@ import {
   CreateHorarioTrabalhoDto,
 } from "../../types/monitor";
 import { useProfessor } from "../../context/ProfessorContext";
+import EditUserModal, { UpdateUserData } from "./components/EditUserModal";
+import MonitorModals from "./components/MonitorModals";
 
 const SuperAdminScreen = () => {
   const navigation = useNavigation();
@@ -55,6 +57,10 @@ const SuperAdminScreen = () => {
   // Estados para usuários
   const [users, setUsers] = useState<UsuarioResponse[]>([]);
   const [loadingUsers, setLoadingUsers] = useState(false);
+  const [showEditUserModal, setShowEditUserModal] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<UsuarioResponse | null>(
+    null
+  );
 
   // Estados para monitores
   const [monitors, setMonitors] = useState<MonitorResponse[]>([]);
@@ -166,6 +172,33 @@ const SuperAdminScreen = () => {
     } catch (error) {
       showError("Erro ao atualizar status do usuário");
     }
+  };
+
+  const handleUpdateUser = async (userId: string, data: UpdateUserData) => {
+    try {
+      await updateUserById(userId, data);
+      await loadUsers();
+      showSuccess("Usuário atualizado com sucesso");
+    } catch (error: any) {
+      console.error("Erro ao atualizar usuário:", error);
+      let errorMessage = "Erro ao atualizar usuário";
+
+      if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.response?.data?.error) {
+        errorMessage = error.response.data.error;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+
+      showError(errorMessage);
+      throw error; // Re-throw para o modal não fechar
+    }
+  };
+
+  const openEditUser = (user: UsuarioResponse) => {
+    setSelectedUser(user);
+    setShowEditUserModal(true);
   };
 
   const handleCreateMonitor = async () => {
@@ -336,6 +369,14 @@ const SuperAdminScreen = () => {
     setShowEditMonitorModal(true);
   };
 
+  const handleMonitorFormChange = (field: string, value: any) => {
+    setMonitorForm({ ...monitorForm, [field]: value });
+  };
+
+  const handleScheduleChange = (dia: DiaSemana, horas: number) => {
+    setWeeklySchedule({ ...weeklySchedule, [dia]: horas });
+  };
+
   const renderUsersTab = () => (
     <ScrollView style={styles.content}>
       <Text
@@ -371,26 +412,37 @@ const SuperAdminScreen = () => {
             </DataTable.Header>
 
             {users.map((user) => (
-              <DataTable.Row key={user.id}>
-                <DataTable.Cell style={{ flex: 2 }}>
-                  <Text style={{ color: isDarkMode ? "#fff" : "#000" }}>
-                    {user.nome}
-                  </Text>
-                </DataTable.Cell>
-                <DataTable.Cell style={{ flex: 1 }}>
-                  <Text style={{ color: isDarkMode ? "#fff" : "#000" }}>
-                    {user.role}
-                  </Text>
-                </DataTable.Cell>
-                <DataTable.Cell style={{ flex: 1, marginTop: 6 }}>
-                  <Switch
-                    value={user.isActive}
-                    onValueChange={() =>
-                      handleToggleUserStatus(user.id, user.isActive)
-                    }
-                  />
-                </DataTable.Cell>
-              </DataTable.Row>
+              <TouchableOpacity
+                key={user.id}
+                onPress={() => openEditUser(user)}
+              >
+                <DataTable.Row>
+                  <DataTable.Cell style={{ flex: 2 }}>
+                    <Text style={{ color: isDarkMode ? "#fff" : "#000" }}>
+                      {user.nome}
+                    </Text>
+                  </DataTable.Cell>
+                  <DataTable.Cell style={{ flex: 1 }}>
+                    <Text style={{ color: isDarkMode ? "#fff" : "#000" }}>
+                      {user.role}
+                    </Text>
+                  </DataTable.Cell>
+                  <DataTable.Cell style={{ flex: 1 }}>
+                    <Text
+                      style={{
+                        color: user.isActive
+                          ? "#4caf50"
+                          : isDarkMode
+                          ? "#999"
+                          : "#666",
+                        fontWeight: "500",
+                      }}
+                    >
+                      {user.isActive ? "Ativo" : "Inativo"}
+                    </Text>
+                  </DataTable.Cell>
+                </DataTable.Row>
+              </TouchableOpacity>
             ))}
           </DataTable>
         </Card.Content>
@@ -502,316 +554,6 @@ const SuperAdminScreen = () => {
     </View>
   );
 
-  const renderMonitorModal = (isEdit = false) => (
-    <Portal>
-      <Modal
-        visible={isEdit ? showEditMonitorModal : showCreateMonitorModal}
-        onDismiss={() => {
-          if (isEdit) {
-            setShowEditMonitorModal(false);
-            setSelectedMonitor(null);
-          } else {
-            setShowCreateMonitorModal(false);
-          }
-          clearMonitorForm();
-        }}
-        contentContainerStyle={[
-          styles.modalContainer,
-          { backgroundColor: isDarkMode ? "#232323" : "#fff" },
-        ]}
-      >
-        <Text
-          style={[styles.modalTitle, { color: isDarkMode ? "#fff" : "#000" }]}
-        >
-          {isEdit ? "Editar Monitor" : "Criar Monitor"}
-        </Text>
-
-        <ScrollView showsVerticalScrollIndicator={false}>
-          <TextInput
-            label="Nome"
-            value={monitorForm.nome}
-            onChangeText={(text) =>
-              setMonitorForm({ ...monitorForm, nome: text })
-            }
-            mode="outlined"
-            style={styles.input}
-          />
-
-          <TextInput
-            label="Email"
-            value={monitorForm.email}
-            onChangeText={(text) =>
-              setMonitorForm({ ...monitorForm, email: text })
-            }
-            mode="outlined"
-            keyboardType="email-address"
-            style={styles.input}
-          />
-
-          <View style={styles.pickerContainer}>
-            <Text
-              style={[
-                styles.pickerLabel,
-                { color: isDarkMode ? "#fff" : "#000" },
-              ]}
-            >
-              Tipo de Monitor
-            </Text>
-            <View style={styles.pickerRow}>
-              <TouchableOpacity
-                style={[
-                  styles.pickerOption,
-                  {
-                    backgroundColor:
-                      monitorForm.tipo === TipoMonitor.MONITOR
-                        ? theme.colors.primary
-                        : isDarkMode
-                        ? "#333"
-                        : "#f0f0f0",
-                  },
-                ]}
-                onPress={() =>
-                  setMonitorForm({ ...monitorForm, tipo: TipoMonitor.MONITOR })
-                }
-              >
-                <Text
-                  style={{
-                    color:
-                      monitorForm.tipo === TipoMonitor.MONITOR
-                        ? "#fff"
-                        : isDarkMode
-                        ? "#fff"
-                        : "#000",
-                  }}
-                >
-                  Monitor
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[
-                  styles.pickerOption,
-                  {
-                    backgroundColor:
-                      monitorForm.tipo === TipoMonitor.PESQUISADOR
-                        ? theme.colors.primary
-                        : isDarkMode
-                        ? "#333"
-                        : "#f0f0f0",
-                  },
-                ]}
-                onPress={() =>
-                  setMonitorForm({
-                    ...monitorForm,
-                    tipo: TipoMonitor.PESQUISADOR,
-                  })
-                }
-              >
-                <Text
-                  style={{
-                    color:
-                      monitorForm.tipo === TipoMonitor.PESQUISADOR
-                        ? "#fff"
-                        : isDarkMode
-                        ? "#fff"
-                        : "#000",
-                  }}
-                >
-                  Pesquisador
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-
-          <TextInput
-            label="Nome da Pesquisa/Monitoria"
-            value={monitorForm.nomePesquisaMonitoria}
-            onChangeText={(text) =>
-              setMonitorForm({ ...monitorForm, nomePesquisaMonitoria: text })
-            }
-            mode="outlined"
-            style={styles.input}
-          />
-
-          <View style={styles.pickerContainer}>
-            <Text
-              style={[
-                styles.pickerLabel,
-                { color: isDarkMode ? "#fff" : "#000" },
-              ]}
-            >
-              Professor
-            </Text>
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              style={styles.professorsScroll}
-            >
-              {professors.map((professor) => (
-                <TouchableOpacity
-                  key={professor.id}
-                  style={[
-                    styles.professorOption,
-                    {
-                      backgroundColor:
-                        monitorForm.professorId === professor.id?.toString()
-                          ? theme.colors.primary
-                          : isDarkMode
-                          ? "#333"
-                          : "#f0f0f0",
-                    },
-                  ]}
-                  onPress={() =>
-                    setMonitorForm({
-                      ...monitorForm,
-                      professorId: professor.id?.toString() || "",
-                    })
-                  }
-                >
-                  <Text
-                    style={{
-                      color:
-                        monitorForm.professorId === professor.id?.toString()
-                          ? "#fff"
-                          : isDarkMode
-                          ? "#fff"
-                          : "#000",
-                      fontSize: 12,
-                    }}
-                    numberOfLines={2}
-                  >
-                    {professor.nome}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </ScrollView>
-          </View>
-
-          <TextInput
-            label="Carga Horária Semanal"
-            value={monitorForm.cargaHorariaSemanal}
-            onChangeText={(text) =>
-              setMonitorForm({ ...monitorForm, cargaHorariaSemanal: text })
-            }
-            mode="outlined"
-            keyboardType="numeric"
-            style={styles.input}
-          />
-
-          {/* Distribuição de Horários por Dia da Semana */}
-          <View style={styles.scheduleContainer}>
-            <Text
-              style={[
-                styles.scheduleTitle,
-                { color: isDarkMode ? "#fff" : "#000" },
-              ]}
-            >
-              Distribuição Semanal ({getTotalHoras()}h de{" "}
-              {monitorForm.cargaHorariaSemanal || 0}h)
-            </Text>
-
-            {Object.values(DiaSemana).map((dia) => (
-              <View key={dia} style={styles.dayContainer}>
-                <Text
-                  style={[
-                    styles.dayLabel,
-                    { color: isDarkMode ? "#fff" : "#000" },
-                  ]}
-                >
-                  {dia.charAt(0) + dia.slice(1).toLowerCase()}:
-                </Text>
-                <View style={styles.hourControls}>
-                  <TouchableOpacity
-                    style={[
-                      styles.hourButton,
-                      { backgroundColor: isDarkMode ? "#444" : "#f0f0f0" },
-                    ]}
-                    onPress={() => {
-                      const current = weeklySchedule[dia] || 0;
-                      if (current > 0) {
-                        setWeeklySchedule({
-                          ...weeklySchedule,
-                          [dia]: current - 1,
-                        });
-                      }
-                    }}
-                  >
-                    <Text style={{ color: isDarkMode ? "#fff" : "#000" }}>
-                      -
-                    </Text>
-                  </TouchableOpacity>
-
-                  <Text
-                    style={[
-                      styles.hourValue,
-                      { color: isDarkMode ? "#fff" : "#000" },
-                    ]}
-                  >
-                    {weeklySchedule[dia] || 0}h
-                  </Text>
-
-                  <TouchableOpacity
-                    style={[
-                      styles.hourButton,
-                      { backgroundColor: isDarkMode ? "#444" : "#f0f0f0" },
-                    ]}
-                    onPress={() => {
-                      const current = weeklySchedule[dia] || 0;
-                      const total = getTotalHoras();
-                      const maxTotal = parseInt(
-                        monitorForm.cargaHorariaSemanal || "0"
-                      );
-                      if (total < maxTotal) {
-                        setWeeklySchedule({
-                          ...weeklySchedule,
-                          [dia]: current + 1,
-                        });
-                      }
-                    }}
-                  >
-                    <Text style={{ color: isDarkMode ? "#fff" : "#000" }}>
-                      +
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            ))}
-
-            {getTotalHoras() !==
-              parseInt(monitorForm.cargaHorariaSemanal || "0") && (
-              <Text style={styles.scheduleWarning}>
-                ⚠️ Total distribuído ({getTotalHoras()}h) diferente da carga
-                horária ({monitorForm.cargaHorariaSemanal}h)
-              </Text>
-            )}
-          </View>
-        </ScrollView>
-
-        <View style={styles.modalActions}>
-          <Button
-            mode="outlined"
-            onPress={() => {
-              if (isEdit) {
-                setShowEditMonitorModal(false);
-                setSelectedMonitor(null);
-              } else {
-                setShowCreateMonitorModal(false);
-              }
-              clearMonitorForm();
-            }}
-          >
-            Cancelar
-          </Button>
-          <Button
-            mode="contained"
-            onPress={isEdit ? handleEditMonitor : handleCreateMonitor}
-          >
-            {isEdit ? "Salvar" : "Criar"}
-          </Button>
-        </View>
-      </Modal>
-    </Portal>
-  );
-
   return (
     <SafeAreaView
       style={[
@@ -822,7 +564,7 @@ const SuperAdminScreen = () => {
       <View style={styles.header}>
         <HamburgerMenu />
         <Text style={[styles.title, { color: isDarkMode ? "#fff" : "#000" }]}>
-          Super Admin
+          Administração
         </Text>
         <View style={{ width: 40 }} />
       </View>
@@ -882,8 +624,41 @@ const SuperAdminScreen = () => {
 
       {activeTab === "users" ? renderUsersTab() : renderMonitorsTab()}
 
-      {renderMonitorModal(false)}
-      {renderMonitorModal(true)}
+      <MonitorModals
+        showCreateModal={showCreateMonitorModal}
+        showEditModal={showEditMonitorModal}
+        isDarkMode={isDarkMode}
+        themeColors={theme.colors}
+        monitorForm={monitorForm}
+        weeklySchedule={weeklySchedule}
+        professors={professors}
+        onDismissCreate={() => {
+          setShowCreateMonitorModal(false);
+          clearMonitorForm();
+        }}
+        onDismissEdit={() => {
+          setShowEditMonitorModal(false);
+          setSelectedMonitor(null);
+          clearMonitorForm();
+        }}
+        onCreate={handleCreateMonitor}
+        onEdit={handleEditMonitor}
+        onFormChange={handleMonitorFormChange}
+        onScheduleChange={handleScheduleChange}
+        getTotalHoras={getTotalHoras}
+      />
+
+      <EditUserModal
+        visible={showEditUserModal}
+        user={selectedUser}
+        isDarkMode={isDarkMode}
+        themeColors={theme.colors}
+        onDismiss={() => {
+          setShowEditUserModal(false);
+          setSelectedUser(null);
+        }}
+        onSave={handleUpdateUser}
+      />
 
       <Portal>
         <Toast
