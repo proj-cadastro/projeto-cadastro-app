@@ -76,3 +76,18 @@ export async function updatePonto(
 export async function deletePonto(id: string): Promise<void> {
   await api.delete(`/pontos/${id}`);
 }
+
+export async function getPontosByMonitor(monitorId: string): Promise<Ponto[]> {
+  try {
+    const response = await api.get(`/pontos/usuario/${monitorId}`);
+    if (response.data && Array.isArray(response.data.data)) {
+      return response.data.data;
+    }
+    return response.data || [];
+  } catch (error: any) {
+    if (error.response?.status === 404) {
+      return [];
+    }
+    throw error;
+  }
+}

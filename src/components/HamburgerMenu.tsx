@@ -309,6 +309,51 @@ export default function HamburgerMenu() {
                       { backgroundColor: theme.colors.outline },
                     ]}
                   />
+
+                  <View style={styles.categoryContainer}>
+                    <Text
+                      style={[
+                        styles.categoryLabel,
+                        { color: theme.colors.onBackground },
+                      ]}
+                    >
+                      Monitores
+                    </Text>
+
+                    <TouchableOpacity
+                      style={styles.menuItem}
+                      onPress={() => {
+                        setVisible(false);
+                        navigation.navigate("AdminMonitorsList" as never);
+                      }}
+                    >
+                      <View style={styles.iconRow}>
+                        <MaterialIcons
+                          name="list"
+                          size={20}
+                          style={[
+                            styles.iconItem,
+                            { color: theme.colors.onBackground },
+                          ]}
+                        />
+                        <Text
+                          style={[
+                            styles.menuText,
+                            { color: theme.colors.onBackground },
+                          ]}
+                        >
+                          Lista
+                        </Text>
+                      </View>
+                    </TouchableOpacity>
+                  </View>
+
+                  <View
+                    style={[
+                      styles.separator,
+                      { backgroundColor: theme.colors.outline },
+                    ]}
+                  />
                 </>
               )}
 
@@ -354,45 +399,6 @@ export default function HamburgerMenu() {
                   </View>
                 </View>
               </View>
-
-              {!isMonitor() && (
-                <View style={styles.monitorsContainer}>
-                  <Text
-                    style={[
-                      styles.categoryLabel,
-                      { color: theme.colors.onBackground },
-                    ]}
-                  >
-                    Monitores
-                  </Text>
-                  <TouchableOpacity
-                    style={styles.menuItem}
-                    onPress={() => {
-                      setVisible(false);
-                      navigation.navigate("MonitorsIndex" as never);
-                    }}
-                  >
-                    <View style={styles.iconRow}>
-                      <MaterialIcons
-                        name="list-alt"
-                        size={20}
-                        style={[
-                          styles.iconItem,
-                          { color: theme.colors.onBackground },
-                        ]}
-                      />
-                      <Text
-                        style={[
-                          styles.menuText,
-                          { color: theme.colors.onBackground },
-                        ]}
-                      >
-                        Lista
-                      </Text>
-                    </View>
-                  </TouchableOpacity>
-                </View>
-              )}
             </ScrollView>
 
             <View

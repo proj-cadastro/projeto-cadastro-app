@@ -31,6 +31,8 @@ const adminScreens = {
     .default,
   EditCourses: require("../screens/courses/edit").default,
   ListCourses: require("../screens/courses/list").default,
+  AdminMonitorsList: require("../screens/monitors/admin-list").default,
+  MonitorDetails: require("../screens/monitors/admin-details").default,
 };
 
 const superAdminScreens = {
