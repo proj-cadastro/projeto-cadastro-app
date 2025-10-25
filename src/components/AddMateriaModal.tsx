@@ -164,19 +164,17 @@ const AddMateriaModal: React.FC<AddMateriaModalProps> = ({
                 Adicionar
               </Button>
 
-              <Card
+              {/* MODIFICADO: Trocado TouchableWithoutFeedback por TouchableOpacity */}
+              <TouchableOpacity
                 style={[
                   styles.linkCard,
                   { backgroundColor: isDarkMode ? "#444" : "#a1a1a1", marginTop: 12 }
                 ]}
-                mode="elevated"
+                onPress={onClose} // MOVIDO: onPress diretamente no TouchableOpacity
+                activeOpacity={0.7} // ADICIONADO: Feedback visual ao tocar
               >
-                <TouchableWithoutFeedback onPress={onClose}>
-                  <View>
-                    <Text style={styles.linkText}>Fechar</Text>
-                  </View>
-                </TouchableWithoutFeedback>
-              </Card>
+                <Text style={styles.linkText}>Fechar</Text>
+              </TouchableOpacity>
             </Card.Content>
           </Card>
         </KeyboardAvoidingView>

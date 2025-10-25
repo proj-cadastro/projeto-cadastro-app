@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import * as React from "react";
+import { useState } from "react";
 import {
   View,
   Text,
@@ -41,6 +42,7 @@ const RegisterScreen = ({ navigation }: any) => {
         { nome, email, senha },
         { abortEarly: false }
       );
+      console.log("Chegou aqui");
       await signUp({ nome, email, senha });
       showSuccess("Cadastro realizado com sucesso!");
       setTimeout(() => {
@@ -52,11 +54,14 @@ const RegisterScreen = ({ navigation }: any) => {
         error.inner.forEach((err: any) => {
           if (err.path) errors[err.path] = err.message;
         });
+        
         setFieldErrors(errors);
       } else {
+        
         const errorMessage =
           error.response?.data?.mensagem || "Erro ao cadastrar";
         showError(errorMessage);
+        console.log("Erros de validação:", error);
       }
     } finally {
       setIsLoading(false);

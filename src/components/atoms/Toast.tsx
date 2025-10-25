@@ -53,6 +53,10 @@ export default function Toast({
       visible={visible}
       onDismiss={onDismiss}
       duration={duration}
+      wrapperStyle={{
+        top: 50,
+        bottom: undefined,
+      }}
       style={{
         backgroundColor: getBackgroundColor(),
         borderLeftWidth: 4,
