@@ -12,10 +12,9 @@ export type ProfessorIAData = {
 };
 
 export type RootStackParamList = {
-
   RegisterProfessorsStepOne: { iaData?: ProfessorIAData };
 
-  RegisterProfessorsStepTwo: { 
+  RegisterProfessorsStepTwo: {
     partialDataProfessor: ProfessorIAData;
   };
 
@@ -32,10 +31,14 @@ export type RootStackParamList = {
       codigo: string;
     };
   };
-  
+
   EditCourses: { id: number };
-  
+
+  Settings: undefined;
 };
 
 export type NavigationProp = StackNavigationProp<RootStackParamList>;
-export type RouteParamsProps<T extends keyof RootStackParamList> = RouteProp<RootStackParamList, T>;
+export type RouteParamsProps<T extends keyof RootStackParamList> = RouteProp<
+  RootStackParamList,
+  T
+>;

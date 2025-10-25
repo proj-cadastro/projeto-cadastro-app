@@ -22,3 +22,20 @@ export async function compareCode(code: string) {
 
   return response.data;
 }
+
+export async function resetPassword(novaSenha: string) {
+  const response = await api.post("/auth/resetar-senha", {
+    novaSenha,
+    confirmarSenha: novaSenha,
+  });
+  return response.data;
+}
+
+export async function changePassword(senhaAtual: string, novaSenha: string) {
+  const response = await api.put("/auth/alterar-senha", {
+    senhaAtual,
+    novaSenha,
+    confirmarSenha: novaSenha,
+  });
+  return response.data;
+}

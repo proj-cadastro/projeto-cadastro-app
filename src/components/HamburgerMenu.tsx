@@ -399,6 +399,51 @@ export default function HamburgerMenu() {
                   </View>
                 </View>
               </View>
+
+              <View
+                style={[
+                  styles.separator,
+                  { backgroundColor: theme.colors.outline },
+                ]}
+              />
+
+              <View style={styles.categoryContainer}>
+                <Text
+                  style={[
+                    styles.categoryLabel,
+                    { color: theme.colors.onBackground },
+                  ]}
+                >
+                  Conta
+                </Text>
+
+                <TouchableOpacity
+                  style={styles.menuItem}
+                  onPress={() => {
+                    setVisible(false);
+                    navigation.navigate("Settings" as never);
+                  }}
+                >
+                  <View style={styles.iconRow}>
+                    <MaterialIcons
+                      name="settings"
+                      size={20}
+                      style={[
+                        styles.iconItem,
+                        { color: theme.colors.onBackground },
+                      ]}
+                    />
+                    <Text
+                      style={[
+                        styles.menuText,
+                        { color: theme.colors.onBackground },
+                      ]}
+                    >
+                      Configurações
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              </View>
             </ScrollView>
 
             <View
