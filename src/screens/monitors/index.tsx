@@ -32,6 +32,7 @@ import {
   getPontosByUser,
 } from "../../services/pontos/pontoService";
 import { Ponto } from "../../types/ponto";
+import { FormStyles } from "../../style/FormStyles";
 
 const MonitorsScreen = () => {
   const navigation = useNavigation();
@@ -178,12 +179,13 @@ const MonitorsScreen = () => {
           { backgroundColor: isDarkMode ? "#181818" : "#fff" },
         ]}
       >
-        <View style={styles.header}>
+        <View style={FormStyles.menuContainer}>
           <HamburgerMenu />
+        </View>
+        <View style={styles.header}>
           <Text style={[styles.title, { color: isDarkMode ? "#fff" : "#000" }]}>
             Registro de Ponto
           </Text>
-          <View style={{ width: 40 }} />
         </View>
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={theme.colors.primary} />
@@ -207,12 +209,13 @@ const MonitorsScreen = () => {
         { backgroundColor: isDarkMode ? "#181818" : "#fff" },
       ]}
     >
+      <View style={FormStyles.menuContainer}>
+              <HamburgerMenu />
+            </View>
       <View style={styles.header}>
-        <HamburgerMenu />
         <Text style={[styles.title, { color: isDarkMode ? "#fff" : "#000" }]}>
           Registro de Ponto
         </Text>
-        <View style={{ width: 40 }} />
       </View>
 
       <ScrollView
@@ -390,10 +393,10 @@ const styles = StyleSheet.create({
   },
   header: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "center",
     alignItems: "center",
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingTop: 30,
+    paddingBottom: 16,
     borderBottomWidth: 1,
     borderBottomColor: "#eee",
   },
