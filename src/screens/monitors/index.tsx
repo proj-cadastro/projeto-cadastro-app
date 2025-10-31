@@ -8,6 +8,7 @@ import {
   Alert,
   RefreshControl,
   TouchableOpacity,
+  Platform,
 } from "react-native";
 import {
   Card,
@@ -258,7 +259,10 @@ const MonitorsScreen = () => {
       <SafeAreaView
         style={[
           styles.container,
-          { backgroundColor: isDarkMode ? "#181818" : "#fff" },
+          {
+            backgroundColor: isDarkMode ? "#181818" : "#fff",
+            paddingBottom: Platform.OS === "ios" ? 0 : 40,
+          },
         ]}
       >
         <View style={FormStyles.menuContainer}>
@@ -496,7 +500,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    paddingTop: 30,
+    paddingTop: Platform.OS === "ios" ? 30 : 90,
     paddingBottom: 16,
     borderBottomWidth: 1,
     borderBottomColor: "#eee",

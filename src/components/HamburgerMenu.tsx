@@ -506,7 +506,6 @@ const styles = StyleSheet.create({
   icon: {
     padding: 10,
     marginTop: 30,
-    zIndex: 0, // Fica atrás dos elementos da página
   },
   overlay: {
     flex: 1,

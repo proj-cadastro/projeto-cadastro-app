@@ -4,7 +4,7 @@ import * as Location from "expo-location";
 // TODO: Substitua estas coordenadas pela sua casa para desenvolvimento
 const VALID_LOCATIONS = [
   {
-    name: "Casa (Desenvolvimento)",
+    name: "Fatec Votorantim",
     latitude: -23.439583, // Exemplo: São Paulo - SUBSTITUA pela sua localização
     longitude: -47.368,
     radius: 1000, // raio em metros

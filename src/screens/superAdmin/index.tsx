@@ -752,7 +752,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     paddingHorizontal: 16,
     marginBottom: 16,
-    zIndex: 1, // Garante que os botões fiquem acima de outros elementos
+    zIndex: 10, // Acima do menu (zIndex 5)
+    elevation: 10, // Para Android
   },
   tab: {
     flex: 1,
@@ -760,7 +761,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     borderRadius: 8,
     marginHorizontal: 4,
-    elevation: 2, // Elevação para Android
+    elevation: 10, // Elevação para Android
   },
   activeTab: {
     // backgroundColor definido dinamicamente

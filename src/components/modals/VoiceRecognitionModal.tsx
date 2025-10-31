@@ -8,10 +8,17 @@ import {
   ActivityIndicator,
   Animated,
   Platform,
+  PermissionsAndroid,
+  Alert,
+  Linking,
 } from "react-native";
 import { Button } from "react-native-paper";
 import Icon from "react-native-vector-icons/MaterialIcons";
-import { useAudioRecorder, setAudioModeAsync } from "expo-audio";
+import {
+  useAudioRecorder,
+  setAudioModeAsync,
+  requestRecordingPermissionsAsync,
+} from "expo-audio";
 
 interface VoiceRecognitionModalProps {
   visible: boolean;
@@ -56,6 +63,51 @@ const VoiceRecognitionModal: React.FC<VoiceRecognitionModalProps> = ({
   const [isRecording, setIsRecording] = useState(false);
   const [pulseAnim] = useState(new Animated.Value(1));
 
+  // Função para solicitar permissão de microfone (Android e iOS)
+  const requestMicrophonePermission = async (): Promise<boolean> => {
+    try {
+      // Usar expo-audio que funciona em ambas plataformas
+      const permission = await requestRecordingPermissionsAsync();
+
+      if (!permission.granted) {
+        if (permission.canAskAgain) {
+          Alert.alert(
+            "Permissão Necessária",
+            "Este aplicativo precisa acessar seu microfone para validação de voz.",
+            [
+              { text: "Cancelar", style: "cancel" },
+              {
+                text: "Permitir",
+                onPress: async () => {
+                  await requestRecordingPermissionsAsync();
+                },
+              },
+            ]
+          );
+        } else {
+          Alert.alert(
+            "Permissão Negada",
+            "Por favor, habilite a permissão de microfone nas configurações do aplicativo.",
+            [
+              { text: "Cancelar", style: "cancel" },
+              {
+                text: "Abrir Configurações",
+                onPress: () => Linking.openSettings(),
+              },
+            ]
+          );
+        }
+        return false;
+      }
+
+      return true;
+    } catch (err) {
+      console.error("Erro ao solicitar permissão:", err);
+      Alert.alert("Erro", "Não foi possível solicitar permissão de microfone.");
+      return false;
+    }
+  };
+
   useEffect(() => {
     if (visible) {
       // Seleciona uma frase aleatória quando o modal abre
@@ -96,6 +148,15 @@ const VoiceRecognitionModal: React.FC<VoiceRecognitionModalProps> = ({
 
   const startRecording = async () => {
     try {
+      // Solicitar permissão antes de gravar
+      const hasPermission = await requestMicrophonePermission();
+      if (!hasPermission) {
+        alert(
+          "Permissão de microfone negada. Por favor, habilite nas configurações do aplicativo."
+        );
+        return;
+      }
+
       setIsRecording(true);
       await audioRecorder.record();
     } catch (error) {
