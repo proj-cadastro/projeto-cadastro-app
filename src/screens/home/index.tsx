@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { SafeAreaView, Text, StyleSheet, View, Image } from "react-native";
+import { SafeAreaView, Text, StyleSheet, View, Image, Platform } from "react-native";
 import HamburgerMenu from "../../components/HamburgerMenu";
 import Chart from "../../components/Chart";
 import { useProfessor } from "../../context/ProfessorContext";
@@ -80,6 +80,8 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff", // será sobrescrito inline
     position: "relative",
+        paddingBottom: Platform.OS === "ios" ? 0 : 40, // Espaço para navbar do Android e FAB
+    
   },
   menuContainer: {
     position: "absolute",

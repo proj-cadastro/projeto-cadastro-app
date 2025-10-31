@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
+  Platform,
 } from "react-native";
 import HamburgerMenu from "../../../components/HamburgerMenu";
 import { useProfessor } from "../../../context/ProfessorContext";
@@ -193,7 +194,8 @@ const ListProfessorScreen = () => {
   };
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
+    <GestureHandlerRootView style={{ flex: 1,     paddingBottom: Platform.OS === "ios" ? 0 : 40, // Espaço para navbar do Android e FAB
+     }}>
       <SafeAreaView
         style={[
           TableStyle.container,

@@ -61,10 +61,15 @@ export default function HamburgerMenu() {
           onPress={() => setVisible(false)}
           activeOpacity={1}
         >
-          <View
+          <TouchableOpacity
+            activeOpacity={1}
             style={[styles.menu, { backgroundColor: theme.colors.background }]}
+            onPress={(e) => e.stopPropagation()}
           >
-            <ScrollView contentContainerStyle={styles.menuItemsContainer}>
+            <ScrollView
+              contentContainerStyle={styles.menuItemsContainer}
+              nestedScrollEnabled={true}
+            >
               <View style={styles.logoContainer}>
                 <Image
                   source={
@@ -490,7 +495,7 @@ export default function HamburgerMenu() {
                 </View>
               </TouchableOpacity>
             </View>
-          </View>
+          </TouchableOpacity>
         </TouchableOpacity>
       </Modal>
     </View>
@@ -501,6 +506,7 @@ const styles = StyleSheet.create({
   icon: {
     padding: 10,
     marginTop: 30,
+    zIndex: 0, // Fica atrás dos elementos da página
   },
   overlay: {
     flex: 1,

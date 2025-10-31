@@ -1,8 +1,9 @@
 // styles/TableStyle.ts
-import { StyleSheet } from "react-native";
+import { Platform, StyleSheet } from "react-native";
 
 export const TableStyle = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#fff" },
+  container: { flex: 1, backgroundColor: "#fff" ,     paddingBottom: Platform.OS === "ios" ? 0 : 40, // Espaço para navbar do Android e FAB
+  },
   menuContainer: {
     position: "absolute",
     top: 10,

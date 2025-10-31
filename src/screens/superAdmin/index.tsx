@@ -8,6 +8,7 @@ import {
   StyleSheet,
   Alert,
   ActivityIndicator,
+  Platform,
 } from "react-native";
 import {
   Card,
@@ -734,12 +735,13 @@ const SuperAdminScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingBottom: Platform.OS === "ios" ? 0 : 40, // Espaço para navbar do Android e FAB
   },
   header: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    paddingTop: 30,
+    paddingTop: Platform.OS === "ios" ? 40 : 90,
     paddingBottom: 24,
   },
   title: {
@@ -750,6 +752,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     paddingHorizontal: 16,
     marginBottom: 16,
+    zIndex: 1, // Garante que os botões fiquem acima de outros elementos
   },
   tab: {
     flex: 1,
@@ -757,6 +760,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     borderRadius: 8,
     marginHorizontal: 4,
+    elevation: 2, // Elevação para Android
   },
   activeTab: {
     // backgroundColor definido dinamicamente
@@ -768,6 +772,7 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     paddingHorizontal: 16,
+    paddingBottom: 80, // Espaço para navbar do Android e FAB
   },
   sectionTitle: {
     fontSize: 18,
