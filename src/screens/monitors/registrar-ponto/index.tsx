@@ -1,11 +1,5 @@
 import React, { useState } from "react";
-import {
-  Modal,
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-} from "react-native";
+import { Modal, View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { Button } from "react-native-paper";
 import Icon from "react-native-vector-icons/MaterialIcons";
 
@@ -28,14 +22,25 @@ const RegistroPontoModal: React.FC<RegistroPontoModalProps> = ({
   onConfirm,
   tipo,
 }) => {
-  const now = new Date();
-  const [hora, setHora] = useState<number>(now.getHours());
-  const [minuto, setMinuto] = useState<number>(now.getMinutes());
+  const [currentTime, setCurrentTime] = useState<string>("");
 
-  const incrementHora = () => setHora((prev) => (prev + 1) % 24);
-  const decrementHora = () => setHora((prev) => (prev === 0 ? 23 : prev - 1));
-  const incrementMinuto = () => setMinuto((prev) => (prev + 1) % 60);
-  const decrementMinuto = () => setMinuto((prev) => (prev === 0 ? 59 : prev - 1));
+  // Atualiza o horário a cada segundo
+  React.useEffect(() => {
+    if (visible) {
+      const updateTime = () => {
+        const now = new Date();
+        const hours = now.getHours().toString().padStart(2, "0");
+        const minutes = now.getMinutes().toString().padStart(2, "0");
+        const seconds = now.getSeconds().toString().padStart(2, "0");
+        setCurrentTime(`${hours}:${minutes}:${seconds}`);
+      };
+
+      updateTime(); // Atualiza imediatamente
+      const interval = setInterval(updateTime, 1000);
+
+      return () => clearInterval(interval);
+    }
+  }, [visible]);
 
   return (
     <Modal
@@ -78,51 +83,46 @@ const RegistroPontoModal: React.FC<RegistroPontoModalProps> = ({
             {monitorNome}
           </Text>
 
-          <Text
-            style={{
-              color: isDarkMode ? "#fff" : "#000",
-              marginBottom: 8,
-            }}
-          >
-            Selecione o horário de {tipo === "entrada" ? "entrada" : "saída"}:
-          </Text>
-
-          {/* Campo de hora e minuto com setas */}
-          <View style={styles.timeRow}>
-            {/* Hora */}
-            <TouchableOpacity onPress={decrementHora} style={styles.arrowButton}>
-              <Icon name="chevron-left" size={32} color="#28a745" />
-            </TouchableOpacity>
-            <View style={styles.timeBox}>
-              <Text style={styles.timeText}>{pad(hora)}</Text>
-            </View>
-            <TouchableOpacity onPress={incrementHora} style={styles.arrowButton}>
-              <Icon name="chevron-right" size={32} color="#28a745" />
-            </TouchableOpacity>
-
-            <Text style={styles.colon}>:</Text>
-
-            {/* Minuto */}
-            <TouchableOpacity onPress={decrementMinuto} style={styles.arrowButton}>
-              <Icon name="chevron-left" size={32} color="#28a745" />
-            </TouchableOpacity>
-            <View style={styles.timeBox}>
-              <Text style={styles.timeText}>{pad(minuto)}</Text>
-            </View>
-            <TouchableOpacity onPress={incrementMinuto} style={styles.arrowButton}>
-              <Icon name="chevron-right" size={32} color="#28a745" />
-            </TouchableOpacity>
+          <View style={styles.iconContainer}>
+            <Icon
+              name={tipo === "entrada" ? "login" : "logout"}
+              size={60}
+              color={tipo === "entrada" ? "#28a745" : "#dc3545"}
+            />
           </View>
 
           <Text
-            style={{
-              color: isDarkMode ? "#fff" : "#000",
-              fontSize: 16,
-              marginVertical: 16,
-              textAlign: "center",
-            }}
+            style={[styles.infoText, { color: isDarkMode ? "#ccc" : "#666" }]}
           >
-            Horário selecionado: {pad(hora)}:{pad(minuto)}
+            {tipo === "entrada"
+              ? "Você está registrando sua entrada"
+              : "Você está registrando sua saída"}
+          </Text>
+
+          {/* Exibição do horário atual (não editável) */}
+          <View style={styles.timeDisplayContainer}>
+            <Text
+              style={[
+                styles.timeLabel,
+                { color: isDarkMode ? "#ccc" : "#666" },
+              ]}
+            >
+              Horário do registro:
+            </Text>
+            <Text
+              style={[
+                styles.currentTimeDisplay,
+                { color: isDarkMode ? "#fff" : "#000" },
+              ]}
+            >
+              {currentTime}
+            </Text>
+          </View>
+
+          <Text
+            style={[styles.noteText, { color: isDarkMode ? "#888" : "#999" }]}
+          >
+            ℹ️ O horário será registrado automaticamente pelo sistema
           </Text>
 
           <View style={styles.buttonContainer}>
@@ -132,14 +132,9 @@ const RegistroPontoModal: React.FC<RegistroPontoModalProps> = ({
                 backgroundColor: tipo === "entrada" ? "#28a745" : "#dc3545",
                 borderRadius: 8,
               }}
-              onPress={() =>
-                onConfirm(
-                  `${pad(hora)}:${pad(minuto)}`,
-                  tipo === "entrada" ? "Não definida" : `${pad(hora)}:${pad(minuto)}`
-                )
-              }
+              onPress={() => onConfirm(currentTime, currentTime)}
             >
-              {tipo === "entrada" ? "REGISTRAR ENTRADA" : "REGISTRAR SAÍDA"}
+              {tipo === "entrada" ? "CONFIRMAR ENTRADA" : "CONFIRMAR SAÍDA"}
             </Button>
           </View>
         </View>
@@ -157,6 +152,7 @@ const styles = StyleSheet.create({
   },
   container: {
     width: "90%",
+    maxWidth: 450,
     borderRadius: 12,
     padding: 24,
     alignItems: "center",
@@ -169,6 +165,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "#eee",
     width: "100%",
+    marginBottom: 16,
   },
   modalTitle: {
     fontSize: 16,
@@ -179,42 +176,44 @@ const styles = StyleSheet.create({
     padding: 4,
   },
   monitorName: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: "bold",
     textAlign: "center",
     marginBottom: 20,
     color: "#000",
   },
-  timeRow: {
-    flexDirection: "row",
+  iconContainer: {
+    marginVertical: 20,
+  },
+  infoText: {
+    fontSize: 16,
+    textAlign: "center",
+    marginBottom: 24,
+  },
+  timeDisplayContainer: {
     alignItems: "center",
-    justifyContent: "center",
-    marginVertical: 16,
-  },
-  arrowButton: {
-    padding: 4,
-  },
-  timeBox: {
-    width: 56,
-    height: 56,
+    marginVertical: 20,
+    padding: 20,
+    backgroundColor: "rgba(40, 167, 69, 0.1)",
     borderRadius: 12,
-    backgroundColor: "#f1f1f1",
-    justifyContent: "center",
-    alignItems: "center",
-    marginHorizontal: 4,
-    borderWidth: 1,
-    borderColor: "#ccc",
+    width: "100%",
   },
-  timeText: {
-    fontSize: 28,
-    fontWeight: "bold",
-    color: "#22223b",
+  timeLabel: {
+    fontSize: 14,
+    marginBottom: 8,
+    textAlign: "center",
   },
-  colon: {
-    fontSize: 28,
+  currentTimeDisplay: {
+    fontSize: 48,
     fontWeight: "bold",
-    marginHorizontal: 8,
-    color: "#22223b",
+    fontFamily: "monospace",
+    letterSpacing: 2,
+  },
+  noteText: {
+    fontSize: 12,
+    textAlign: "center",
+    marginBottom: 20,
+    paddingHorizontal: 16,
   },
   buttonContainer: {
     padding: 16,

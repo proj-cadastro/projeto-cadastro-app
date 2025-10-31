@@ -25,12 +25,15 @@ import { useAuth } from "../../context/AuthContext";
 import { useToast } from "../../utils/useToast";
 import Toast from "../../components/atoms/Toast";
 import RegistroPontoModal from "./registrar-ponto";
+import VoiceRecognitionModal from "../../components/modals/VoiceRecognitionModal";
+import LocationValidationModal from "../../components/modals/LocationValidationModal";
 import {
   registrarEntrada,
   registrarSaida,
   getPontoAberto,
   getPontosByUser,
 } from "../../services/pontos/pontoService";
+import { validateUserLocation } from "../../services/pontos/locationValidationService";
 import { Ponto } from "../../types/ponto";
 import { FormStyles } from "../../style/FormStyles";
 
@@ -44,7 +47,17 @@ const MonitorsScreen = () => {
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [showVoiceModal, setShowVoiceModal] = useState(false);
+  const [showLocationModal, setShowLocationModal] = useState(false);
   const [modalType, setModalType] = useState<"entrada" | "saida">("entrada");
+  const [locationValidated, setLocationValidated] = useState(false);
+  const [voiceValidated, setVoiceValidated] = useState(false);
+  const [locationResult, setLocationResult] = useState<{
+    isValid: boolean;
+    message: string;
+    nearestLocation?: string;
+    distance?: number;
+  } | null>(null);
 
   useEffect(() => {
     loadData();
@@ -76,13 +89,72 @@ const MonitorsScreen = () => {
     setRefreshing(false);
   };
 
-  const handleOpenModal = (tipo: "entrada" | "saida") => {
+  const handleOpenModal = async (tipo: "entrada" | "saida") => {
     setModalType(tipo);
+    setLoading(true);
+
+    try {
+      // Mensagem amistosa durante a validação
+      showSuccess("🌍 Verificação concluída");
+
+      // 1. Validar localização
+      const result = await validateUserLocation();
+      setLocationResult(result);
+      setLoading(false);
+
+      // Exibir modal de localização (seja válida ou inválida)
+      setShowLocationModal(true);
+    } catch (error: any) {
+      console.error("Erro na validação:", error);
+      showError(error.message || "Erro ao validar localização");
+      setLoading(false);
+    }
+  };
+
+  const handleLocationConfirm = () => {
+    // Fechar modal de localização
+    setShowLocationModal(false);
+
+    // Se localização foi validada, continuar para verificação de voz
+    if (locationResult?.isValid) {
+      setLocationValidated(true);
+      showSuccess(`✅ ${locationResult.message}`);
+
+      // Abrir modal de reconhecimento de voz
+      setTimeout(() => {
+        setShowVoiceModal(true);
+      }, 300);
+    }
+  };
+
+  const handleLocationClose = () => {
+    setShowLocationModal(false);
+    setLocationResult(null);
+  };
+
+  const handleVoiceSuccess = () => {
+    // Voz validada com sucesso
+    setVoiceValidated(true);
+    setShowVoiceModal(false);
+
+    // 3. Abrir modal de confirmação de registro
     setShowModal(true);
+  };
+
+  const handleCloseVoiceModal = () => {
+    setShowVoiceModal(false);
+    setLocationValidated(false);
+    setVoiceValidated(false);
   };
 
   const handleConfirmPonto = async (entrada: string, saida: string) => {
     if (!user?.id) return;
+
+    // Verificar se passou por todas as validações
+    if (!locationValidated || !voiceValidated) {
+      showError("Validações de segurança incompletas");
+      return;
+    }
 
     try {
       setLoading(true);
@@ -98,6 +170,9 @@ const MonitorsScreen = () => {
       }
 
       setShowModal(false);
+      // Resetar estados de validação
+      setLocationValidated(false);
+      setVoiceValidated(false);
       await loadData();
     } catch (error: any) {
       console.error("❌ Erro ao registrar ponto:", error);
@@ -113,6 +188,13 @@ const MonitorsScreen = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleCloseRegistroModal = () => {
+    setShowModal(false);
+    // Resetar estados de validação se cancelar
+    setLocationValidated(false);
+    setVoiceValidated(false);
   };
 
   const formatDateTime = (dateString: string) => {
@@ -195,7 +277,7 @@ const MonitorsScreen = () => {
               { color: isDarkMode ? "#fff" : "#000" },
             ]}
           >
-            Carregando...
+            Verificando localização...
           </Text>
         </View>
       </SafeAreaView>
@@ -210,8 +292,8 @@ const MonitorsScreen = () => {
       ]}
     >
       <View style={FormStyles.menuContainer}>
-              <HamburgerMenu />
-            </View>
+        <HamburgerMenu />
+      </View>
       <View style={styles.header}>
         <Text style={[styles.title, { color: isDarkMode ? "#fff" : "#000" }]}>
           Registro de Ponto
@@ -367,9 +449,28 @@ const MonitorsScreen = () => {
       </ScrollView>
 
       <Portal>
+        <LocationValidationModal
+          visible={showLocationModal}
+          onClose={handleLocationClose}
+          onConfirm={handleLocationConfirm}
+          isDarkMode={isDarkMode}
+          isValid={locationResult?.isValid || false}
+          message={locationResult?.message || ""}
+          locationName={locationResult?.nearestLocation}
+          distance={locationResult?.distance}
+        />
+
+        <VoiceRecognitionModal
+          visible={showVoiceModal}
+          onClose={handleCloseVoiceModal}
+          onSuccess={handleVoiceSuccess}
+          isDarkMode={isDarkMode}
+          userName={user?.nome || "Monitor"}
+        />
+
         <RegistroPontoModal
           visible={showModal}
-          onClose={() => setShowModal(false)}
+          onClose={handleCloseRegistroModal}
           monitorNome={user?.nome || "Monitor"}
           isDarkMode={isDarkMode}
           onConfirm={handleConfirmPonto}

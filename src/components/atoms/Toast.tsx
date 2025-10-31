@@ -56,6 +56,8 @@ export default function Toast({
       wrapperStyle={{
         top: 50,
         bottom: undefined,
+        zIndex: 9999,
+        elevation: 9999,
       }}
       style={{
         backgroundColor: getBackgroundColor(),
@@ -68,6 +70,8 @@ export default function Toast({
             : type === "warning"
             ? "#ffc107"
             : "#17a2b8",
+        zIndex: 9999,
+        elevation: 9999,
       }}
     >
       <Text style={{ color: getTextColor(), fontWeight: "500" }}>
