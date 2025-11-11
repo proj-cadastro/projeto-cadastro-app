@@ -1,5 +1,3 @@
-
-
 import React, { useEffect, useState } from "react";
 import {
   SafeAreaView,
@@ -135,7 +133,7 @@ const ListProfessorScreen = () => {
     fetchProfessors();
   }, [debouncedSearchTerm, cursos, titulacoes]);
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: string) => {
     try {
       await deleteProfessor(id);
       setTitulacoes({ Especialista: false, Mestre: false, Doutor: false });
@@ -194,8 +192,12 @@ const ListProfessorScreen = () => {
   };
 
   return (
-    <GestureHandlerRootView style={{ flex: 1,     paddingBottom: Platform.OS === "ios" ? 0 : 40, // Espaço para navbar do Android e FAB
-     }}>
+    <GestureHandlerRootView
+      style={{
+        flex: 1,
+        paddingBottom: Platform.OS === "ios" ? 0 : 40, // Espaço para navbar do Android e FAB
+      }}
+    >
       <SafeAreaView
         style={[
           TableStyle.container,
@@ -429,5 +431,3 @@ const styles = StyleSheet.create({
 });
 
 export default ListProfessorScreen;
-
-

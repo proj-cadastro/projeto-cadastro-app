@@ -30,7 +30,7 @@ const EditCourseScreen = () => {
   const { id } = route.params;
 
   const { getCourseById, refreshCoursesData } = useCourse();
-  const course = getCourseById(Number(id));
+  const course = getCourseById(id);
 
   const { professors, getProfessorById } = useProfessor();
 
@@ -251,7 +251,7 @@ const EditCourseScreen = () => {
               <ListPicker
                 items={professors}
                 selected={fetchCourseCoordinator()}
-                onSelect={(coordenadorId: number) =>
+                onSelect={(coordenadorId: string) =>
                   setFormData({ ...formData, coordenadorId })
                 }
                 getLabel={(professor) => professor.nome}

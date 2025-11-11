@@ -25,13 +25,13 @@ export const getProfessors = async (filters?: {
   return response.data.data;
 };
 
-export const deleteProfessor = async (id: number) => {
+export const deleteProfessor = async (id: string) => {
   const response = await api.delete(`/professores/${id}`);
 
   return response.data;
 };
 
-export const updateProfessor = async (id: number, data: Professor) => {
+export const updateProfessor = async (id: string, data: Professor) => {
   const response = await api.put(`/professores/${id}`, data);
 
   return response.data;

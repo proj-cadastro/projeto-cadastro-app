@@ -19,13 +19,13 @@ export const postCourse = async (data: Course) => {
   return response.data;
 };
 
-export const deleteCourse = async (id: number) => {
+export const deleteCourse = async (id: string) => {
   const response = await api.delete(`/cursos/${id}`);
 
   return response.data;
 };
 
-export const updateCourse = async (id: number, data: Course) => {
+export const updateCourse = async (id: string, data: Course) => {
   const response = await api.put(`/cursos/${id}`, data);
 
   return response.data;

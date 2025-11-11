@@ -11,7 +11,7 @@ import { useThemeMode } from "../../../context/ThemeContext"; // Importa o conte
 
 const DetailsProfessors = () => {
   const navigation = useNavigation<NavigationProp>();
-  const route = useRoute<RouteProp<{ params: { id: number } }, "params">>();
+  const route = useRoute<RouteProp<{ params: { id: string } }, "params">>();
   const { professors } = useProfessor();
 
   const { isDarkMode } = useThemeMode();
@@ -20,7 +20,9 @@ const DetailsProfessors = () => {
   const professor = professors.find((p) => p.id === id);
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: isDarkMode ? "#181818" : "#fff" }}>
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: isDarkMode ? "#181818" : "#fff" }}
+    >
       <View style={TableStyle.menuContainer}>
         <HamburgerMenu />
       </View>
@@ -82,11 +84,31 @@ const DetailsProfessors = () => {
             {professor.nome}
           </Text>
           <View style={{ marginBottom: 16 }}>
-            <InfoLine label="Email" value={professor.email} isDarkMode={isDarkMode} />
-            <InfoLine label="Titulação" value={professor.titulacao} isDarkMode={isDarkMode} />
-            <InfoLine label="Status" value={professor.statusAtividade} isDarkMode={isDarkMode} />
-            <InfoLine label="Referência" value={professor.referencia} isDarkMode={isDarkMode} />
-            <InfoLine label="ID Unidade" value={professor.idUnidade} isDarkMode={isDarkMode} />
+            <InfoLine
+              label="Email"
+              value={professor.email}
+              isDarkMode={isDarkMode}
+            />
+            <InfoLine
+              label="Titulação"
+              value={professor.titulacao}
+              isDarkMode={isDarkMode}
+            />
+            <InfoLine
+              label="Status"
+              value={professor.statusAtividade}
+              isDarkMode={isDarkMode}
+            />
+            <InfoLine
+              label="Referência"
+              value={professor.referencia}
+              isDarkMode={isDarkMode}
+            />
+            <InfoLine
+              label="ID Unidade"
+              value={professor.idUnidade}
+              isDarkMode={isDarkMode}
+            />
             <InfoLine
               label="Lattes"
               value={professor.lattes}
@@ -123,8 +145,16 @@ const DetailsProfessors = () => {
               >
                 Curso Coordenado
               </Text>
-              <InfoLine label="Nome" value={professor.cursoCoordenado.nome} isDarkMode={isDarkMode} />
-              <InfoLine label="Sigla" value={professor.cursoCoordenado.sigla} isDarkMode={isDarkMode} />
+              <InfoLine
+                label="Nome"
+                value={professor.cursoCoordenado.nome}
+                isDarkMode={isDarkMode}
+              />
+              <InfoLine
+                label="Sigla"
+                value={professor.cursoCoordenado.sigla}
+                isDarkMode={isDarkMode}
+              />
               <InfoLine
                 label="Código"
                 value={professor.cursoCoordenado.codigo}
@@ -154,10 +184,14 @@ const DetailsProfessors = () => {
           )}
         </View>
       ) : (
-        <Text style={[
-          TableStyle.emptyText,
-          { color: isDarkMode ? "#fff" : "#000" }
-        ]}>Professor não encontrado.</Text>
+        <Text
+          style={[
+            TableStyle.emptyText,
+            { color: isDarkMode ? "#fff" : "#000" },
+          ]}
+        >
+          Professor não encontrado.
+        </Text>
       )}
 
       <View style={{ margin: 16 }}>
