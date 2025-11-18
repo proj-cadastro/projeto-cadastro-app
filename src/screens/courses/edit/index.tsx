@@ -73,6 +73,17 @@ const EditCourseScreen = () => {
   };
 
   const handleUpdate = async () => {
+    if (!formData) {
+      showError("Dados do curso não encontrados");
+      return;
+    }
+
+     // Validação do campo Nome
+  if (!formData.nome || formData.nome.trim().length < 3) {
+    showError("Nome do curso deve ter no mínimo 3 caracteres");
+    return;
+  }
+  
     try {
       if (formData) {
         await updateCourse(id, formData);
