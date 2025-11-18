@@ -15,6 +15,7 @@ import { Button, Card } from "react-native-paper";
 import { RouteParamsProps } from "../../../routes/rootStackParamList ";
 import ListPicker from "../../../components/atoms/ListPicker";
 import { useCourse } from "../../../context/CourseContext";
+import { coursesEditSchema } from "../../../validations/coursesRegisterValidations";
 import { Course } from "../../../types/courses";
 import { Materia } from "../../../types/materia";
 import { updateCourse } from "../../../services/course/cursoService";
@@ -76,24 +77,27 @@ const EditCourseScreen = () => {
     if (!formData) {
       showError("Dados do curso não encontrados");
       return;
-    }
-
-     // Validação do campo Nome
-  if (!formData.nome || formData.nome.trim().length < 3) {
-    showError("Nome do curso deve ter no mínimo 3 caracteres");
-    return;
-  }
+    }    
   
     try {
-      if (formData) {
+      await coursesEditSchema.validate(formData, { abortEarly: false });
+
         await updateCourse(id, formData);
         refreshCoursesData();
         showSuccess("Curso atualizado com sucesso!");
         setTimeout(() => {
           navigation.navigate("ListCourses" as never);
         }, 1500);
-      }
+      
     } catch (error: any) {
+      
+      if (error.name === 'ValidationError') {
+        
+        showError(error.errors[0]);
+        return;
+      }
+      
+      
       const errorMessage =
         error.response?.data?.mensagem ||
         error.message ||
