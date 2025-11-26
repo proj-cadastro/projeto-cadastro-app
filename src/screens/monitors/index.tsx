@@ -470,6 +470,7 @@ const MonitorsScreen = () => {
           onSuccess={handleVoiceSuccess}
           isDarkMode={isDarkMode}
           userName={user?.nome || "Monitor"}
+          userId={user?.id?.toString() || ""}
         />
 
         <RegistroPontoModal

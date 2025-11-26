@@ -44,7 +44,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       setUser(userData);
       setUserRole(userData.role);
     } catch (error: any) {
-      console.error(
+      console.warn(
         "❌ AuthContext: Erro ao carregar dados do usuário:",
         error
       );

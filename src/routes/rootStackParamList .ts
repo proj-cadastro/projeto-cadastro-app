@@ -35,6 +35,8 @@ export type RootStackParamList = {
   EditCourses: { id: string };
 
   Settings: undefined;
+
+  VoiceEnrollment: undefined;
 };
 
 export type NavigationProp = StackNavigationProp<RootStackParamList>;

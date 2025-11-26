@@ -426,6 +426,33 @@ export default function HamburgerMenu() {
                   style={styles.menuItem}
                   onPress={() => {
                     setVisible(false);
+                    navigation.navigate("VoiceEnrollment" as never);
+                  }}
+                >
+                  <View style={styles.iconRow}>
+                    <MaterialIcons
+                      name="record-voice-over"
+                      size={20}
+                      style={[
+                        styles.iconItem,
+                        { color: theme.colors.onBackground },
+                      ]}
+                    />
+                    <Text
+                      style={[
+                        styles.menuText,
+                        { color: theme.colors.onBackground },
+                      ]}
+                    >
+                      Cadastro de Voz
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.menuItem}
+                  onPress={() => {
+                    setVisible(false);
                     navigation.navigate("Settings" as never);
                   }}
                 >
