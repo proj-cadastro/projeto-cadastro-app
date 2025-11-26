@@ -334,7 +334,7 @@ export default function VoiceEnrollmentScreen() {
             <Text
               style={[styles.sectionTitle, { color: theme.colors.onSurface }]}
             >
-              Obter Frase de Desafio
+              Obter Frase
             </Text>
 
             <TouchableOpacity
