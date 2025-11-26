@@ -42,6 +42,10 @@ interface HealthResponse {
   message?: string;
 }
 
+interface UserExistsResponse {
+  exists: boolean;
+}
+
 // Criar instância do axios com configurações padrão
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
@@ -68,6 +72,36 @@ export const checkHealth = async (): Promise<
     return {
       success: false,
       error: (error as Error).message || "Erro ao conectar com a API",
+    };
+  }
+};
+
+/**
+ * Verifica se o usuário já possui voz cadastrada
+ * GET /voice/user/{user_id}/exists
+ * @param {string} userId - ID único do usuário
+ * @returns {Promise<VoiceAuthResponse<UserExistsResponse>>} Se o perfil de voz existe
+ */
+export const checkUserVoiceExists = async (
+  userId: string
+): Promise<VoiceAuthResponse<UserExistsResponse>> => {
+  try {
+    const response = await apiClient.get(
+      `${API_ENDPOINTS.USER_EXISTS}/${userId}/exists`
+    );
+
+    return {
+      success: true,
+      data: {
+        exists: response.data.exists,
+      },
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error:
+        (error as Error).message ||
+        "Erro ao verificar se usuário possui voz cadastrada",
     };
   }
 };
