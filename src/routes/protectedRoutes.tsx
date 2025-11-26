@@ -11,6 +11,7 @@ const commonScreens = {
   Home: require("../screens/home").default,
   SupportPage: require("../screens/support").default,
   Settings: require("../screens/settings").default,
+  VoiceEnrollment: require("../screens/voiceEnrollment").default,
 };
 
 const adminScreens = {
@@ -43,6 +44,7 @@ const superAdminScreens = {
 const monitorScreens = {
   MonitorsIndex: require("../screens/monitors").default,
   Settings: require("../screens/settings").default,
+  VoiceEnrollment: require("../screens/voiceEnrollment").default,
 };
 
 export function ProtectedRoutes() {

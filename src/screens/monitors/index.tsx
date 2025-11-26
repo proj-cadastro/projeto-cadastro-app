@@ -37,6 +37,7 @@ import {
 import { validateUserLocation } from "../../services/pontos/locationValidationService";
 import { Ponto } from "../../types/ponto";
 import { FormStyles } from "../../style/FormStyles";
+import { checkUserVoiceExists } from "../../services/voice-auth/voiceAuthService";
 
 const MonitorsScreen = () => {
   const navigation = useNavigation();
@@ -95,8 +96,46 @@ const MonitorsScreen = () => {
     setLoading(true);
 
     try {
-      // Mensagem amistosa durante a validação
-      showSuccess("🌍 Verificação concluída");
+      if (!user?.id) {
+        setLoading(false);
+        showError("Usuário não encontrado para validação de voz");
+        return;
+      }
+
+      // 0. Verificar rapidamente se o usuário já possui voz cadastrada
+      const voiceCheck = await checkUserVoiceExists(user.id.toString());
+
+      if (!voiceCheck.success) {
+        setLoading(false);
+        showError(
+          voiceCheck.error ||
+            "Não foi possível verificar se você possui voz cadastrada"
+        );
+        return;
+      }
+
+      if (!voiceCheck.data?.exists) {
+        setLoading(false);
+        Alert.alert(
+          "Voz não cadastrada",
+          "Antes de registrar o ponto, você precisa cadastrar sua voz na tela de cadastro de voz.",
+          [
+            {
+              text: "Cancelar",
+              style: "cancel",
+            },
+            {
+              text: "Ir para cadastro",
+              onPress: () => {
+                // Navegar para a tela de cadastro de voz, se existir rota
+                // @ts-ignore
+                navigation.navigate("VoiceEnrollment");
+              },
+            },
+          ]
+        );
+        return;
+      }
 
       // 1. Validar localização
       const result = await validateUserLocation();
@@ -470,6 +509,7 @@ const MonitorsScreen = () => {
           onSuccess={handleVoiceSuccess}
           isDarkMode={isDarkMode}
           userName={user?.nome || "Monitor"}
+          userId={user?.id?.toString() || ""}
         />
 
         <RegistroPontoModal

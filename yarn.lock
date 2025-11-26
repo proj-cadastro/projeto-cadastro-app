@@ -5071,6 +5071,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"expo-av@npm:~16.0.7":
+  version: 16.0.7
+  resolution: "expo-av@npm:16.0.7"
+  peerDependencies:
+    expo: "*"
+    react: "*"
+    react-native: "*"
+    react-native-web: "*"
+  peerDependenciesMeta:
+    react-native-web:
+      optional: true
+  checksum: 10c0/d9d43ea0da01b3b20918df4cee269a6a1537f8998c9d38c6ffb8533d9de6bd298d4288f37abb1464370aa0b878827ea987608d37a8c9c77376ef85c8f433d7c8
+  languageName: node
+  linkType: hard
+
 "expo-constants@npm:~18.0.9":
   version: 18.0.10
   resolution: "expo-constants@npm:18.0.10"
@@ -8544,6 +8559,7 @@ __metadata:
     expo: "npm:54.0.10"
     expo-asset: "npm:^12.0.9"
     expo-audio: "npm:^1.0.14"
+    expo-av: "npm:~16.0.7"
     expo-document-picker: "npm:~14.0.0"
     expo-font: "npm:~14.0.0"
     expo-linear-gradient: "npm:~15.0.0"

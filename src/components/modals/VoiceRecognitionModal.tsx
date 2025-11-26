@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Modal,
   View,
@@ -7,18 +7,20 @@ import {
   StyleSheet,
   ActivityIndicator,
   Animated,
-  Platform,
-  PermissionsAndroid,
   Alert,
-  Linking,
 } from "react-native";
 import { Button } from "react-native-paper";
 import Icon from "react-native-vector-icons/MaterialIcons";
+import { Audio } from "expo-av";
 import {
-  useAudioRecorder,
-  setAudioModeAsync,
-  requestRecordingPermissionsAsync,
-} from "expo-audio";
+  getChallengePhrase,
+  verifyVoice,
+} from "../../services/voice-auth/voiceAuthService";
+import {
+  requestAudioPermissions,
+  getRecordingOptions,
+  formatDuration,
+} from "../../utils/audioUtils";
 
 interface VoiceRecognitionModalProps {
   visible: boolean;
@@ -26,16 +28,8 @@ interface VoiceRecognitionModalProps {
   onSuccess: () => void;
   isDarkMode?: boolean;
   userName: string;
+  userId: string;
 }
-
-// Frases aleatórias para o usuário ler (reduzidas e mais curtas)
-const FRASES_VALIDACAO = [
-  "Confirmo minha presença.",
-  "Registro meu ponto.",
-  "Estou no trabalho.",
-  "Autenticando entrada.",
-  "Verificando identidade.",
-];
 
 const VoiceRecognitionModal: React.FC<VoiceRecognitionModalProps> = ({
   visible,
@@ -43,85 +37,47 @@ const VoiceRecognitionModal: React.FC<VoiceRecognitionModalProps> = ({
   onSuccess,
   isDarkMode = false,
   userName,
+  userId,
 }) => {
-  // Configuração para expo-audio com opções específicas de plataforma
-  const audioRecorder = useAudioRecorder({
-    android: {
-      extension: ".m4a",
-      outputFormat: "mpeg4",
-      audioEncoder: "aac",
-    },
-    ios: {
-      extension: ".m4a",
-      audioQuality: 0x7f, // High quality (valor numérico correto)
-    },
-  } as any); // Temporário até que os tipos sejam atualizados
-
-  const [hasRecorded, setHasRecorded] = useState(false);
-  const [fraseAtual, setFraseAtual] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [isRecording, setIsRecording] = useState(false);
+  // Estados do componente
+  const [phrase, setPhrase] = useState<string>("");
+  const [recording, setRecording] = useState<Audio.Recording | null>(null);
+  const [recordingUri, setRecordingUri] = useState<string | null>(null);
+  const [isRecording, setIsRecording] = useState<boolean>(false);
+  const [recordingTime, setRecordingTime] = useState<number>(0);
+  const [timerInterval, setTimerInterval] = useState<NodeJS.Timeout | null>(
+    null
+  );
+  const [autoStopTimer, setAutoStopTimer] = useState<NodeJS.Timeout | null>(
+    null
+  );
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [pulseAnim] = useState(new Animated.Value(1));
 
-  // Função para solicitar permissão de microfone (Android e iOS)
-  const requestMicrophonePermission = async (): Promise<boolean> => {
-    try {
-      // Usar expo-audio que funciona em ambas plataformas
-      const permission = await requestRecordingPermissionsAsync();
-
-      if (!permission.granted) {
-        if (permission.canAskAgain) {
-          Alert.alert(
-            "Permissão Necessária",
-            "Este aplicativo precisa acessar seu microfone para validação de voz.",
-            [
-              { text: "Cancelar", style: "cancel" },
-              {
-                text: "Permitir",
-                onPress: async () => {
-                  await requestRecordingPermissionsAsync();
-                },
-              },
-            ]
-          );
-        } else {
-          Alert.alert(
-            "Permissão Negada",
-            "Por favor, habilite a permissão de microfone nas configurações do aplicativo.",
-            [
-              { text: "Cancelar", style: "cancel" },
-              {
-                text: "Abrir Configurações",
-                onPress: () => Linking.openSettings(),
-              },
-            ]
-          );
-        }
-        return false;
-      }
-
-      return true;
-    } catch (err) {
-      console.error("Erro ao solicitar permissão:", err);
-      Alert.alert("Erro", "Não foi possível solicitar permissão de microfone.");
-      return false;
-    }
-  };
+  // Ref para tracking do recording
+  const recordingRef = useRef<Audio.Recording | null>(null);
+  const isRecordingRef = useRef<boolean>(false);
 
   useEffect(() => {
     if (visible) {
-      // Seleciona uma frase aleatória quando o modal abre
-      const randomIndex = Math.floor(Math.random() * FRASES_VALIDACAO.length);
-      setFraseAtual(FRASES_VALIDACAO[randomIndex]);
-      setHasRecorded(false);
+      // Obter frase da API quando o modal abre
+      getNewPhrase();
+      setRecordingUri(null);
       setIsRecording(false);
-
-      // Habilitar modo de gravação
-      setAudioModeAsync({
-        allowsRecording: true,
-        playsInSilentMode: true,
-      });
+      setRecordingTime(0);
     }
+
+    return () => {
+      if (timerInterval) {
+        clearInterval(timerInterval);
+      }
+      if (autoStopTimer) {
+        clearTimeout(autoStopTimer);
+      }
+      if (recording) {
+        recording.stopAndUnloadAsync();
+      }
+    };
   }, [visible]);
 
   useEffect(() => {
@@ -146,59 +102,207 @@ const VoiceRecognitionModal: React.FC<VoiceRecognitionModalProps> = ({
     }
   }, [isRecording]);
 
+  // Função para obter nova frase da API
+  const getNewPhrase = async () => {
+    setIsLoading(true);
+    const result = await getChallengePhrase();
+    setIsLoading(false);
+
+    if (result.success && result.data?.phrase) {
+      setPhrase(result.data.phrase);
+    } else {
+      // Fallback para frase padrão se API falhar
+      setPhrase("Confirmo minha presença.");
+    }
+  };
+
+  // Função para iniciar gravação
   const startRecording = async () => {
     try {
-      // Solicitar permissão antes de gravar
-      const hasPermission = await requestMicrophonePermission();
+      const hasPermission = await requestAudioPermissions();
+
       if (!hasPermission) {
-        alert(
-          "Permissão de microfone negada. Por favor, habilite nas configurações do aplicativo."
+        Alert.alert(
+          "Permissão Negada",
+          "Permissão de microfone é necessária para verificação por voz."
         );
         return;
       }
 
+      await Audio.setAudioModeAsync({
+        allowsRecordingIOS: true,
+        playsInSilentModeIOS: true,
+        playThroughEarpieceAndroid: false,
+        staysActiveInBackground: true,
+      });
+
+      const recordingOptions = getRecordingOptions();
+      const { recording: newRecording } = await Audio.Recording.createAsync(
+        recordingOptions
+      );
+
+      setRecording(newRecording);
       setIsRecording(true);
-      await audioRecorder.record();
+      setRecordingTime(0);
+
+      // Atualizar refs
+      recordingRef.current = newRecording;
+      isRecordingRef.current = true;
+
+      // Iniciar contador de tempo
+      const interval = setInterval(() => {
+        setRecordingTime((prev) => prev + 1);
+      }, 1000) as NodeJS.Timeout;
+      setTimerInterval(interval);
+
+      // Timer automático para parar em 12 segundos
+      const autoStop = setTimeout(async () => {
+        if (recordingRef.current && isRecordingRef.current) {
+          try {
+            // Forçar parada da gravação
+            setIsRecording(false);
+            isRecordingRef.current = false;
+
+            // Limpar timers
+            if (timerInterval) {
+              clearInterval(timerInterval);
+              setTimerInterval(null);
+            }
+
+            // Parar e obter URI
+            await recordingRef.current.stopAndUnloadAsync();
+            const uri = recordingRef.current.getURI();
+
+            setRecordingUri(uri);
+            setRecording(null);
+            recordingRef.current = null;
+          } catch (error) {
+            // Forçar reset em caso de erro
+            setIsRecording(false);
+            isRecordingRef.current = false;
+            setRecording(null);
+            recordingRef.current = null;
+            if (timerInterval) {
+              clearInterval(timerInterval);
+              setTimerInterval(null);
+            }
+          }
+        }
+      }, 12000) as NodeJS.Timeout;
+      setAutoStopTimer(autoStop);
     } catch (error) {
-      console.error("Erro ao iniciar gravação:", error);
-      setIsRecording(false);
-      alert("Erro ao iniciar gravação. Verifique as permissões do microfone.");
+      Alert.alert(
+        "Erro",
+        "Falha ao iniciar gravação: " + (error as Error).message
+      );
     }
   };
 
+  // Função para parar gravação
   const stopRecording = async () => {
+    if (!recording) return;
+
     try {
-      const uri = await audioRecorder.stop();
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        setTimerInterval(null);
+      }
+
+      if (autoStopTimer) {
+        clearTimeout(autoStopTimer);
+        setAutoStopTimer(null);
+      }
+
       setIsRecording(false);
+      isRecordingRef.current = false;
+      await recording.stopAndUnloadAsync();
+      const uri = recording.getURI();
 
-      // TODO: Quando o backend estiver pronto, enviar o áudio para validação
-      // await enviarAudioParaValidacao(uri);
-
-      setHasRecorded(true);
+      setRecordingUri(uri);
+      setRecording(null);
+      recordingRef.current = null;
     } catch (error) {
-      console.error("Erro ao parar gravação:", error);
-      setIsRecording(false);
-      alert("Erro ao parar gravação.");
+      console.error("❌ Erro ao parar gravação:", error);
+      Alert.alert(
+        "Erro",
+        "Falha ao parar gravação: " + (error as Error).message
+      );
     }
   };
-  const handleConfirm = () => {
-    if (hasRecorded) {
-      setIsLoading(true);
-      // Simula processamento (quando backend estiver pronto, validar aqui)
-      setTimeout(() => {
-        setIsLoading(false);
-        onSuccess();
-      }, 1000);
+
+  // Função para verificar voz
+  const handleConfirm = async () => {
+    if (!recordingUri || !phrase) {
+      Alert.alert("Erro", "Gravação ou frase não encontrada");
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const audioFile = {
+        uri: recordingUri,
+        type: "audio/wav",
+        name: `voice_verification_${Date.now()}.wav`,
+      };
+
+      // Usar userId para verificação
+      const result = await verifyVoice(userId, phrase, audioFile);
+      setIsLoading(false);
+
+      if (result.success && result.data) {
+        // Verificar se a autenticação foi bem-sucedida
+        if (result.data.authenticated) {
+          Alert.alert(
+            "Sucesso!",
+            `Verificação por voz realizada com sucesso! Similaridade: ${(
+              result.data.similarity * 100
+            ).toFixed(1)}%`,
+            [
+              {
+                text: "OK",
+                onPress: onSuccess,
+              },
+            ]
+          );
+        } else {
+          const similarity = result.data?.similarity
+            ? (result.data.similarity * 100).toFixed(1)
+            : "0.0";
+          const message = result.data?.message || "Voz não reconhecida";
+          const threshold = result.data?.threshold
+            ? (result.data.threshold * 100).toFixed(1)
+            : "75.0";
+
+          Alert.alert(
+            "Verificação Falhou",
+            `${message}\n\nSimilaridade atingida: ${similarity}%\nLimiar necessário: ${threshold}%\n\nTente novamente.`
+          );
+        }
+      } else {
+        Alert.alert("Erro", result.error || "Erro ao verificar voz");
+      }
+    } catch (error) {
+      setIsLoading(false);
+      Alert.alert("Erro", "Erro inesperado na verificação por voz");
     }
   };
 
   const handleRecordToggle = async () => {
     if (isRecording) {
+      if (recordingTime < 5) {
+        Alert.alert(
+          "Gravação muito curta",
+          "Grave por pelo menos 5 segundos para uma melhor verificação."
+        );
+        return;
+      }
       await stopRecording();
     } else {
       await startRecording();
     }
   };
+
   return (
     <Modal
       visible={visible}
@@ -242,7 +346,7 @@ const VoiceRecognitionModal: React.FC<VoiceRecognitionModalProps> = ({
             <Text
               style={[styles.userName, { color: isDarkMode ? "#fff" : "#000" }]}
             >
-              {userName}
+              Olá, {userName}!
             </Text>
 
             <Text
@@ -251,8 +355,9 @@ const VoiceRecognitionModal: React.FC<VoiceRecognitionModalProps> = ({
                 { color: isDarkMode ? "#ccc" : "#666" },
               ]}
             >
-              Para confirmar sua identidade, por favor leia a frase abaixo em
-              voz alta:
+              {isLoading
+                ? "Carregando frase..."
+                : "Leia a frase abaixo em voz alta para confirmar sua identidade.\n\nGrave por pelo menos 5 segundos. A gravação será interrompida automaticamente após 12 segundos."}
             </Text>
 
             <View
@@ -273,7 +378,7 @@ const VoiceRecognitionModal: React.FC<VoiceRecognitionModalProps> = ({
               <Text
                 style={[styles.frase, { color: isDarkMode ? "#fff" : "#000" }]}
               >
-                {fraseAtual}
+                {phrase || "Carregando..."}
               </Text>
             </View>
 
@@ -308,10 +413,12 @@ const VoiceRecognitionModal: React.FC<VoiceRecognitionModalProps> = ({
               ]}
             >
               {isRecording
-                ? "🔴 Gravando... Toque para parar"
-                : hasRecorded
-                ? "✅ Gravação concluída"
-                : "🎤 Toque para começar a gravar"}
+                ? `Gravando... ${formatDuration(recordingTime)} ${
+                    recordingTime < 5 ? "(mínimo 5s)" : ""
+                  }`
+                : recordingUri
+                ? "Gravação concluída! Toque em 'Verificar' para continuar."
+                : "Toque no microfone para começar a gravar"}
             </Text>
 
             <View style={styles.buttonContainer}>
@@ -320,25 +427,25 @@ const VoiceRecognitionModal: React.FC<VoiceRecognitionModalProps> = ({
                 style={[
                   styles.confirmButton,
                   {
-                    backgroundColor: hasRecorded ? "#28a745" : "#ccc",
+                    backgroundColor: recordingUri ? "#28a745" : "#ccc",
                   },
                 ]}
+                disabled={!recordingUri || isLoading}
                 onPress={handleConfirm}
-                disabled={!hasRecorded || isLoading}
+                loading={isLoading}
               >
-                {isLoading ? (
-                  <ActivityIndicator color="#fff" />
-                ) : (
-                  "CONFIRMAR IDENTIDADE"
-                )}
+                {isLoading ? "Verificando..." : "Verificar Voz"}
+              </Button>
+
+              <Button
+                mode="text"
+                style={styles.cancelButton}
+                onPress={onClose}
+                textColor={isDarkMode ? "#ccc" : "#666"}
+              >
+                Cancelar
               </Button>
             </View>
-
-            <Text
-              style={[styles.infoText, { color: isDarkMode ? "#888" : "#999" }]}
-            >
-              ℹ️ Esta gravação será usada apenas para validação de identidade
-            </Text>
           </View>
         </View>
       </View>
@@ -349,73 +456,85 @@ const VoiceRecognitionModal: React.FC<VoiceRecognitionModalProps> = ({
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.6)",
+    backgroundColor: "rgba(0, 0, 0, 0.7)",
     justifyContent: "center",
     alignItems: "center",
   },
   container: {
     width: "90%",
-    maxWidth: 500,
-    borderRadius: 12,
-    padding: 24,
+    maxWidth: 400,
+    borderRadius: 15,
+    padding: 0,
+    elevation: 10,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
   },
   modalHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingBottom: 16,
+    paddingHorizontal: 20,
+    paddingVertical: 15,
     borderBottomWidth: 1,
     borderBottomColor: "#eee",
-    marginBottom: 20,
   },
   modalTitle: {
     fontSize: 18,
     fontWeight: "bold",
+    flex: 1,
+    textAlign: "center",
   },
   closeButton: {
-    padding: 4,
+    padding: 5,
   },
   content: {
+    padding: 20,
     alignItems: "center",
   },
   micIcon: {
-    marginBottom: 16,
+    marginBottom: 15,
   },
   userName: {
     fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 16,
+    fontWeight: "600",
+    marginBottom: 10,
     textAlign: "center",
   },
   instruction: {
     fontSize: 14,
     textAlign: "center",
-    marginBottom: 16,
-    paddingHorizontal: 8,
+    marginBottom: 20,
+    lineHeight: 20,
   },
   fraseContainer: {
-    padding: 16,
-    borderRadius: 8,
+    padding: 15,
+    borderRadius: 10,
     borderWidth: 1,
-    marginBottom: 24,
-    width: "100%",
-    minHeight: 80,
+    marginBottom: 25,
+    minHeight: 60,
     justifyContent: "center",
+    alignItems: "center",
+    position: "relative",
   },
   quoteIcon: {
     position: "absolute",
-    top: 8,
-    left: 8,
+    top: 5,
+    left: 10,
   },
   frase: {
     fontSize: 16,
-    lineHeight: 24,
+    fontWeight: "500",
     textAlign: "center",
+    paddingTop: 10,
     fontStyle: "italic",
-    paddingHorizontal: 8,
   },
   recordButtonContainer: {
-    marginVertical: 20,
+    marginBottom: 20,
   },
   recordButton: {
     width: 80,
@@ -425,36 +544,28 @@ const styles = StyleSheet.create({
     alignItems: "center",
     elevation: 5,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-  },
-  disabledButton: {
-    opacity: 0.5,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
   },
   recordStatus: {
     fontSize: 14,
-    marginBottom: 24,
     textAlign: "center",
+    marginBottom: 25,
+    minHeight: 40,
   },
   buttonContainer: {
     width: "100%",
-    marginBottom: 16,
+    gap: 10,
   },
   confirmButton: {
-    borderRadius: 8,
-    paddingVertical: 4,
+    paddingVertical: 5,
   },
-  infoText: {
-    fontSize: 12,
-    textAlign: "center",
-    paddingHorizontal: 16,
-  },
-  warningText: {
-    color: "#ff9800",
-    fontSize: 14,
-    marginBottom: 16,
-    textAlign: "center",
+  cancelButton: {
+    marginTop: 5,
   },
 });
 
