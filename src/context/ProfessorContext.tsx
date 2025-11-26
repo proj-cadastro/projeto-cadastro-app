@@ -16,7 +16,7 @@ type ProfessorContextType = {
   professors: Professor[];
   loading: boolean;
   refreshProfessorsData: () => void;
-  getProfessorById: (id: number) => Professor | undefined;
+  getProfessorById: (id: string) => Professor | undefined;
 };
 
 export const ProfessorContext = createContext<ProfessorContextType | undefined>(
@@ -35,7 +35,6 @@ export const ProfessorProvider = ({ children }: { children: ReactNode }) => {
       titulacoes?: string[];
     }) => {
       try {
-
         const professoresData = await getProfessors(filters);
 
         setProfessors(professoresData);
@@ -43,7 +42,6 @@ export const ProfessorProvider = ({ children }: { children: ReactNode }) => {
         const msg = error.response?.data?.mensagem;
 
         showError(msg);
-
       } finally {
         setLoading(false);
       }
@@ -51,7 +49,7 @@ export const ProfessorProvider = ({ children }: { children: ReactNode }) => {
     []
   );
 
-  const fetchDataById = (id: number): Professor | undefined => {
+  const fetchDataById = (id: string): Professor | undefined => {
     return professors.find((professor) => professor.id === id);
   };
 

@@ -12,7 +12,7 @@ export const FormStyles = StyleSheet.create({
     position: "absolute",
     top: 10,
     left: 10,
-    zIndex: 10,
+    zIndex: 5, // Médio - acima do conteúdo mas abaixo de modais
   },
   title: {
     fontWeight: "bold",
@@ -43,7 +43,7 @@ export const FormStyles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 8,
     padding: 10,
-    width: "100%"
+    width: "100%",
   },
   label: {
     fontSize: 17,

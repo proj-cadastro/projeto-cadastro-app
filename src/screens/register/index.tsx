@@ -42,7 +42,6 @@ const RegisterScreen = ({ navigation }: any) => {
         { nome, email, senha },
         { abortEarly: false }
       );
-      console.log("Chegou aqui");
       await signUp({ nome, email, senha });
       showSuccess("Cadastro realizado com sucesso!");
       setTimeout(() => {

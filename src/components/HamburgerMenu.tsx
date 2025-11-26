@@ -61,10 +61,15 @@ export default function HamburgerMenu() {
           onPress={() => setVisible(false)}
           activeOpacity={1}
         >
-          <View
+          <TouchableOpacity
+            activeOpacity={1}
             style={[styles.menu, { backgroundColor: theme.colors.background }]}
+            onPress={(e) => e.stopPropagation()}
           >
-            <ScrollView contentContainerStyle={styles.menuItemsContainer}>
+            <ScrollView
+              contentContainerStyle={styles.menuItemsContainer}
+              nestedScrollEnabled={true}
+            >
               <View style={styles.logoContainer}>
                 <Image
                   source={
@@ -421,6 +426,33 @@ export default function HamburgerMenu() {
                   style={styles.menuItem}
                   onPress={() => {
                     setVisible(false);
+                    navigation.navigate("VoiceEnrollment" as never);
+                  }}
+                >
+                  <View style={styles.iconRow}>
+                    <MaterialIcons
+                      name="record-voice-over"
+                      size={20}
+                      style={[
+                        styles.iconItem,
+                        { color: theme.colors.onBackground },
+                      ]}
+                    />
+                    <Text
+                      style={[
+                        styles.menuText,
+                        { color: theme.colors.onBackground },
+                      ]}
+                    >
+                      Cadastro de Voz
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.menuItem}
+                  onPress={() => {
+                    setVisible(false);
                     navigation.navigate("Settings" as never);
                   }}
                 >
@@ -490,7 +522,7 @@ export default function HamburgerMenu() {
                 </View>
               </TouchableOpacity>
             </View>
-          </View>
+          </TouchableOpacity>
         </TouchableOpacity>
       </Modal>
     </View>

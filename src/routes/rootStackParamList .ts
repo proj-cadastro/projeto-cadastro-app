@@ -18,9 +18,9 @@ export type RootStackParamList = {
     partialDataProfessor: ProfessorIAData;
   };
 
-  EditProfessors: { id: number };
+  EditProfessors: { id: string };
 
-  DetailsProfessors: { id: number };
+  DetailsProfessors: { id: string };
 
   FormCourseStepOne: undefined;
 
@@ -32,9 +32,11 @@ export type RootStackParamList = {
     };
   };
 
-  EditCourses: { id: number };
+  EditCourses: { id: string };
 
   Settings: undefined;
+
+  VoiceEnrollment: undefined;
 };
 
 export type NavigationProp = StackNavigationProp<RootStackParamList>;

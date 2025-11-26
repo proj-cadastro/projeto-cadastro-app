@@ -15,6 +15,22 @@ export const coursesRegisterSchema = Yup.object().shape({
     .matches(/^\d+$/, "O código deve conter apenas números"),
 });
 
+// Schema para edição mas com campos opcionais
+export const coursesEditSchema = Yup.object().shape({
+  nome: Yup.string()
+    .required("Nome do curso é obrigatório")
+    .min(3, "Nome deve ter pelo menos 3 caracteres"),
+  sigla: Yup.string()
+    .min(2, "Mínimo 2 caracteres")
+    .max(4, "A sigla deve ter no máximo 4 caracteres")
+    .matches(/^[A-Za-z]*$/, "A sigla deve conter apenas letras"),
+  codigo: Yup.string()
+    .max(4, "O código deve ter no máximo 4 dígitos")
+    .matches(/^\d*$/, "O código deve conter apenas números"),
+  modelo: Yup.string(),
+  coordenadorId: Yup.string(),
+});
+
 export const siglaValidationSchema = Yup.string()
   .max(4, "A sigla deve ter no máximo 4 caracteres")
   .matches(/^[A-Za-z]*$/, "A sigla não deve conter números");

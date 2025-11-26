@@ -10,9 +10,7 @@ export interface UserData {
 }
 
 export async function signUp(data: UserData) {
-  console.log("Chegou no service", api);
   const response = await api.post("/usuarios", data);
-  console.log("Usuário criado:", response);
   return response.data;
 }
 
@@ -25,34 +23,39 @@ export async function updateUser(data: Partial<UserData>, id: string) {
 export async function getLoggedUser(): Promise<UsuarioResponse> {
   try {
     const token = await AsyncStorage.getItem("token");
+
     if (!token) {
       throw new Error("Token não encontrado no AsyncStorage");
     }
 
-    console.log("🔍 getLoggedUser: Tentando obter dados do usuário");
+    // Decodificar o token para extrair o userId
+    const decoded = decodeJwt(token);
+    const userId = decoded.userId;
 
-    // Como você confirmou que a rota é /usuarios, vamos usar diretamente
     try {
-      const response = await api.get("/usuarios/me");
+      // Fazer requisição com o ID do usuário
+      const response = await api.get(`/usuarios/${userId}`);
 
       // Tratar diferentes formatos de resposta
       if (response.data.data) {
         return response.data.data;
       } else if (response.data.user) {
         return response.data.user;
+      } else if (Array.isArray(response.data)) {
+        return response.data[0];
       } else {
         return response.data;
       }
     } catch (error: any) {
-      // Se não conseguir obter do servidor, não podemos determinar o role
       throw new Error(
         `Erro ao obter dados do usuário: ${
-          error.response?.status || error.message
+          error.response?.data?.message ||
+          error.response?.status ||
+          error.message
         }`
       );
     }
   } catch (error: any) {
-    console.error("❌ Erro em getLoggedUser:", error);
     throw error;
   }
 }

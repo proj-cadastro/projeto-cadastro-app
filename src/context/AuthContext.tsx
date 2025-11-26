@@ -9,6 +9,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import api from "../services/apiService";
 import { authEventEmitter } from "../events/AuthEventEmitter";
 import { UsuarioResponse } from "../types/user";
+import { getLoggedUser } from "../services/users/userService";
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -39,12 +40,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const loadUserData = useCallback(async () => {
     try {
-      const { getLoggedUser } = await import("../services/users/userService");
       const userData = await getLoggedUser();
       setUser(userData);
       setUserRole(userData.role);
     } catch (error: any) {
-      console.error(
+      console.warn(
         "❌ AuthContext: Erro ao carregar dados do usuário:",
         error
       );

@@ -8,6 +8,7 @@ import {
   StyleSheet,
   Alert,
   ActivityIndicator,
+  Platform,
 } from "react-native";
 import {
   Card,
@@ -15,7 +16,6 @@ import {
   Modal,
   Portal,
   TextInput,
-  DataTable,
   FAB,
   IconButton,
 } from "react-native-paper";
@@ -46,6 +46,7 @@ import {
 import { useProfessor } from "../../context/ProfessorContext";
 import EditUserModal, { UpdateUserData } from "./components/EditUserModal";
 import MonitorModals from "./components/MonitorModals";
+import { FormStyles } from "../../style/FormStyles";
 
 const SuperAdminScreen = () => {
   const navigation = useNavigation();
@@ -385,49 +386,88 @@ const SuperAdminScreen = () => {
         Gerenciar Usuários
       </Text>
 
-      <Card
-        style={[
-          styles.card,
-          { backgroundColor: isDarkMode ? "#232323" : "#fff" },
-        ]}
-      >
-        <Card.Content>
-          <DataTable>
-            <DataTable.Header>
-              <DataTable.Title style={{ flex: 2 }}>
-                <Text style={{ color: isDarkMode ? "#fff" : "#000" }}>
-                  Nome
-                </Text>
-              </DataTable.Title>
-              <DataTable.Title style={{ flex: 1 }}>
-                <Text style={{ color: isDarkMode ? "#fff" : "#000" }}>
-                  Role
-                </Text>
-              </DataTable.Title>
-              <DataTable.Title style={{ flex: 1 }}>
-                <Text style={{ color: isDarkMode ? "#fff" : "#000" }}>
-                  Status
-                </Text>
-              </DataTable.Title>
-            </DataTable.Header>
-
-            {users.map((user) => (
-              <TouchableOpacity
-                key={user.id}
-                onPress={() => openEditUser(user)}
-              >
-                <DataTable.Row>
-                  <DataTable.Cell style={{ flex: 2 }}>
-                    <Text style={{ color: isDarkMode ? "#fff" : "#000" }}>
-                      {user.nome}
-                    </Text>
-                  </DataTable.Cell>
-                  <DataTable.Cell style={{ flex: 1 }}>
-                    <Text style={{ color: isDarkMode ? "#fff" : "#000" }}>
-                      {user.role}
-                    </Text>
-                  </DataTable.Cell>
-                  <DataTable.Cell style={{ flex: 1 }}>
+      {loadingUsers ? (
+        <ActivityIndicator
+          size="large"
+          color={theme.colors.primary}
+          style={{ marginTop: 50 }}
+        />
+      ) : users.length > 0 ? (
+        users.map((user) => (
+          <Card
+            key={user.id}
+            style={[
+              styles.userCard,
+              { backgroundColor: isDarkMode ? "#232323" : "#fff" },
+            ]}
+          >
+            <Card.Content>
+              <View style={styles.userHeader}>
+                <View style={{ flex: 1 }}>
+                  <Text
+                    style={[
+                      styles.userName,
+                      { color: isDarkMode ? "#fff" : "#000" },
+                    ]}
+                  >
+                    {user.nome}
+                  </Text>
+                  <Text
+                    style={[
+                      styles.userEmail,
+                      { color: isDarkMode ? "#ccc" : "#666" },
+                    ]}
+                  >
+                    {user.email}
+                  </Text>
+                </View>
+                <IconButton
+                  icon="pencil"
+                  size={20}
+                  iconColor={theme.colors.primary}
+                  onPress={() => openEditUser(user)}
+                />
+              </View>
+              <View style={styles.userInfo}>
+                <View style={styles.userInfoItem}>
+                  <Text
+                    style={[
+                      styles.userInfoLabel,
+                      { color: isDarkMode ? "#999" : "#666" },
+                    ]}
+                  >
+                    Cargo
+                  </Text>
+                  <Text
+                    style={[
+                      styles.userInfoValue,
+                      { color: isDarkMode ? "#fff" : "#000" },
+                    ]}
+                  >
+                    {user.role}
+                  </Text>
+                </View>
+                <View style={styles.userInfoItem}>
+                  <Text
+                    style={[
+                      styles.userInfoLabel,
+                      { color: isDarkMode ? "#999" : "#666" },
+                    ]}
+                  >
+                    Status
+                  </Text>
+                  <View
+                    style={[
+                      styles.statusBadge,
+                      {
+                        backgroundColor: user.isActive
+                          ? "#4caf5020"
+                          : isDarkMode
+                          ? "#99999920"
+                          : "#66666620",
+                      },
+                    ]}
+                  >
                     <Text
                       style={{
                         color: user.isActive
@@ -435,18 +475,37 @@ const SuperAdminScreen = () => {
                           : isDarkMode
                           ? "#999"
                           : "#666",
-                        fontWeight: "500",
+                        fontWeight: "600",
+                        fontSize: 12,
                       }}
                     >
                       {user.isActive ? "Ativo" : "Inativo"}
                     </Text>
-                  </DataTable.Cell>
-                </DataTable.Row>
-              </TouchableOpacity>
-            ))}
-          </DataTable>
-        </Card.Content>
-      </Card>
+                  </View>
+                </View>
+              </View>
+            </Card.Content>
+          </Card>
+        ))
+      ) : (
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            marginTop: 50,
+          }}
+        >
+          <Text
+            style={[
+              styles.sectionTitle,
+              { color: isDarkMode ? "#ccc" : "#666" },
+            ]}
+          >
+            Nenhum usuário encontrado
+          </Text>
+        </View>
+      )}
     </ScrollView>
   );
 
@@ -561,12 +620,13 @@ const SuperAdminScreen = () => {
         { backgroundColor: isDarkMode ? "#181818" : "#fff" },
       ]}
     >
-      <View style={styles.header}>
+      <View style={FormStyles.menuContainer}>
         <HamburgerMenu />
+      </View>
+      <View style={styles.header}>
         <Text style={[styles.title, { color: isDarkMode ? "#fff" : "#000" }]}>
           Administração
         </Text>
-        <View style={{ width: 40 }} />
       </View>
 
       <View style={styles.tabContainer}>
@@ -675,14 +735,14 @@ const SuperAdminScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingBottom: Platform.OS === "ios" ? 0 : 40, // Espaço para navbar do Android e FAB
   },
   header: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 16,
-    paddingTop: 16,
-    paddingBottom: 8,
+    justifyContent: "center",
+    paddingTop: Platform.OS === "ios" ? 40 : 90,
+    paddingBottom: 24,
   },
   title: {
     fontSize: 20,
@@ -692,6 +752,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     paddingHorizontal: 16,
     marginBottom: 16,
+    zIndex: 10, // Acima do menu (zIndex 5)
+    elevation: 10, // Para Android
   },
   tab: {
     flex: 1,
@@ -699,6 +761,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     borderRadius: 8,
     marginHorizontal: 4,
+    elevation: 10, // Elevação para Android
   },
   activeTab: {
     // backgroundColor definido dinamicamente
@@ -710,6 +773,7 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     paddingHorizontal: 16,
+    paddingBottom: 80, // Espaço para navbar do Android e FAB
   },
   sectionTitle: {
     fontSize: 18,
@@ -718,6 +782,50 @@ const styles = StyleSheet.create({
   },
   card: {
     marginBottom: 16,
+  },
+  userCard: {
+    marginBottom: 12,
+    elevation: 2,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  userHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    marginBottom: 12,
+  },
+  userName: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginBottom: 4,
+  },
+  userEmail: {
+    fontSize: 13,
+  },
+  userInfo: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 8,
+  },
+  userInfoItem: {
+    flex: 1,
+  },
+  userInfoLabel: {
+    fontSize: 12,
+    marginBottom: 4,
+  },
+  userInfoValue: {
+    fontSize: 14,
+    fontWeight: "500",
+  },
+  statusBadge: {
+    paddingVertical: 4,
+    paddingHorizontal: 12,
+    borderRadius: 12,
+    alignSelf: "flex-start",
   },
   monitorCard: {
     marginBottom: 12,

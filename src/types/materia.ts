@@ -1,6 +1,6 @@
 export interface Materia {
-  id?: number;
+  id?: string;
   nome: string;
   cargaHoraria: number;
-  professorId: number | null;
+  professorId: string | null;
 }

@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { useRoute, useNavigation } from "@react-navigation/native";
-import { 
-  SafeAreaView, 
-  Text, 
-  View, 
-  ScrollView, 
-  TextInput, 
+import {
+  SafeAreaView,
+  Text,
+  View,
+  ScrollView,
+  TextInput,
   KeyboardAvoidingView,
   Platform,
   TouchableWithoutFeedback,
   Keyboard,
-  StyleSheet // ADICIONADO: Para os estilos customizados
+  StyleSheet, // ADICIONADO: Para os estilos customizados
 } from "react-native";
 import HamburgerMenu from "../../../components/HamburgerMenu";
 import { FormStyles } from "../../../style/FormStyles";
@@ -34,7 +34,7 @@ const EditProfessorScreen = () => {
   const { id } = route.params;
 
   const { getProfessorById } = useProfessor();
-  const professor = getProfessorById(Number(id));
+  const professor = getProfessorById(id);
 
   const [formData, setFormData] = useState<Professor | null>(null);
   // ADICIONADO: Estado para controlar a visibilidade do menu hambúrguer
@@ -49,13 +49,19 @@ const EditProfessorScreen = () => {
 
   // ADICIONADO: Listeners do teclado para controlar a visibilidade do menu
   useEffect(() => {
-    const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => {
-      setShowHamburgerMenu(false); // Esconde o menu quando o teclado aparecer
-    });
+    const keyboardDidShowListener = Keyboard.addListener(
+      "keyboardDidShow",
+      () => {
+        setShowHamburgerMenu(false); // Esconde o menu quando o teclado aparecer
+      }
+    );
 
-    const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
-      setShowHamburgerMenu(true); // Mostra o menu quando o teclado sumir
-    });
+    const keyboardDidHideListener = Keyboard.addListener(
+      "keyboardDidHide",
+      () => {
+        setShowHamburgerMenu(true); // Mostra o menu quando o teclado sumir
+      }
+    );
 
     return () => {
       keyboardDidShowListener?.remove();
@@ -122,7 +128,7 @@ const EditProfessorScreen = () => {
               <HamburgerMenu />
             </View>
           )}
-          
+
           <Button
             mode="outlined"
             onPress={() => navigation.goBack()}
@@ -134,7 +140,10 @@ const EditProfessorScreen = () => {
 
           <View style={FormStyles.container}>
             <Text
-              style={[FormStyles.title, { color: isDarkMode ? "#fff" : "#000" }]}
+              style={[
+                FormStyles.title,
+                { color: isDarkMode ? "#fff" : "#000" },
+              ]}
             >
               Atualizar {professor?.nome}
             </Text>
@@ -147,9 +156,12 @@ const EditProfessorScreen = () => {
             >
               Modifique os dados conforme necessário 🙂
             </Text>
-            
+
             <ScrollView
-              contentContainerStyle={[FormStyles.scrollContent, styles.scrollPadding]} // ADICIONADO: Padding extra
+              contentContainerStyle={[
+                FormStyles.scrollContent,
+                styles.scrollPadding,
+              ]} // ADICIONADO: Padding extra
               keyboardShouldPersistTaps="handled"
               showsVerticalScrollIndicator={false} // ADICIONADO: Remove indicador visual
             >
@@ -246,7 +258,9 @@ const EditProfessorScreen = () => {
                     placeholder="Ex: 123"
                     placeholderTextColor={isDarkMode ? "#aaa" : "#888"}
                     value={formData.idUnidade}
-                    onChangeText={(e) => setFormData({ ...formData, idUnidade: e })}
+                    onChangeText={(e) =>
+                      setFormData({ ...formData, idUnidade: e })
+                    }
                     onFocus={handleInputFocus} // ADICIONADO: Esconde menu ao focar
                     keyboardType="numeric" // ADICIONADO: Teclado numérico
                     returnKeyType="next" // ADICIONADO: Facilita navegação
@@ -297,7 +311,9 @@ const EditProfessorScreen = () => {
                     placeholder="https://lattes.cnpq.br/..."
                     placeholderTextColor={isDarkMode ? "#aaa" : "#888"}
                     value={formData.lattes}
-                    onChangeText={(e) => setFormData({ ...formData, lattes: e })}
+                    onChangeText={(e) =>
+                      setFormData({ ...formData, lattes: e })
+                    }
                     onFocus={handleInputFocus} // ADICIONADO: Esconde menu ao focar
                     keyboardType="url" // ADICIONADO: Teclado específico para URL
                     autoCapitalize="none" // ADICIONADO: Não capitaliza
@@ -383,7 +399,7 @@ const EditProfessorScreen = () => {
 const styles = StyleSheet.create({
   scrollPadding: {
     // Padding extra no final do ScrollView para garantir visibilidade
-    paddingBottom: Platform.OS === 'ios' ? 120 : 100,
+    paddingBottom: Platform.OS === "ios" ? 120 : 100,
   },
 });
 

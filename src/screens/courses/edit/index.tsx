@@ -15,6 +15,7 @@ import { Button, Card } from "react-native-paper";
 import { RouteParamsProps } from "../../../routes/rootStackParamList ";
 import ListPicker from "../../../components/atoms/ListPicker";
 import { useCourse } from "../../../context/CourseContext";
+import { coursesEditSchema } from "../../../validations/coursesRegisterValidations";
 import { Course } from "../../../types/courses";
 import { Materia } from "../../../types/materia";
 import { updateCourse } from "../../../services/course/cursoService";
@@ -30,7 +31,7 @@ const EditCourseScreen = () => {
   const { id } = route.params;
 
   const { getCourseById, refreshCoursesData } = useCourse();
-  const course = getCourseById(Number(id));
+  const course = getCourseById(id);
 
   const { professors, getProfessorById } = useProfessor();
 
@@ -73,16 +74,30 @@ const EditCourseScreen = () => {
   };
 
   const handleUpdate = async () => {
+    if (!formData) {
+      showError("Dados do curso não encontrados");
+      return;
+    }    
+  
     try {
-      if (formData) {
+      await coursesEditSchema.validate(formData, { abortEarly: false });
+
         await updateCourse(id, formData);
         refreshCoursesData();
         showSuccess("Curso atualizado com sucesso!");
         setTimeout(() => {
           navigation.navigate("ListCourses" as never);
         }, 1500);
-      }
+      
     } catch (error: any) {
+      
+      if (error.name === 'ValidationError') {
+        
+        showError(error.errors[0]);
+        return;
+      }
+      
+      
       const errorMessage =
         error.response?.data?.mensagem ||
         error.message ||
@@ -251,7 +266,7 @@ const EditCourseScreen = () => {
               <ListPicker
                 items={professors}
                 selected={fetchCourseCoordinator()}
-                onSelect={(coordenadorId: number) =>
+                onSelect={(coordenadorId: string) =>
                   setFormData({ ...formData, coordenadorId })
                 }
                 getLabel={(professor) => professor.nome}

@@ -2,7 +2,7 @@
   "expo": {
     "name": "projeto-cadastro-app",
     "slug": "projeto-cadastro-app",
-    "version": "1.7.14",
+    "version": "1.7.17",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -12,14 +12,23 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSMicrophoneUsageDescription": "Este aplicativo precisa acessar seu microfone para validação de voz no registro de ponto.",
+        "NSLocationWhenInUseUsageDescription": "Este aplicativo precisa acessar sua localização para validar que você está no local correto ao registrar ponto."
+      }
     },
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.ericknascimento.projetocadastroapp"
+      "package": "com.ericknascimento.projetocadastroapp",
+      "permissions": [
+        "RECORD_AUDIO",
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION"
+      ]
     },
     "plugins": [
       [

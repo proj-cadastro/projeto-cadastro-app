@@ -158,7 +158,7 @@ const ListCoursesScreen = () => {
     }
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: string) => {
     try {
       await deleteCourse(id);
       showSuccess("Curso excluído com sucesso!");
