@@ -14,7 +14,7 @@ import { getLoggedUser } from "../services/users/userService";
 interface AuthContextType {
   isAuthenticated: boolean;
   user: UsuarioResponse | null;
-  userRole: "ADMIN" | "SUPER_ADMIN" | "MONITOR" | null;
+  userRole: "ADMIN" | "SUPER_ADMIN" | "MONITOR" | "PESQUISADOR" | null;
   login: (token: string, userData?: UsuarioResponse) => Promise<void>;
   logout: () => void;
 }
@@ -27,7 +27,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<UsuarioResponse | null>(null);
   const [userRole, setUserRole] = useState<
-    "SUPER_ADMIN" | "ADMIN" | "MONITOR" | null
+    "SUPER_ADMIN" | "ADMIN" | "MONITOR" | "PESQUISADOR" | null
   >(null);
 
   const logout = useCallback(async () => {
@@ -44,10 +44,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       setUser(userData);
       setUserRole(userData.role);
     } catch (error: any) {
-      console.warn(
-        "❌ AuthContext: Erro ao carregar dados do usuário:",
-        error
-      );
+      console.warn("❌ AuthContext: Erro ao carregar dados do usuário:", error);
       // Em caso de erro, faz logout em vez de forçar como MONITOR
       // Isso é mais seguro e evita problemas de permissão
       await logout();

@@ -34,13 +34,19 @@ export default function HamburgerMenu() {
     return userRole === "SUPER_ADMIN";
   };
 
+  const isMonitorOrResearcher = () => {
+    return userRole === "MONITOR" || userRole === "PESQUISADOR";
+  };
+
   const shouldShowMonitorFeatures = () => {
-    return userRole === "MONITOR";
+    return isMonitorOrResearcher();
   };
 
   const isMonitor = () => {
-    return userRole === "MONITOR";
+    return isMonitorOrResearcher();
   };
+
+  const canAccessVoiceEnrollment = isMonitorOrResearcher();
 
   return (
     <View>
@@ -422,32 +428,34 @@ export default function HamburgerMenu() {
                   Conta
                 </Text>
 
-                <TouchableOpacity
-                  style={styles.menuItem}
-                  onPress={() => {
-                    setVisible(false);
-                    navigation.navigate("VoiceEnrollment" as never);
-                  }}
-                >
-                  <View style={styles.iconRow}>
-                    <MaterialIcons
-                      name="record-voice-over"
-                      size={20}
-                      style={[
-                        styles.iconItem,
-                        { color: theme.colors.onBackground },
-                      ]}
-                    />
-                    <Text
-                      style={[
-                        styles.menuText,
-                        { color: theme.colors.onBackground },
-                      ]}
-                    >
-                      Cadastro de Voz
-                    </Text>
-                  </View>
-                </TouchableOpacity>
+                {canAccessVoiceEnrollment && (
+                  <TouchableOpacity
+                    style={styles.menuItem}
+                    onPress={() => {
+                      setVisible(false);
+                      navigation.navigate("VoiceEnrollment" as never);
+                    }}
+                  >
+                    <View style={styles.iconRow}>
+                      <MaterialIcons
+                        name="record-voice-over"
+                        size={20}
+                        style={[
+                          styles.iconItem,
+                          { color: theme.colors.onBackground },
+                        ]}
+                      />
+                      <Text
+                        style={[
+                          styles.menuText,
+                          { color: theme.colors.onBackground },
+                        ]}
+                      >
+                        Cadastro de Voz
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
+                )}
 
                 <TouchableOpacity
                   style={styles.menuItem}

@@ -11,7 +11,6 @@ const commonScreens = {
   Home: require("../screens/home").default,
   SupportPage: require("../screens/support").default,
   Settings: require("../screens/settings").default,
-  VoiceEnrollment: require("../screens/voiceEnrollment").default,
 };
 
 const adminScreens = {
@@ -60,6 +59,8 @@ export function ProtectedRoutes() {
 
   const getScreens = () => {
     let screens = {};
+    const isMonitorOrResearcher =
+      effectiveUserRole === "MONITOR" || effectiveUserRole === "PESQUISADOR";
 
     if (effectiveUserRole === "SUPER_ADMIN") {
       // Super admin tem acesso a tudo
@@ -67,7 +68,7 @@ export function ProtectedRoutes() {
     } else if (effectiveUserRole === "ADMIN") {
       // Admin normal tem acesso às funcionalidades de admin + telas comuns
       screens = { ...commonScreens, ...adminScreens };
-    } else if (effectiveUserRole === "MONITOR") {
+    } else if (isMonitorOrResearcher) {
       // Monitor só tem acesso às funcionalidades de monitor (SEM telas comuns)
       screens = { ...monitorScreens };
     } else {
@@ -79,7 +80,10 @@ export function ProtectedRoutes() {
   };
 
   const getInitialRoute = () => {
-    if (effectiveUserRole === "MONITOR") {
+    if (
+      effectiveUserRole === "MONITOR" ||
+      effectiveUserRole === "PESQUISADOR"
+    ) {
       return "MonitorsIndex";
     }
     return "Home";
