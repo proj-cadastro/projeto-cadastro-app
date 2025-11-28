@@ -43,6 +43,7 @@ const superAdminScreens = {
 const monitorScreens = {
   MonitorsIndex: require("../screens/monitors").default,
   Settings: require("../screens/settings").default,
+  SupportPage: require("../screens/support").default,
   VoiceEnrollment: require("../screens/voiceEnrollment").default,
 };
 
