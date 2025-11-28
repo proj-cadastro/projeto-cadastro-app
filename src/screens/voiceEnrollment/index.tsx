@@ -239,8 +239,8 @@ export default function VoiceEnrollmentScreen() {
     try {
       const audioFile = {
         uri: recordingUri,
-        type: "audio/wav",
-        name: `voice_enrollment_${user.id}_${Date.now()}.wav`,
+        type: "audio/m4a",
+        name: `voice_enrollment_${user.id}_${Date.now()}.m4a`,
       };
 
       const result = await enrollVoice(user.id.toString(), phrase, audioFile);

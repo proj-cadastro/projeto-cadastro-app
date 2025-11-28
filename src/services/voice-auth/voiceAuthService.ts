@@ -147,8 +147,8 @@ export const enrollVoice = async (
     formData.append("phrase_expected", phraseExpected);
     (formData as any).append("audio_file", {
       uri: audioFile.uri,
-      type: audioFile.type || "audio/wav",
-      name: audioFile.name || "recording.wav",
+      type: audioFile.type || "audio/m4a",
+      name: audioFile.name || "recording.m4a",
     });
 
     const response = await axios.post(
@@ -204,8 +204,8 @@ export const verifyVoice = async (
     formData.append("phrase_expected", phraseExpected);
     (formData as any).append("audio_file", {
       uri: audioFile.uri,
-      type: audioFile.type || "audio/wav",
-      name: audioFile.name || "recording.wav",
+      type: audioFile.type || "audio/m4a",
+      name: audioFile.name || "recording.m4a",
     });
 
     const response = await axios.post(

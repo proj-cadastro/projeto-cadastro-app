@@ -26,9 +26,9 @@ export const requestAudioPermissions = async (): Promise<boolean> => {
 export const getRecordingOptions = () => {
   return {
     android: {
-      extension: ".wav",
-      outputFormat: Audio.AndroidOutputFormat.DEFAULT,
-      audioEncoder: Audio.AndroidAudioEncoder.DEFAULT,
+      extension: ".m4a",
+      outputFormat: Audio.AndroidOutputFormat.MPEG_4,
+      audioEncoder: Audio.AndroidAudioEncoder.AAC,
       sampleRate: 16000,
       numberOfChannels: 1,
       bitRate: 128000,

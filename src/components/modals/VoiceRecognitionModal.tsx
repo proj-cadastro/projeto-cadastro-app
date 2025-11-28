@@ -242,8 +242,8 @@ const VoiceRecognitionModal: React.FC<VoiceRecognitionModalProps> = ({
     try {
       const audioFile = {
         uri: recordingUri,
-        type: "audio/wav",
-        name: `voice_verification_${Date.now()}.wav`,
+        type: "audio/m4a",
+        name: `voice_verification_${Date.now()}.m4a`,
       };
 
       // Usar userId para verificação
