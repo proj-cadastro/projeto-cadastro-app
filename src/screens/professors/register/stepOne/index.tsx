@@ -412,12 +412,12 @@ export default function ProfessorFormStepOne() {
             </Card.Actions>
             <ProgressBar progress={0.5} color={MD3Colors.neutral40} />
           </Card>
-          <SuggestionSwitch
+          {/* <SuggestionSwitch
             value={suggestionEnabled}
             onValueChange={setSuggestionEnabled}
             label={`Sugestões de \n     Cadastro`}
             labelColor={isDarkMode ? "#ccc" : "#333"}
-          />
+          /> */}
         </ScrollView>
       </View>
       

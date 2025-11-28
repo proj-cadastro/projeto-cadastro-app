@@ -473,14 +473,14 @@ export default function ProfessorFormStepTwo() {
                 </Card.Actions>
                 <ProgressBar progress={0.8} color={MD3Colors.neutral40} />
               </Card>
-              <View style={{ marginTop: 16 }}>
+              {/* <View style={{ marginTop: 16 }}>
                 <SuggestionSwitch
                   value={suggestionEnabled}
                   onValueChange={setSuggestionEnabled}
                   label={`Sugestões de \n     Cadastro`}
                   labelColor={isDarkMode ? "#ccc" : "#333"}
                 />
-              </View>
+              </View> */}
             </ScrollView>
           </View>
           <Portal>

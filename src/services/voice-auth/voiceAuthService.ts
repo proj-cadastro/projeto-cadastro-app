@@ -167,7 +167,7 @@ export const enrollVoice = async (
       data: response.data,
     };
   } catch (error: any) {
-    console.error(
+    console.warn(
       "❌ Erro no enrollment:",
       error.response?.data || error.message
     );
