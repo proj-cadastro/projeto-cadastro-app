@@ -8,7 +8,7 @@
 <a href="#prototipo">Protótipo & Documentação</a>  |  
 <a href="#arquitetura">Arquitetura</a>  |  
 <a href="#tecnologias">Tecnologias</a>  |
-<a href="https://htmlpreview.github.io/?https://github.com/juramal/manualusuario/blob/main/index.html">Manual</a>  |
+<a href="https://juramal.github.io/manualusuario">Manual</a>  |
 <a href="#equipe">Equipe</a>
 </p>
 <span id="sobre">
